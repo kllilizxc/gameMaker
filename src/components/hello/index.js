@@ -1,4 +1,5 @@
 /* @flow */
+import Card from '@/ui/card'
 
 function getMessage (i: string): string {
     return i
@@ -6,6 +7,7 @@ function getMessage (i: string): string {
 
 export default {
     name: 'hello',
+    components: { Card },
     data () {
         return {
             msg: getMessage('Welcome to zZ\'s Vue.js App'),

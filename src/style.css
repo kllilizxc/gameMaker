@@ -1,0 +1,12 @@
+#app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.title-1 {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+    padding: 8px 8px 8px 0;
+}
