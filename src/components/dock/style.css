@@ -1,0 +1,7 @@
+.dock {
+    position: fixed;
+    bottom: 32px;
+    left: 0;
+    margin: auto;
+    width: 800px;
+}
