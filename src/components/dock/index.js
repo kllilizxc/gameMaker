@@ -1,5 +1,5 @@
 // @flow
-import Card from '@/components/card'
+import Card from '@/ui/card'
 
 export default {
     name: 'dock',
