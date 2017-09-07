@@ -1,10 +1,10 @@
 <template>
-    <mu-card class="card">
-        <div class="container">
-            <div class="header" v-if="title">
+    <mu-card :class="$style.card">
+        <div :class="$style.container">
+            <div :class="$style.header" v-if="title">
                 <mu-card-title :title="title" :sub-title="subTitle"/>
             </div>
-            <div class="content">
+            <div :class="$style.content">
                 <slot/>
             </div>
         </div>
@@ -26,8 +26,9 @@
         }
     }
 </script>
-<style scoped>
+<style module>
     .content {
         padding: 16px;
+        overflow: auto;
     }
 </style>

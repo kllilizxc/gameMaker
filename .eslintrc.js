@@ -27,7 +27,13 @@ module.exports = {
 
         'flowtype-errors/show-errors': 2,
 
-        'indent': ['warn', 4]
+        'indent': ['warn', 4],
+
+        'space-before-function-paren': 0,
+
+        'curly': 0,
+
+        'jsx-quotes': 0
     },
     settings: {}
 }

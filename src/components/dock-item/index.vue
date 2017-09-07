@@ -1,8 +1,27 @@
-<template></template>
+<template>
+    <div class="dock-item">
+        <icon-button :icon="icon" :disabled="disabled" @click="clickHandler"/>
+    </div>
+</template>
 <script>
-//    @flow
+    //    @flow
+    import iconButton from '@/ui/material-icon-button'
+
     export default {
-        name: 'dock-item'
+        name: 'dock-item',
+        components: { iconButton },
+        props: {
+            icon: String,
+            disabled: Boolean
+        },
+        methods: {
+            clickHandler(e) {
+                this.$emit('click', e)
+            }
+        }
     }
 </script>
-<style scoped></style>
+<style scoped>
+    .dock-item {
+    }
+</style>
