@@ -1,5 +1,5 @@
 .windowLabelList {
-    position: absolute;
+    position: fixed;
     top: 32px;
     right: 0;
 }

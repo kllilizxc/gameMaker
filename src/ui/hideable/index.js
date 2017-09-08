@@ -4,11 +4,11 @@ import { afterTransition } from '@/common/util'
 export default {
     name: 'hideable',
     props: {
-        onHide: {
+        hideFunction: {
             type: Function,
             required: true
         },
-        onShow: {
+        showFunction: {
             type: Function,
             default: style => style.transform = ''
         },
@@ -18,20 +18,24 @@ export default {
         }
     },
     data: () => ({
-        isHide: false,
+        isHide: true,
         t: null
     }),
+    mounted() {
+        if (!this.isLocked)
+            this.hideFunction(this.$el.style)
+    },
     methods: {
         hide(): void {
             if (this.isLocked || this.isHide) return
-            this.onHide(this.$el.style)
+            this.hideFunction(this.$el.style)
             afterTransition(this.$el, () => {
                 this.isHide = true
             })
         },
         show(): void {
             if (!this.isHide) return
-            this.onShow(this.$el.style)
+            this.showFunction(this.$el.style)
             afterTransition(this.$el, () => {
                 this.isHide = false
             })

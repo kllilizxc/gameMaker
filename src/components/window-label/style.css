@@ -1,12 +1,16 @@
-.windowLabel {
-    margin-bottom: -8px;
-    transform: translateX(60%);
-    transition: transform 0.3s ease;
+.container {
+    margin-bottom: -20px;
+    cursor: pointer;
+}
+
+.icon {
+    margin: auto;
+    display: block;
 }
 
 .card {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
     padding: 8px;
 }
 

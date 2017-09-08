@@ -1,6 +1,6 @@
 <template>
     <div :class="$style.dock">
-        <hideable :class="$style.container" :onHide="hide" :isLocked="isLocked">
+        <hideable :class="$style.container" :hideFunction="hide" :isLocked="isLocked">
             <card :class="$style.card">
                 <div :class="$style.left">
                     <dock-item :class="$style.leftTool" v-for="tool in leftTools" :icon="tool.icon" :key="tool.icon"/>
