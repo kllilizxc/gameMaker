@@ -1,17 +1,25 @@
-@value Grey-400 from '@/common/colors.css';
+@value Grey-400, Pink-500 from '@/common/colors.css';
 
 .dock {
     position: fixed;
-    bottom: 32px;
+    bottom: 0;
     left: 50%;
     margin: 0 auto;
-    transition: transform 0.5s ease;
+}
+
+.isLocked {
+    color: Pink-500
 }
 
 .container {
     width: 100%;
     height: 100%;
     margin-left: -50%;
+    padding-bottom: 32px;
+}
+
+.card {
+    border-radius: 16px;
 }
 
 .left {

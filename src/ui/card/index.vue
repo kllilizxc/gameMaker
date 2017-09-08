@@ -4,9 +4,7 @@
             <div :class="$style.header" v-if="title">
                 <mu-card-title :title="title" :sub-title="subTitle"/>
             </div>
-            <div :class="$style.content">
-                <slot/>
-            </div>
+            <slot/>
         </div>
     </mu-card>
 </template>
@@ -27,8 +25,7 @@
     }
 </script>
 <style module>
-    .content {
-        padding: 16px;
+    .container {
         overflow: auto;
     }
 </style>

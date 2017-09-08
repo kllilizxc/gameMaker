@@ -1,22 +1,30 @@
 <template>
     <div class="ui-layer">
-        <mu-appbar title="gameMaker"></mu-appbar>
         <dock :leftTools="bottomTools.left" :rightTools="bottomTools.right"/>
         <hello/>
-        <window-label/>
+        <window-label-list :labels="windowLabels"/>
     </div>
 </template>
 <script>
     import Hello from '@/components/hello'
     import Dock from '@/components/dock'
-    import windowLabel from 'Components/window-label'
+    import windowLabelList from 'Components/window-label-list'
 
     export default {
         name: 'ui-layer',
-        components: { Hello, Dock, windowLabel },
+        components: { Hello, Dock, windowLabelList },
         data: () => ({}),
         computed: {
-            bottomTools () {
+            windowLabels() {
+                return [
+                    { icon: 'dashboard', name: 'dashboard' },
+                    { icon: 'face', name: 'face' },
+                    { icon: 'favorite', name: 'favorite' },
+                    { icon: 'delete', name: 'delete' },
+                    { icon: 'polymer', name: 'polymer' }
+                ]
+            },
+            bottomTools() {
                 return {
                     left: [
                         { icon: 'face' },

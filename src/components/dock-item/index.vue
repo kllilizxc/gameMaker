@@ -23,5 +23,6 @@
 </script>
 <style scoped>
     .dock-item {
+        margin: 8px;
     }
 </style>

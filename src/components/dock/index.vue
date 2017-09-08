@@ -1,14 +1,16 @@
 <template>
-    <div :class="$style.dock" v-on:mouseover="handleMouseOver">
-        <card :class="$style.container">
-            <div :class="$style.left">
-                <dock-item :class="$style.leftTool" v-for="tool in leftTools" :icon="tool.icon" :key="tool.icon"/>
-            </div>
-            <div :class="$style.right">
-                <dock-item :class="$style.rightTool" icon="eject" @click="hide"/>
-                <dock-item :class="$style.rightTool" v-for="tool in rightTools" :icon="tool.icon" :key="tool.icon"/>
-            </div>
-        </card>
+    <div :class="$style.dock">
+        <hideable :class="$style.container" :onHide="hide" :isLocked="isLocked">
+            <card :class="$style.card">
+                <div :class="$style.left">
+                    <dock-item :class="$style.leftTool" v-for="tool in leftTools" :icon="tool.icon" :key="tool.icon"/>
+                </div>
+                <div :class="$style.right">
+                    <dock-item icon="eject" @click="toggleLock" :class="{ [$style.isLocked]: isLocked, [$style.rightTool]: true }"/>
+                    <dock-item :class="$style.rightTool" v-for="tool in rightTools" :icon="tool.icon" :key="tool.icon"/>
+                </div>
+            </card>
+        </hideable>
     </div>
 </template>
 <script src="./index.js"></script>

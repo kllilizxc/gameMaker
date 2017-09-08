@@ -33,7 +33,13 @@ module.exports = {
 
         'curly': 0,
 
-        'jsx-quotes': 0
+        'jsx-quotes': 0,
+
+        'eol-last': 0,
+
+        'object-curly-spacing': 0,
+
+        'no-return-assign': 0
     },
     settings: {}
 }
