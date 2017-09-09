@@ -1,17 +1,17 @@
 <template>
     <div id="app">
-        <scene/>
-        <ui-layer/>
+        <desktop-manager/>
     </div>
 </template>
 
 <script>
     import Scene from '@/components/scene'
     import UiLayer from '@/components/ui-layer'
+    import DesktopManager from '@/components/desktop-manager'
 
     export default {
         name: 'app',
-        components: { Scene, UiLayer }
+        components: { Scene, UiLayer, DesktopManager }
     }
 </script>
 

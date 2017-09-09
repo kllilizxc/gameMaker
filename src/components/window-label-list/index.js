@@ -24,7 +24,7 @@ export default {
         } = this
 
         return <div class={styles.windowLabelList}>
-            {labels.map(label => <WindowLabel icon={label.icon} name={label.name} />)}
+            {labels && labels.map(label => <WindowLabel icon={label.icon} name={label.name} />)}
         </div>
     }
 }

@@ -6,6 +6,7 @@
 .icon {
     margin: auto;
     display: block;
+    user-select: none;
 }
 
 .card {
@@ -17,4 +18,5 @@
 .name {
     text-align: center;
     margin-top: 8px;
+    user-select: none;
 }

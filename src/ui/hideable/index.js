@@ -34,7 +34,7 @@ export default {
             })
         },
         show(): void {
-            if (!this.isHide) return
+            if (this.isLocked || !this.isHide) return
             this.showFunction(this.$el.style)
             afterTransition(this.$el, () => {
                 this.isHide = false
@@ -63,7 +63,9 @@ export default {
         } = this
 
         return <div onMouseenter={handleMouseEnter}
+                    onTouchstart={handleMouseEnter}
                     onMouseleave={handleMouseLeave}
+                    onTouchend={handleMouseLeave}
                     style={{ transition: 'all 0.3s ease' }}>
             {this.$slots.default}
         </div>

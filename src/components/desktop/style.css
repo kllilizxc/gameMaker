@@ -1,0 +1,6 @@
+.desktop {
+    overflow: auto;
+    width: 100vm;
+    height: 100vm;
+    display: flex;
+}

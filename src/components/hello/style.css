@@ -18,9 +18,5 @@ a {
 
 .hello {
     margin: auto;
-}
-
-.card {
-    margin: 16px;
-    width: 400px;
+    height: 100%;
 }

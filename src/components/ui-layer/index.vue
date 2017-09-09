@@ -1,18 +1,20 @@
 <template>
-    <div class="ui-layer">
-        <dock :leftTools="bottomTools.left" :rightTools="bottomTools.right"/>
+    <div :class="$style.uiLayer">
+        <desktop-manager/>
         <hello/>
+        <dock :leftTools="bottomTools.left" :rightTools="bottomTools.right"/>
         <window-label-list :labels="windowLabels"/>
     </div>
 </template>
 <script>
     import Hello from '@/components/hello'
     import Dock from '@/components/dock'
-    import windowLabelList from 'Components/window-label-list'
+    import WindowLabelList from '@/components/window-label-list'
+    import DesktopManager from '@/components/desktop-manager'
 
     export default {
         name: 'ui-layer',
-        components: { Hello, Dock, windowLabelList },
+        components: { Hello, Dock, WindowLabelList, DesktopManager },
         data: () => ({}),
         computed: {
             windowLabels() {
@@ -41,3 +43,9 @@
         }
     }
 </script>
+<style module>
+    .uiLayer {
+        width: 100%;
+        height: 100%;
+    }
+</style>

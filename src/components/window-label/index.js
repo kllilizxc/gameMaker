@@ -4,6 +4,7 @@ import Card from 'Ui/card'
 import Icon from 'Ui/icon'
 
 import Hideable from '@/ui/hideable'
+import { afterTransition } from '../../common/util'
 
 export default {
     name: 'window-label',
@@ -17,18 +18,64 @@ export default {
         }
     },
     data: () => ({
-        isHide: true
+        isHide: true,
+        isDragging: false,
+        lastX: 0,
+        deltaX: 0
     }),
     methods: {
-        hide(style) {
+        hide(style: { transform: string, marginBottom: string }): void {
             style.transform = 'translateX(80%)'
             style.marginBottom = '-20px'
             this.isHide = true
         },
-        show(style) {
+        show(style: { transform: string, margin: string }): void {
             style.transform = 'translateX(0)'
             style.margin = '0'
             this.isHide = false
+        },
+        setTransform(translateX: number): void {
+            this.$el.style.transform = `translateX(${translateX}px)`
+        },
+        setTransition(haveTransition: boolean): void {
+            this.$el.style.transition = haveTransition ? 'transform 0.3s ease' : 'none'
+        },
+        handleTouchStart(e): void {
+            this.lastX = e.clientX || e.touches[0].clientX
+            this.isDragging = true
+            this.$emit('newWindow', { name, content: null })
+        },
+        handleTouchMove(e): void {
+            e.stopPropagation()
+            e.preventDefault()
+
+            if (!this.isDragging) return
+            const clientX = e.clientX || e.touches[0].clientX
+            this.deltaX += clientX - this.lastX
+            this.lastX = clientX
+
+            if (this.isDragging) {
+                window.requestAnimationFrame(() => this.setTransform(this.deltaX))
+                this.$emit('movingWindow', { name, deltaX: this.deltaX })
+            }
+
+        },
+        handleTouchEnd(e): void {
+            if (this.isDragging) {
+                const threshold = 0.1
+                if (Math.abs(this.deltaX) <= window.innerWidth * threshold) {
+                    this.setTransition(true)
+                    afterTransition(this.$el, () => {
+                        this.setTransition(false)
+                        this.isDragging = false
+                    })
+                    window.requestAnimationFrame(() => this.setTransform(0))
+                this.$emit('movingWindowEnd', { name, size: 0 })
+                } else {
+                    this.isDragging = false
+                    this.$emit('movingWindowEnd', { name, size: 1 })
+                }
+            }
         }
     },
     render() {
@@ -36,13 +83,25 @@ export default {
             icon,
             name,
             hide,
-            show
+            show,
+            handleTouchStart,
+            handleTouchMove,
+            handleTouchEnd,
+            isDragging
         } = this
 
-        return <div class={styles.windowLabel}>
+        return <div class={styles.windowLabel}
+                    onTouchstart={handleTouchStart}
+                    onTouchmove={handleTouchMove}
+                    onTouchend={handleTouchEnd}
+                    onMousedown={handleTouchStart}
+                    onMousemove={handleTouchMove}
+                    onMouseleave={handleTouchEnd}
+                    onMouseup={handleTouchEnd}>
             <Hideable class={styles.container}
                       hideFunction={hide}
-                      showFunction={show}>
+                      showFunction={show}
+                      isLocked={isDragging}>
                 <Card class={styles.card}>
                     <Icon className={styles.icon} icon={icon} size={32}/>
                     <div class={styles.name}>{name}</div>
