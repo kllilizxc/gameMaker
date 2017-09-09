@@ -6,38 +6,58 @@ import WindowLabelList from '@/components/window-label-list'
 
 type WindowType = {
     title: string,
-    content: any
+    content: any,
+    size: number
 }
 
 type DesktopType = {
     windows: Window[]
 }
 
+export const MAX_SIZE = 4
+
 export default {
     name: 'desktop-manager',
     data: () => ({
-        desktops: []
+        desktops: [],
+        currentWindow: null,
+        currentDesktopIndex: 0
     }),
     methods: {
         gotoDesktop(index: number): void {
             this.$el.style.transform = `translateX(${-100 * index}%)`
         },
-        addWindow(window: WindowType, size: number) {
-            //size:
-            //0: none
-            //1: 1/3
-            //2: 1/2
-            //3: 1
+        addWindow(window: WindowType, size: number): void {
             if (!size) return
 
         },
         handleNewWindow({ name, content }): void {
+            this.currentWindow = { title: name, content }
         },
-        handleMovingWindow({ name, deltaX }): void {
-
+        handleMovingWindow(deltaX): void {
+            this.$refs.currentWindow.style.width = `${deltaX}px`
         },
-        handleMovingWindowEnd({name, size}): void {
+        handleMovingWindowEnd(size): void {
+            if (!size || !this.currentWindow) {
+                this.currentWindow = null
+                return
+            }
 
+            let currentDesktop = this.desktops[this.currentDesktopIndex]
+            let { windows } = currentDesktop
+
+            this.currentWindow.size = size
+            if (windows.length + size > MAX_SIZE) {
+                //create a new window
+                this.desktops.push({ windows: [this.currentWindow] })
+                this.gotoDesktop(++this.currentDesktopIndex)
+            } else {
+                //shrink the first window to fit the new window
+                let totalSize = windows.reduce((sum, window) => sum += window.size, 0)
+                windows[0].size -= totalSize + size - MAX_SIZE
+                windows.push(this.currentWindow)
+            }
+            this.currentWindow = null
         }
     },
     created() {
@@ -58,6 +78,8 @@ export default {
         let {
             desktops,
             windowLabels,
+            currentDesktopIndex,
+            currentWindow,
             handleNewWindow,
             handleMovingWindow,
             handleMovingWindowEnd
@@ -67,9 +89,15 @@ export default {
                     onNewWindow={handleNewWindow}
                     onMovingWindow={handleMovingWindow}
                     onMovingWindowEnd={handleMovingWindowEnd}>
-            {desktops && desktops.map(desktop => <Desktop>
+            {desktops && desktops.map((desktop, index) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
-                    <Window title={window.title} color={window.color}>{window.content}</Window>)}
+                    <Window title={window.title}
+                            color={window.color}
+                            style={{ flex: window.size }}>{window.content}</Window>)}
+                {index === currentDesktopIndex && currentWindow &&
+                    <Window title={currentWindow.title}
+                            color={currentWindow.color}
+                            ref="currentWindow">{currentWindow.content}</Window>}
             </Desktop>)}
             <WindowLabelList labels={windowLabels}/>
         </div>

@@ -5,6 +5,7 @@ import Icon from 'Ui/icon'
 
 import Hideable from '@/ui/hideable'
 import { afterTransition } from '../../common/util'
+import { MAX_SIZE } from '../desktop-manager/index'
 
 export default {
     name: 'window-label',
@@ -54,7 +55,7 @@ export default {
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
-            if (this.isDragging) {
+            if (this.isDragging && this.deltaX > 0 && this.deltaX < window.innerWidth) {
                 window.requestAnimationFrame(() => this.setTransform(this.deltaX))
                 this.$emit('movingWindow', { name, deltaX: this.deltaX })
             }
@@ -62,18 +63,22 @@ export default {
         },
         handleTouchEnd(e): void {
             if (this.isDragging) {
-                const threshold = 0.1
-                if (Math.abs(this.deltaX) <= window.innerWidth * threshold) {
+                let absDeltaX = Math.abs(this.deltaX)
+                let blockWidth = window.innerWidth / MAX_SIZE
+                console.log(absDeltaX, blockWidth, Math.ceil((absDeltaX - blockWidth / 2) / blockWidth))
+                if (absDeltaX <= blockWidth / 2) {
+                    //cancel
                     this.setTransition(true)
                     afterTransition(this.$el, () => {
                         this.setTransition(false)
                         this.isDragging = false
                     })
                     window.requestAnimationFrame(() => this.setTransform(0))
-                this.$emit('movingWindowEnd', { name, size: 0 })
+                this.$emit('movingWindowEnd', 0)
                 } else {
+                    //add new window
+                    this.$emit('movingWindowEnd', Math.max(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
                     this.isDragging = false
-                    this.$emit('movingWindowEnd', { name, size: 1 })
                 }
             }
         }
