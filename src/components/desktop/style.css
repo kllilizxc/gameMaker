@@ -1,6 +1,7 @@
 .desktop {
     overflow: auto;
-    width: 100vm;
-    height: 100vm;
+    float: left;
+    width: 100vw;
+    height: 100vh;
     display: flex;
 }

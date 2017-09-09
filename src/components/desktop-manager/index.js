@@ -25,19 +25,19 @@ export default {
     }),
     methods: {
         gotoDesktop(index: number): void {
-            this.$el.style.transform = `translateX(${-100 * index}%)`
+            this.$el.style.transform = `translateX(${-100 * index}vw)`
         },
-        addWindow(window: WindowType, size: number): void {
-            if (!size) return
-
+        addDesktop(desktop: DesktopType): void {
+            this.desktops.push(desktop)
+            this.$el.style.width = `${this.desktops.length * 100}vw`
+            this.gotoDesktop(++this.currentDesktopIndex)
         },
         handleNewWindow({ name, content }): void {
             this.currentWindow = { title: name, content }
             console.log('newWindow', 'desktop-manager')
         },
         handleMovingWindow(deltaX): void {
-            console.log(this.$refs)
-            if (this.$refs.currentWindow)
+            if (this.$refs.currentWindow && this.$refs.currentWindow.style)
                 this.$refs.currentWindow.style.width = `${deltaX}px`
         },
         handleMovingWindowEnd(size): void {
@@ -46,16 +46,17 @@ export default {
                 return
             }
 
-            if (!this.desktops[this.currentDesktopIndex]) {
-                this.desktops[this.currentDesktopIndex] = { windows: [] }
+            let currentDesktop = this.desktops[this.currentDesktopIndex]
+            if (!currentDesktop) {
+                this.desktops[this.currentDesktopIndex] = currentDesktop = { windows: [] }
             }
-            let { windows } = this.desktops[this.currentDesktopIndex]
+            let { windows } = currentDesktop
 
             this.currentWindow.size = size
+            console.log(windows.length, size)
             if (windows.length + size > MAX_SIZE) {
                 //create a new window
-                this.desktops.push({ windows: [this.currentWindow] })
-                this.gotoDesktop(++this.currentDesktopIndex)
+                this.addDesktop({ windows: [this.currentWindow] })
             } else {
                 //shrink the first window to fit the new window
                 if (windows.length) {
@@ -67,7 +68,6 @@ export default {
                 windows.push(this.currentWindow)
             }
             this.currentWindow = null
-            console.log(this.desktops)
         }
     },
     created() {
@@ -99,6 +99,7 @@ export default {
             {desktops && desktops.map((desktop, index) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window title={window.title}
+                            key={window.title}
                             color={window.color}
                             style={{ flex: window.size }}>{window.content}</Window>)}
                 {index === currentDesktopIndex && currentWindow &&

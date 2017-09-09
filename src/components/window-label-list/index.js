@@ -24,8 +24,10 @@ export default {
         handleMovingWindow(deltaX) {
             this.$emit('movingWindow', deltaX)
         },
-        handleMovingWindowEnd(size) {
+        handleMovingWindowEnd({ labelName, size }) {
             this.$emit('movingWindowEnd', size)
+            if(size)
+                this.labels.splice(this.labels.findIndex(label => label.name === labelName), 1)
         }
     },
     render() {
@@ -39,6 +41,7 @@ export default {
         return <div class={styles.windowLabelList}>
             {labels && labels.map(label => <WindowLabel icon={label.icon}
                                                         name={label.name}
+                                                        key={label.name}
                                                         onNewWindow={handleNewWindow}
                                                         onMovingWindow={handleMovingWindow}
                                                         onMovingWindowEnd={handleMovingWindowEnd} />)}

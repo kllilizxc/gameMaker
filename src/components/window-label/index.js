@@ -44,7 +44,7 @@ export default {
         handleTouchStart(e): void {
             this.lastX = e.clientX || e.touches[0].clientX
             this.isDragging = true
-            this.$emit('newWindow', { name, content: null })
+            this.$emit('newWindow', { name: this.name, content: null })
         },
         handleTouchMove(e): void {
             e.stopPropagation()
@@ -74,10 +74,13 @@ export default {
                         this.isDragging = false
                     })
                     window.requestAnimationFrame(() => this.setTransform(0))
-                this.$emit('movingWindowEnd', 0)
+                    this.$emit('movingWindowEnd', { labelName: this.name, size: 0 })
                 } else {
                     //add new window
-                    this.$emit('movingWindowEnd', Math.max(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
+                    this.$emit('movingWindowEnd', {
+                        labelName: this.name,
+                        size: Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
+                    })
                     this.isDragging = false
                 }
             }
