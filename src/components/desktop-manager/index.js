@@ -33,9 +33,12 @@ export default {
         },
         handleNewWindow({ name, content }): void {
             this.currentWindow = { title: name, content }
+            console.log('newWindow', 'desktop-manager')
         },
         handleMovingWindow(deltaX): void {
-            this.$refs.currentWindow.style.width = `${deltaX}px`
+            console.log(this.$refs)
+            if (this.$refs.currentWindow)
+                this.$refs.currentWindow.style.width = `${deltaX}px`
         },
         handleMovingWindowEnd(size): void {
             if (!size || !this.currentWindow) {
@@ -43,8 +46,10 @@ export default {
                 return
             }
 
-            let currentDesktop = this.desktops[this.currentDesktopIndex]
-            let { windows } = currentDesktop
+            if (!this.desktops[this.currentDesktopIndex]) {
+                this.desktops[this.currentDesktopIndex] = { windows: [] }
+            }
+            let { windows } = this.desktops[this.currentDesktopIndex]
 
             this.currentWindow.size = size
             if (windows.length + size > MAX_SIZE) {
@@ -53,11 +58,16 @@ export default {
                 this.gotoDesktop(++this.currentDesktopIndex)
             } else {
                 //shrink the first window to fit the new window
-                let totalSize = windows.reduce((sum, window) => sum += window.size, 0)
-                windows[0].size -= totalSize + size - MAX_SIZE
+                if (windows.length) {
+                    let totalSize = windows.reduce((sum, window) => sum += window.size, 0)
+                    windows[0].size -= totalSize + size - MAX_SIZE
+                } else {
+                    this.currentWindow.size = MAX_SIZE
+                }
                 windows.push(this.currentWindow)
             }
             this.currentWindow = null
+            console.log(this.desktops)
         }
     },
     created() {
@@ -85,21 +95,21 @@ export default {
             handleMovingWindowEnd
         } = this
 
-        return <div class={styles.desktopManager}
-                    onNewWindow={handleNewWindow}
-                    onMovingWindow={handleMovingWindow}
-                    onMovingWindowEnd={handleMovingWindowEnd}>
+        return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window title={window.title}
                             color={window.color}
                             style={{ flex: window.size }}>{window.content}</Window>)}
                 {index === currentDesktopIndex && currentWindow &&
-                    <Window title={currentWindow.title}
-                            color={currentWindow.color}
-                            ref="currentWindow">{currentWindow.content}</Window>}
+                <Window title={currentWindow.title}
+                        color={currentWindow.color}
+                        ref="currentWindow">{currentWindow.content}</Window>}
             </Desktop>)}
-            <WindowLabelList labels={windowLabels}/>
+            <WindowLabelList labels={windowLabels}
+                             onNewWindow={handleNewWindow}
+                             onMovingWindow={handleMovingWindow}
+                             onMovingWindowEnd={handleMovingWindowEnd}/>
         </div>
     }
 }
