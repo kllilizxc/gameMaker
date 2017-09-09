@@ -55,7 +55,7 @@ export default {
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
-            if (this.isDragging && this.deltaX > 0 && this.deltaX < window.innerWidth) {
+            if (this.isDragging && this.deltaX < 0 && this.deltaX > -window.innerWidth) {
                 window.requestAnimationFrame(() => this.setTransform(this.deltaX))
                 this.$emit('movingWindow', { name, deltaX: this.deltaX })
             }
