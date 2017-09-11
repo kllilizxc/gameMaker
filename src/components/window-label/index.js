@@ -4,6 +4,7 @@ import Card from 'Ui/card'
 import Icon from 'Ui/icon'
 
 import Hideable from '@/ui/hideable'
+import Draggable from '@/ui/draggable'
 import { afterTransition } from '../../common/util'
 import { MAX_SIZE } from '../desktop-manager/index'
 
@@ -24,9 +25,6 @@ export default {
     },
     data: () => ({
         isHide: true,
-        isDragging: false,
-        lastX: 0,
-        deltaX: 0,
         shouldClear: false
     }),
     methods: {
@@ -44,13 +42,13 @@ export default {
             this.$el.style.transform = `translateX(${translateX}px)`
         },
         setTransformAnimated(from: number, to: number, callback: (number) => void): void {
-            let duration = 300
+            const duration = 300
             let totalTime = 0
-            let startTime = new Date().getTime()
-            let t = setInterval(() => {
-                let nowTime = new Date().getTime()
+            const startTime = new Date().getTime()
+            const t = setInterval(() => {
+                const nowTime = new Date().getTime()
                 totalTime += nowTime - startTime
-                let deltaX = to + (from - to) * totalTime / duration
+                const deltaX = to + (from - to) * totalTime / duration
                 console.log(deltaX)
                 this.$el.style.transform = `translateX(${deltaX}px)`
                 callback(deltaX)
@@ -61,48 +59,33 @@ export default {
         setTransition(haveTransition: boolean): void {
             this.$el.style.transition = haveTransition ? 'transform 0.3s ease' : 'none'
         },
-        handleTouchStart(e): void {
-            this.lastX = e.clientX || e.touches[0].clientX
-            this.isDragging = true
+        handleTouchStart(): void {
             this.$emit('newWindow', { name: this.name, content: null, color: this.color })
         },
-        handleTouchMove(e): void {
-            e.stopPropagation()
-            e.preventDefault()
-
-            if (!this.isDragging) return
-            const clientX = e.clientX || e.touches[0].clientX
-            this.deltaX += clientX - this.lastX
-            this.lastX = clientX
-
-            if (this.isDragging && this.deltaX < 0 && this.deltaX > -window.innerWidth) {
-                window.requestAnimationFrame(() => this.setTransform(this.deltaX))
-                this.$emit('movingWindow', this.deltaX)
-            }
+        handleTouchMove(deltaX): void {
+            window.requestAnimationFrame(() => this.setTransform(deltaX))
+            this.$emit('movingWindow', deltaX)
         },
-        handleTouchEnd(e): void {
-            if (this.isDragging) {
-                let absDeltaX = Math.abs(this.deltaX)
-                let blockWidth = window.innerWidth / MAX_SIZE
-                if (absDeltaX <= blockWidth / 2) {
-                    //cancel
-                    let t
-                    this.setTransition(true)
-                    afterTransition(this.$el, () => {
-                        this.setTransition(false)
-                        this.isDragging = false
-                    })
-                    window.requestAnimationFrame(() => this.setTransform(0))
-                    this.$emit('movingWindowEnd', { labelName: this.name, size: 0 })
-                } else {
-                    //add new window
-                    this.$emit('movingWindowEnd', {
-                        labelName: this.name,
-                        size: Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
-                    })
-                    this.isDragging = false
-                    this.shouldClear = true
-                }
+        handleTouchEnd(deltaX, stopDragging): void {
+            const absDeltaX = Math.abs(deltaX)
+            const blockWidth = window.innerWidth / MAX_SIZE
+            if (absDeltaX <= blockWidth / 2) {
+                // cancel
+                this.setTransition(true)
+                afterTransition(this.$el, () => {
+                    this.setTransition(false)
+                    stopDragging()
+                })
+                window.requestAnimationFrame(() => this.setTransform(0))
+                this.$emit('movingWindowEnd', { labelName: this.name, size: 0 })
+            } else {
+                // add new window
+                this.$emit('movingWindowEnd', {
+                    labelName: this.name,
+                    size: Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
+                })
+                stopDragging()
+                this.shouldClear = true
             }
         }
     },
@@ -121,14 +104,11 @@ export default {
         } = this
 
         return !shouldClear &&
-            <div class={styles.windowLabel}
-                 onTouchstart={handleTouchStart}
-                 onTouchmove={handleTouchMove}
-                 onTouchend={handleTouchEnd}
-                 onMousedown={handleTouchStart}
-                 onMousemove={handleTouchMove}
-                 onMouseleave={handleTouchEnd}
-                 onMouseup={handleTouchEnd}>
+            <Draggable class={styles.windowLabel}
+                       touchStart={handleTouchStart}
+                       touchMove={handleTouchMove}
+                       touchEnd={handleTouchEnd}
+                       dragLimit={-window.innerWidth}>
                 <Hideable class={styles.container}
                           hideFunction={hide}
                           showFunction={show}
@@ -138,6 +118,6 @@ export default {
                         <div class={styles.name}>{name}</div>
                     </Card>
                 </Hideable>
-            </div>
+            </Draggable>
     }
 }
