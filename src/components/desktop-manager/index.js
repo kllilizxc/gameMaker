@@ -23,8 +23,8 @@ export default {
     name: 'desktop-manager',
     data: () => ({
         desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
-        currentWindow: null,
-        currentDesktopIndex: 0
+        currentDesktopIndex: 0,
+        currentWindowIndex: 0
     }),
     methods: {
         gotoDesktop(index: number): void {
@@ -45,27 +45,30 @@ export default {
             this.gotoDesktop(++this.currentDesktopIndex)
         },
         handleNewWindow({ name, content, color }): void {
-            this.currentWindow = { title: name, content, color }
+            const currentDesktop = this.createDesktopIfShould()
+            this.currentWindowIndex = currentDesktop.windows.length
+            currentDesktop.windows.push({ title: name, content, color, size: 0 })
         },
         handleMovingWindow(deltaX: number): void {
-            if (this.currentWindow)
-                this.$refs.currentWindow.$el.style.width = `${Math.abs(deltaX)}px`
+            if (this.currentWindowRef)
+                this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
         },
         createDesktopIfShould(): DesktopType {
-            let currentDesktop = this.desktops[this.currentDesktopIndex]
+            let { currentDesktop } = this
             if (!currentDesktop) {
-                this.desktops[this.currentDesktopIndex] = currentDesktop = { windows: [] }
+                currentDesktop = this.desktops[this.currentDesktopIndex] = { windows: [] }
             }
             return currentDesktop
         },
         translateCurrentWindow(translateWidth: number, callback: () => void) {
-            afterTransition(this.$refs.currentWindow.$el, () => {
+            const { currentWindowRef } = this
+            afterTransition(currentWindowRef.$el, () => {
+                currentWindowRef.$el.style.transition = 'none'
+                this.currentWindowIndex = -1
                 callback && callback()
-                this.$refs.currentWindow.$el.style.transition = 'none'
-                this.currentWindow = null
             })
-            this.$refs.currentWindow.$el.style.transition = 'width 0.3s ease'
-            this.$refs.currentWindow.$el.style.width = `${translateWidth}px`
+            currentWindowRef.$el.style.transition = 'width 0.3s ease'
+            currentWindowRef.$el.style.width = `${translateWidth}px`
         },
         setCurrentWindowSize(windows: WindowType[], size: number) {
             switch (windows.length) {
@@ -92,12 +95,15 @@ export default {
             }
         },
         createNewDesktopToFitWindow() {
-            this.currentWindow.size = MAX_SIZE
-            this.addDesktop({ windows: [this.currentWindow] })
+            const { currentWindow } = this
+            currentWindow.size = MAX_SIZE
+            this.currentDesktop.windows.pop()
+            this.addDesktop({ windows: [currentWindow] })
         },
         handleMovingWindowEnd(size: number): void {
+            if (!this.currentWindow) return
             if (!size) {
-                this.translateCurrentWindow(0)
+                this.translateCurrentWindow(0, () => this.currentDesktop.windows.pop())
                 return
             }
 
@@ -110,7 +116,7 @@ export default {
                 this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
             } else {
                 this.setCurrentWindowSize(windows, size)
-                this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth, () => windows.push(this.currentWindow))
+                this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
             }
         }
     },
@@ -129,6 +135,15 @@ export default {
         },
         isLastDesktop() {
             return this.currentDesktopIndex === this.desktops.length - 1
+        },
+        currentDesktop() {
+            return this.desktops[this.currentDesktopIndex]
+        },
+        currentWindow() {
+            return this.currentDesktop.windows[this.currentWindowIndex]
+        },
+        currentWindowRef() {
+            return this.$refs[`windows${this.currentWindowIndex}`]
         }
     },
     render() {
@@ -136,7 +151,6 @@ export default {
             desktops,
             windowLabels,
             currentDesktopIndex,
-            currentWindow,
             handleNewWindow,
             handleMovingWindow,
             handleMovingWindowEnd,
@@ -146,19 +160,17 @@ export default {
             isLastDesktop
         } = this
 
+        // console.log(desktops)
+
         return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>
-                {desktop.windows && desktop.windows.map(window =>
-                    <Window title={window.title}
+                {desktop.windows && desktop.windows.map((window, index) =>
+                    <Window ref={`windows${index}`}
+                            title={window.title}
                             key={window.title}
                             color={window.color}
                             slot="flex"
-                            style={{ flex: window.size }}>{window.content}</Window>)}
-                {index === currentDesktopIndex && currentWindow &&
-                <Window title={currentWindow.title}
-                        color={currentWindow.color}
-                        class={styles.currentWindow}
-                        ref="currentWindow">{''}</Window>}
+                            style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}%)` }}>
                 <WindowLabelList labels={windowLabels}

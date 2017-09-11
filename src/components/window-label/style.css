@@ -1,6 +1,7 @@
 .container {
     margin-bottom: -20px;
     cursor: pointer;
+    overflow: auto;
 }
 
 .icon {
@@ -13,6 +14,7 @@
     border-top-left-radius: 8px !important;
     border-bottom-left-radius: 8px !important;
     padding: 8px;
+    overflow: auto;
 }
 
 .name {

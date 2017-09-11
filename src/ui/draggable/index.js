@@ -31,11 +31,8 @@ export default {
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
-            if (this.isDragging && this.deltaX < 8 && this.deltaX > this.dragLimit) {
+            if (this.isDragging && this.deltaX < 8 && this.deltaX > this.dragLimit)
                 this.touchMove(this.deltaX)
-                window.requestAnimationFrame(() => this.setTransform(this.deltaX))
-                this.$emit('movingWindow', this.deltaX)
-            }
         },
         handleTouchEnd(e): void {
             if (this.isDragging)
