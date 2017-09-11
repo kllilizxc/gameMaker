@@ -25,7 +25,16 @@ export default {
     }),
     methods: {
         gotoDesktop(index: number): void {
-            this.$el.style.transform = `translateX(${-100 * index}vw)`
+            if (this.$el)
+                this.$el.style.transform = `translateX(${-100 * index}vw)`
+        },
+        gotoLastDesktop() : void {
+            if(this.currentDesktopIndex > 0)
+                this.gotoDesktop(--this.currentDesktopIndex)
+        },
+        gotoNextDesktop() : void {
+            if(this.currentDesktopIndex < this.desktops.length - 1)
+                this.gotoDesktop(++this.currentDesktopIndex)
         },
         addDesktop(desktop: DesktopType): void {
             this.desktops.push(desktop)
@@ -95,7 +104,9 @@ export default {
             currentWindow,
             handleNewWindow,
             handleMovingWindow,
-            handleMovingWindowEnd
+            handleMovingWindowEnd,
+            gotoLastDesktop,
+            gotoNextDesktop
         } = this
 
         return <div class={styles.desktopManager}>
@@ -109,6 +120,7 @@ export default {
                 {index === currentDesktopIndex && currentWindow &&
                 <Window title={currentWindow.title}
                         color={currentWindow.color}
+                        class={styles.currentWindow}
                         ref="currentWindow">{''}</Window>}
             </Desktop>)}
             <WindowLabelList labels={windowLabels}

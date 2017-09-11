@@ -1,5 +1,5 @@
 <template>
-    <mu-card :class="$style.card">
+    <mu-card :class="{[$style.card]: true, [$style.rounded]: rounded}">
         <div :class="$style.container">
             <div :class="$style.header" v-if="title">
                 <mu-card-title :title="title" :sub-title="subTitle"/>
@@ -20,6 +20,10 @@
             subTitle: {
                 type: String,
                 default: ''
+            },
+            rounded: {
+                type: Boolean,
+                default: false
             }
         }
     }
@@ -27,5 +31,8 @@
 <style module>
     .container {
         overflow: auto;
+    }
+    .rounded {
+        border-radius: 50%;
     }
 </style>

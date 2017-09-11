@@ -1,0 +1,27 @@
+.fixedUI {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.fixedUI * {
+    pointer-events: auto;
+}
+
+.toLeft, .toRight {
+    position: fixed;
+    top: 50%;
+    border-radius: 50%;
+    margin-top: -24px;
+    width: 48px;
+    height: 48px;
+}
+
+.toLeft {
+    left: 32px;
+}
+
+.toRight {
+    right: 32px;
+}
