@@ -32,13 +32,20 @@ export default {
             this.$el.style.width = `${this.desktops.length * 100}vw`
             this.gotoDesktop(++this.currentDesktopIndex)
         },
-        handleNewWindow({ name, content }): void {
-            this.currentWindow = { title: name, content }
-            console.log('newWindow', 'desktop-manager')
+        handleNewWindow({ name, content, color }): void {
+            this.currentWindow = { title: name, content, color }
+            this.createDesktopIfShould()
         },
-        handleMovingWindow(deltaX): void {
-            if (this.$refs.currentWindow && this.$refs.currentWindow.style)
-                this.$refs.currentWindow.style.width = `${deltaX}px`
+        handleMovingWindow(deltaX: number): void {
+            if (this.currentWindow)
+                this.$refs.currentWindow.$el.style.width = `${Math.abs(deltaX)}px`
+        },
+        createDesktopIfShould(): DesktopType {
+            let currentDesktop = this.desktops[this.currentDesktopIndex]
+            if (!currentDesktop) {
+                this.desktops[this.currentDesktopIndex] = currentDesktop = { windows: [] }
+            }
+            return currentDesktop
         },
         handleMovingWindowEnd(size): void {
             if (!size || !this.currentWindow) {
@@ -46,11 +53,7 @@ export default {
                 return
             }
 
-            let currentDesktop = this.desktops[this.currentDesktopIndex]
-            if (!currentDesktop) {
-                this.desktops[this.currentDesktopIndex] = currentDesktop = { windows: [] }
-            }
-            let { windows } = currentDesktop
+            let { windows } = this.createDesktopIfShould()
 
             this.currentWindow.size = size
             console.log(windows.length, size)
@@ -76,11 +79,11 @@ export default {
     computed: {
         windowLabels() {
             return [
-                { icon: 'dashboard', name: 'dashboard' },
-                { icon: 'face', name: 'face' },
-                { icon: 'favorite', name: 'favorite' },
-                { icon: 'delete', name: 'delete' },
-                { icon: 'polymer', name: 'polymer' }
+                { icon: 'dashboard', name: 'dashboard', color: '#EF9A9A' },
+                { icon: 'face', name: 'face', color: '#9FA8DA' },
+                { icon: 'favorite', name: 'favorite', color: '#80DEEA' },
+                { icon: 'delete', name: 'delete', color: '#80CBC4' },
+                { icon: 'polymer', name: 'polymer', color: '#E6EE9C' }
             ]
         },
     },
@@ -101,11 +104,12 @@ export default {
                     <Window title={window.title}
                             key={window.title}
                             color={window.color}
+                            slot="flex"
                             style={{ flex: window.size }}>{window.content}</Window>)}
                 {index === currentDesktopIndex && currentWindow &&
                 <Window title={currentWindow.title}
                         color={currentWindow.color}
-                        ref="currentWindow">{currentWindow.content}</Window>}
+                        ref="currentWindow">{''}</Window>}
             </Desktop>)}
             <WindowLabelList labels={windowLabels}
                              onNewWindow={handleNewWindow}

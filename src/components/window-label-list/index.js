@@ -17,8 +17,8 @@ export default {
         show(): void {
             this.$el.styles.transform = 'translateX(0)'
         },
-        handleNewWindow({ name, content }) {
-            this.$emit('newWindow', { name, content })
+        handleNewWindow({ name, content, color }) {
+            this.$emit('newWindow', { name, content, color })
             console.log('newWindow', 'window-label-list')
         },
         handleMovingWindow(deltaX) {
@@ -41,6 +41,7 @@ export default {
         return <div class={styles.windowLabelList}>
             {labels && labels.map(label => <WindowLabel icon={label.icon}
                                                         name={label.name}
+                                                        color={label.color}
                                                         key={label.name}
                                                         onNewWindow={handleNewWindow}
                                                         onMovingWindow={handleMovingWindow}

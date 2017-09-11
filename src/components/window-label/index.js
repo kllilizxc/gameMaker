@@ -16,6 +16,10 @@ export default {
         name: {
             type: String,
             required: true
+        },
+        color: {
+            type: String,
+            default: '#fff'
         }
     },
     data: () => ({
@@ -44,7 +48,7 @@ export default {
         handleTouchStart(e): void {
             this.lastX = e.clientX || e.touches[0].clientX
             this.isDragging = true
-            this.$emit('newWindow', { name: this.name, content: null })
+            this.$emit('newWindow', { name: this.name, content: null, color: this.color })
         },
         handleTouchMove(e): void {
             e.stopPropagation()
@@ -90,6 +94,7 @@ export default {
         const {
             icon,
             name,
+            color,
             hide,
             show,
             handleTouchStart,
@@ -110,7 +115,7 @@ export default {
                       hideFunction={hide}
                       showFunction={show}
                       isLocked={isDragging}>
-                <Card class={styles.card}>
+                <Card class={styles.card} style={{ background: color }}>
                     <Icon className={styles.icon} icon={icon} size={32}/>
                     <div class={styles.name}>{name}</div>
                 </Card>
