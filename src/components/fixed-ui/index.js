@@ -13,7 +13,7 @@ export default {
         }
     },
     render() {
-        let {
+        const {
             gotoLastDesktop,
             gotoNextDesktop
         } = this

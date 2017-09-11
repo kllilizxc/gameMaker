@@ -6,3 +6,25 @@
 .currentWindow {
     width: 0;
 }
+
+.fixedUI {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.toLeftButton, .toRightButton {
+    position: fixed;
+    margin-top: -20px;
+    top: 50%;
+}
+
+.toLeftButton {
+    left: 20px;
+}
+
+.toRightButton {
+    right: 20px;
+}

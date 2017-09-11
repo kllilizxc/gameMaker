@@ -3,6 +3,8 @@ import styles from './style.css'
 import Desktop from '@/components/desktop'
 import Window from '@/components/window'
 import WindowLabelList from '@/components/window-label-list'
+import FloatButton from '@/ui/float-button'
+import Hideable from '@/ui/hideable'
 import { afterTransition } from '../../common/util'
 
 type WindowType = {
@@ -99,11 +101,11 @@ export default {
                 return
             }
 
-            let { windows } = this.desktops[this.currentDesktopIndex]
+            const { windows } = this.desktops[this.currentDesktopIndex]
 
             this.currentWindow.size = size
             if (windows.length === 0 || windows.length + size > MAX_SIZE) {
-                //create a new window
+                // create a new window
                 this.createNewDesktopToFitWindow()
                 this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
             } else {
@@ -122,9 +124,15 @@ export default {
                 { icon: 'polymer', name: 'polymer', color: '#E6EE9C' }
             ]
         },
+        isFirstDesktop() {
+            return this.currentDesktopIndex === 0
+        },
+        isLastDesktop() {
+            return this.currentDesktopIndex === this.desktops.length - 1
+        }
     },
     render() {
-        let {
+        const {
             desktops,
             windowLabels,
             currentDesktopIndex,
@@ -133,7 +141,9 @@ export default {
             handleMovingWindow,
             handleMovingWindowEnd,
             gotoLastDesktop,
-            gotoNextDesktop
+            gotoNextDesktop,
+            isFirstDesktop,
+            isLastDesktop
         } = this
 
         return <div class={styles.desktopManager}>
@@ -150,10 +160,28 @@ export default {
                         class={styles.currentWindow}
                         ref="currentWindow">{''}</Window>}
             </Desktop>)}
-            <WindowLabelList labels={windowLabels}
-                             onNewWindow={handleNewWindow}
-                             onMovingWindow={handleMovingWindow}
-                             onMovingWindowEnd={handleMovingWindowEnd}/>
+            <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}%)` }}>
+                <WindowLabelList labels={windowLabels}
+                                 onNewWindow={handleNewWindow}
+                                 onMovingWindow={handleMovingWindow}
+                                 onMovingWindowEnd={handleMovingWindowEnd}/>
+                {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
+                    <FloatButton mini secondary
+                                 icon="keyboard_arrow_left"
+                                 onClick={gotoLastDesktop}/></Hideable>}
+                {!isLastDesktop && <Hideable class={styles.toRightButton} hideFunction={rightButtonHide}>
+                    <FloatButton mini secondary
+                                 icon="keyboard_arrow_right"
+                                 onClick={gotoNextDesktop}/></Hideable>}
+            </div>
         </div>
     }
+}
+
+function leftButtonHide(style) {
+    style.transform = 'translateX(-50px)'
+}
+
+function rightButtonHide(style) {
+    style.transform = 'translateX(50px)'
 }

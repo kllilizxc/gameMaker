@@ -1,8 +1,8 @@
 <template>
     <div id="app">
         <desktop-manager ref="desktopManager"/>
-        <FixedUI @gotoLastDesktop="handleGotoLastDesktop"
-                  @gotoNextDesktop="handleGotoNextDesktop"/>
+        <!--<FixedUI @gotoLastDesktop="handleGotoLastDesktop"-->
+                  <!--@gotoNextDesktop="handleGotoNextDesktop"/>-->
     </div>
 </template>
 
