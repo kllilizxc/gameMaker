@@ -44,11 +44,13 @@ export default {
             this.isHide ? this.show() : this.hide()
         },
         handleMouseEnter(): void {
+            if(this.isLocked) return
             clearTimeout(this.t)
             if (this.isHide)
                 this.show()
         },
         handleMouseLeave(): void {
+            if(this.isLocked) return
             clearTimeout(this.t)
             this.t = setTimeout(() => {
                 if (!this.isHide)

@@ -26,7 +26,8 @@ export default {
         isHide: true,
         isDragging: false,
         lastX: 0,
-        deltaX: 0
+        deltaX: 0,
+        shouldClear: false
     }),
     methods: {
         hide(style: { transform: string, marginBottom: string }): void {
@@ -41,6 +42,21 @@ export default {
         },
         setTransform(translateX: number): void {
             this.$el.style.transform = `translateX(${translateX}px)`
+        },
+        setTransformAnimated(from: number, to: number, callback: (number) => void): void {
+            let duration = 300
+            let totalTime = 0
+            let startTime = new Date().getTime()
+            let t = setInterval(() => {
+                let nowTime = new Date().getTime()
+                totalTime += nowTime - startTime
+                let deltaX = to + (from - to) * totalTime / duration
+                console.log(deltaX)
+                this.$el.style.transform = `translateX(${deltaX}px)`
+                callback(deltaX)
+                if (Math.abs(deltaX) >= Math.abs(from))
+                    clearInterval(t)
+            }, 10)
         },
         setTransition(haveTransition: boolean): void {
             this.$el.style.transition = haveTransition ? 'transform 0.3s ease' : 'none'
@@ -63,15 +79,14 @@ export default {
                 window.requestAnimationFrame(() => this.setTransform(this.deltaX))
                 this.$emit('movingWindow', this.deltaX)
             }
-
         },
         handleTouchEnd(e): void {
             if (this.isDragging) {
                 let absDeltaX = Math.abs(this.deltaX)
                 let blockWidth = window.innerWidth / MAX_SIZE
-                console.log(absDeltaX, blockWidth, Math.ceil((absDeltaX - blockWidth / 2) / blockWidth))
                 if (absDeltaX <= blockWidth / 2) {
                     //cancel
+                    let t
                     this.setTransition(true)
                     afterTransition(this.$el, () => {
                         this.setTransition(false)
@@ -86,6 +101,7 @@ export default {
                         size: Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
                     })
                     this.isDragging = false
+                    this.shouldClear = true
                 }
             }
         }
@@ -100,26 +116,28 @@ export default {
             handleTouchStart,
             handleTouchMove,
             handleTouchEnd,
-            isDragging
+            isDragging,
+            shouldClear
         } = this
 
-        return <div class={styles.windowLabel}
-                    onTouchstart={handleTouchStart}
-                    onTouchmove={handleTouchMove}
-                    onTouchend={handleTouchEnd}
-                    onMousedown={handleTouchStart}
-                    onMousemove={handleTouchMove}
-                    onMouseleave={handleTouchEnd}
-                    onMouseup={handleTouchEnd}>
-            <Hideable class={styles.container}
-                      hideFunction={hide}
-                      showFunction={show}
-                      isLocked={isDragging}>
-                <Card class={styles.card} style={{ background: color }}>
-                    <Icon className={styles.icon} icon={icon} size={32}/>
-                    <div class={styles.name}>{name}</div>
-                </Card>
-            </Hideable>
-        </div>
+        return !shouldClear &&
+            <div class={styles.windowLabel}
+                 onTouchstart={handleTouchStart}
+                 onTouchmove={handleTouchMove}
+                 onTouchend={handleTouchEnd}
+                 onMousedown={handleTouchStart}
+                 onMousemove={handleTouchMove}
+                 onMouseleave={handleTouchEnd}
+                 onMouseup={handleTouchEnd}>
+                <Hideable class={styles.container}
+                          hideFunction={hide}
+                          showFunction={show}
+                          isLocked={isDragging}>
+                    <Card class={styles.card} style={{ background: color }}>
+                        <Icon className={styles.icon} icon={icon} size={32}/>
+                        <div class={styles.name}>{name}</div>
+                    </Card>
+                </Hideable>
+            </div>
     }
 }

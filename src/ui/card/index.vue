@@ -31,6 +31,7 @@
 <style module>
     .container {
         overflow: auto;
+        user-select: none;
     }
     .rounded {
         border-radius: 50%;

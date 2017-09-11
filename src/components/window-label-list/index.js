@@ -19,15 +19,14 @@ export default {
         },
         handleNewWindow({ name, content, color }) {
             this.$emit('newWindow', { name, content, color })
-            console.log('newWindow', 'window-label-list')
         },
         handleMovingWindow(deltaX) {
             this.$emit('movingWindow', deltaX)
         },
         handleMovingWindowEnd({ labelName, size }) {
-            this.$emit('movingWindowEnd', size)
             if(size)
                 this.labels.splice(this.labels.findIndex(label => label.name === labelName), 1)
+            this.$emit('movingWindowEnd', size)
         }
     },
     render() {
