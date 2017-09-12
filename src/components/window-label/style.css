@@ -1,7 +1,5 @@
-.container {
+.windowLabel {
     margin-bottom: -20px;
-    cursor: pointer;
-    overflow: auto;
 }
 
 .icon {

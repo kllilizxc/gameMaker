@@ -25,7 +25,8 @@ export default {
     },
     data: () => ({
         isHide: true,
-        shouldClear: false
+        shouldClear: false,
+        isDragging: false
     }),
     methods: {
         hide(style: { transform: string, marginBottom: string }): void {
@@ -61,6 +62,7 @@ export default {
         },
         handleTouchStart(): void {
             this.$emit('newWindow', { name: this.name, content: null, color: this.color })
+            this.isDragging = true
         },
         handleTouchMove(deltaX): void {
             window.requestAnimationFrame(() => this.setTransform(deltaX))
@@ -75,6 +77,7 @@ export default {
                 afterTransition(this.$el, () => {
                     this.setTransition(false)
                     stopDragging()
+                    this.isDragging = false
                 })
                 window.requestAnimationFrame(() => this.setTransform(0))
                 this.$emit('movingWindowEnd', { labelName: this.name, size: 0 })
@@ -86,6 +89,7 @@ export default {
                 })
                 stopDragging()
                 this.shouldClear = true
+                this.isDragging = false
             }
         }
     },
@@ -104,20 +108,23 @@ export default {
         } = this
 
         return !shouldClear &&
-            <Draggable class={styles.windowLabel}
-                       touchStart={handleTouchStart}
-                       touchMove={handleTouchMove}
-                       touchEnd={handleTouchEnd}
-                       dragLimit={-window.innerWidth}>
-                <Hideable class={styles.container}
-                          hideFunction={hide}
-                          showFunction={show}
-                          isLocked={isDragging}>
+            <Hideable
+                class={styles.windowLabel}
+                hideFunction={hide}
+                showFunction={show}
+                isLocked={isDragging}>
+                <Draggable
+                    class={styles.container}
+                    touchStart={handleTouchStart}
+                    touchMove={handleTouchMove}
+                    touchEnd={handleTouchEnd}
+                    dragLimit={8}
+                    dragMin={-window.innerWidth}>
                     <Card class={styles.card} style={{ background: color }}>
                         <Icon className={styles.icon} icon={icon} size={32}/>
                         <div class={styles.name}>{name}</div>
                     </Card>
-                </Hideable>
-            </Draggable>
+                </Draggable>
+            </Hideable>
     }
 }

@@ -5,9 +5,3 @@
     height: 100vh;
     display: flex;
 }
-
-.flexContainer {
-    display: flex;
-    height: 100%;
-    flex-grow: 1;
-}

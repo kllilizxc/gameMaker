@@ -1,4 +1,5 @@
 // @flow
+import styles from './style.css'
 
 export default {
     name: 'draggable',
@@ -9,6 +10,10 @@ export default {
         dragLimit: {
             type: Number,
             default: window.innerWidth
+        },
+        dragMin: {
+            type: Number,
+            default: 8
         }
     },
     data: () => ({
@@ -31,7 +36,7 @@ export default {
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
-            if (this.isDragging && this.deltaX < 8 && this.deltaX > this.dragLimit)
+            if (this.isDragging && this.deltaX < this.dragLimit && this.deltaX > this.dragMin)
                 this.touchMove(this.deltaX)
         },
         handleTouchEnd(e): void {
@@ -43,15 +48,18 @@ export default {
         const {
             handleTouchStart,
             handleTouchMove,
-            handleTouchEnd
+            handleTouchEnd,
+            isDragging
         } = this
 
-        return <div onTouchstart={handleTouchStart}
+        return <div class={styles.draggable}
+                    onTouchstart={handleTouchStart}
                     onTouchmove={handleTouchMove}
                     onTouchend={handleTouchEnd}
                     onMousedown={handleTouchStart}
                     onMousemove={handleTouchMove}
                     onMouseleave={handleTouchEnd}
-                    onMouseup={handleTouchEnd}>{this.$slots.default}</div>
+                    onMouseup={handleTouchEnd}
+                    style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>{this.$slots.default}</div>
     }
 }

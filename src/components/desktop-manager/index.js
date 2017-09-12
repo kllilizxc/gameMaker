@@ -45,11 +45,17 @@ export default {
             this.gotoDesktop(++this.currentDesktopIndex)
         },
         handleNewWindow({ name, content, color }): void {
-            const currentDesktop = this.createDesktopIfShould()
-            this.currentWindowIndex = currentDesktop.windows.length
-            currentDesktop.windows.push({ title: name, content, color, size: 0 })
+            const index = this.currentDesktop.windows.findIndex(window => window.name === name)
+            if (index === -1) { // new window
+                const currentDesktop = this.createDesktopIfShould()
+                this.currentWindowIndex = currentDesktop.windows.length
+                currentDesktop.windows.push({ title: name, content, color, size: 0 })
+            } else { // existing window
+                this.currentWindowIndex = index
+            }
         },
         handleMovingWindow(deltaX: number): void {
+            this.currentWindow.size = 0
             if (this.currentWindowRef)
                 this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
         },
@@ -160,8 +166,6 @@ export default {
             isLastDesktop
         } = this
 
-        // console.log(desktops)
-
         return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>
                 {desktop.windows && desktop.windows.map((window, index) =>
@@ -169,7 +173,9 @@ export default {
                             title={window.title}
                             key={window.title}
                             color={window.color}
-                            slot="flex"
+                            onNewWindow={handleNewWindow}
+                            onMovingWindow={handleMovingWindow}
+                            onMovingWindowEnd={handleMovingWindowEnd}
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}%)` }}>

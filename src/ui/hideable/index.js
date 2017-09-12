@@ -44,13 +44,13 @@ export default {
             this.isHide ? this.show() : this.hide()
         },
         handleMouseEnter(): void {
-            if(this.isLocked) return
+            if (this.isLocked) return
             clearTimeout(this.t)
             if (this.isHide)
                 this.show()
         },
         handleMouseLeave(): void {
-            if(this.isLocked) return
+            if (this.isLocked) return
             clearTimeout(this.t)
             this.t = setTimeout(() => {
                 if (!this.isHide)
@@ -60,6 +60,7 @@ export default {
     },
     render() {
         const {
+            isLocked,
             handleMouseEnter,
             handleMouseLeave
         } = this
@@ -68,7 +69,7 @@ export default {
                     onTouchstart={handleMouseEnter}
                     onMouseleave={handleMouseLeave}
                     onTouchend={handleMouseLeave}
-                    style={{ transition: 'all 0.3s ease' }}>
+                    style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
             {this.$slots.default}
         </div>
     }
