@@ -13,6 +13,12 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+    transform: translate(0);
+    pointer-events: none;
+}
+
+.fixedUI * {
+    pointer-events: auto;
 }
 
 .toLeftButton, .toRightButton {

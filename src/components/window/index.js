@@ -38,7 +38,9 @@ export default {
                 this.$emit('movingWindowEnd', 0)
             } else {
                 // add new window
-                this.$emit('movingWindowEnd', Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
+                const movingSize = Math.ceil((absDeltaX - blockWidth / 2) / blockWidth)
+                const direction = deltaX > 0 ? 1 : -1
+                this.$emit('movingWindowEnd', movingSize * direction)
                 stopDragging()
             }
         }
@@ -55,13 +57,13 @@ export default {
         return <div class={styles.window}>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>
-                <Draggable class={styles.title}
+                <Draggable class={styles.draggable}
                            touchStart={handleTouchStart}
                            touchMove={handleTouchMove}
                            touchEnd={handleTouchEnd}
                            dragMin={-window.innerWidth}
                            dragLimit={window.innerWidth}>
-                    {title}
+                    <div class={styles.title}>{title}</div>
                 </Draggable>
                 {this.$slots.default}
             </Card>

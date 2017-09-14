@@ -24,40 +24,28 @@ export default {
     data: () => ({
         desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
         currentDesktopIndex: 0,
-        currentWindowIndex: 0
+        currentWindowIndex: 0,
+        currentWindow: null
     }),
-    methods: {
-        gotoDesktop(index: number): void {
+    watch: {
+        currentDesktopIndex(index) {
             if (this.$el && this.$el.style)
                 this.$el.style.transform = `translateX(${-100 * index}vw)`
-        },
+        }
+    },
+    methods: {
         gotoLastDesktop(): void {
             if (this.currentDesktopIndex > 0)
-                this.gotoDesktop(--this.currentDesktopIndex)
+                --this.currentDesktopIndex
         },
         gotoNextDesktop(): void {
             if (this.currentDesktopIndex < this.desktops.length - 1)
-                this.gotoDesktop(++this.currentDesktopIndex)
+                ++this.currentDesktopIndex
         },
         addDesktop(desktop: DesktopType): void {
             this.desktops.push(desktop)
             this.$el.style.width = `${this.desktops.length * 100}vw`
-            this.gotoDesktop(++this.currentDesktopIndex)
-        },
-        handleNewWindow({ name, content, color }): void {
-            const index = this.currentDesktop.windows.findIndex(window => window.name === name)
-            if (index === -1) { // new window
-                const currentDesktop = this.createDesktopIfShould()
-                this.currentWindowIndex = currentDesktop.windows.length
-                currentDesktop.windows.push({ title: name, content, color, size: 0 })
-            } else { // existing window
-                this.currentWindowIndex = index
-            }
-        },
-        handleMovingWindow(deltaX: number): void {
-            this.currentWindow.size = 0
-            if (this.currentWindowRef)
-                this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
+            this.gotoNextDesktop()
         },
         createDesktopIfShould(): DesktopType {
             let { currentDesktop } = this
@@ -106,6 +94,22 @@ export default {
             this.currentDesktop.windows.pop()
             this.addDesktop({ windows: [currentWindow] })
         },
+        handleNewWindow({ name, content, color }): void {
+            const index = this.currentDesktop.windows.findIndex(window => window.name === name)
+            if (index === -1) { // new window
+                const currentDesktop = this.createDesktopIfShould()
+                this.currentWindowIndex = currentDesktop.windows.length
+                this.currentWindow = { title: name, content, color, size: 0 }
+                currentDesktop.windows.push(this.currentWindow)
+            } else { // existing window
+                this.currentWindowIndex = index
+                this.currentWindow = this.desktops[this.currentDesktopIndex].windows[this.currentWindowIndex]
+            }
+        },
+        handleMovingWindow(deltaX: number): void {
+            if (this.currentWindowRef)
+                this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
+        },
         handleMovingWindowEnd(size: number): void {
             if (!this.currentWindow) return
             if (!size) {
@@ -115,13 +119,16 @@ export default {
 
             const { windows } = this.desktops[this.currentDesktopIndex]
 
-            this.currentWindow.size = size
-            if (windows.length === 0 || windows.length + size > MAX_SIZE) {
+            if (size > MAX_SIZE) size = MAX_SIZE
+            else if (size < -MAX_SIZE) size = -MAX_SIZE
+            this.currentWindow.size += size
+            if (this.currentWindow.size < 0) this.currentWindow.size = 0
+            if (windows.length === 0 || windows.length + this.currentWindow.size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
                 this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
             } else {
-                this.setCurrentWindowSize(windows, size)
+                this.setCurrentWindowSize(windows, this.currentWindow.size)
                 this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
             }
         }
@@ -144,9 +151,6 @@ export default {
         },
         currentDesktop() {
             return this.desktops[this.currentDesktopIndex]
-        },
-        currentWindow() {
-            return this.currentDesktop.windows[this.currentWindowIndex]
         },
         currentWindowRef() {
             return this.$refs[`windows${this.currentWindowIndex}`]
@@ -178,17 +182,17 @@ export default {
                             onMovingWindowEnd={handleMovingWindowEnd}
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
-            <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}%)` }}>
+            <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
                 <WindowLabelList labels={windowLabels}
                                  onNewWindow={handleNewWindow}
                                  onMovingWindow={handleMovingWindow}
                                  onMovingWindowEnd={handleMovingWindowEnd}/>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
-                    <FloatButton mini secondary
+                    <FloatButton mini
                                  icon="keyboard_arrow_left"
                                  onClick={gotoLastDesktop}/></Hideable>}
                 {!isLastDesktop && <Hideable class={styles.toRightButton} hideFunction={rightButtonHide}>
-                    <FloatButton mini secondary
+                    <FloatButton mini
                                  icon="keyboard_arrow_right"
                                  onClick={gotoNextDesktop}/></Hideable>}
             </div>
