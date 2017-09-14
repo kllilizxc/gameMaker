@@ -2,9 +2,9 @@
 import styles from './style.css'
 import Desktop from '@/components/desktop'
 import Window from '@/components/window'
-import WindowLabelList from '@/components/window-label-list'
 import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
+import WindowLabel from 'Components/window-label'
 import { afterTransition } from '../../common/util'
 
 type WindowType = {
@@ -25,7 +25,14 @@ export default {
         desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
         currentDesktopIndex: 0,
         currentWindowIndex: 0,
-        currentWindow: null
+        currentWindow: null,
+        windowLabels: [
+            { icon: 'dashboard', title: 'dashboard', color: '#EF9A9A' },
+            { icon: 'face', title: 'face', color: '#9FA8DA' },
+            { icon: 'favorite', title: 'favorite', color: '#80DEEA' },
+            { icon: 'delete', title: 'delete', color: '#80CBC4' },
+            { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
+        ]
     }),
     watch: {
         currentDesktopIndex(index) {
@@ -59,8 +66,6 @@ export default {
             const style = currentWindowRef.$el.style
             afterTransition(currentWindowRef.$el, () => {
                 style.transition = 'none'
-                this.currentWindowIndex = -1
-                this.currentWindow = null
                 callback && callback()
             })
             style.transition = 'width 0.3s ease'
@@ -68,26 +73,26 @@ export default {
         },
         setCurrentWindowSize(windows: WindowType[], size: number) {
             switch (windows.length) {
-                case 1:
-                    windows[0].size = MAX_SIZE - size
-                    break
-                case 2:
-                    if (size === 1) {
-                        if (windows[0].size === 3)
-                            windows[0].size = 2
-                        else if (windows[1].size === 3)
-                            windows[1].size = 2
-                    } else if (size === 2) {
-                        windows[0].size = 1
-                        windows[1].size = 1
-                        this.currentWindow.size = 1
-                    }
-                    break
-                case 3:
-                    windows.forEach(window => window.size = 1)
-                    break
-                default:
-                    break
+            case 2:
+                windows[0].size = MAX_SIZE - size
+                break
+            case 3:
+                if (size === 1) {
+                    if (windows[0].size === 3)
+                        windows[0].size = 2
+                    else if (windows[1].size === 3)
+                        windows[1].size = 2
+                } else if (size === 2) {
+                    windows[0].size = 1
+                    windows[1].size = 1
+                    this.currentWindow.size = 1
+                }
+                break
+            case 4:
+                windows.forEach(window => window.size = 1)
+                break
+            default:
+                break
             }
         },
         createNewDesktopToFitWindow() {
@@ -97,21 +102,35 @@ export default {
             this.currentWindowIndex = 0
             this.addDesktop({ windows: [currentWindow] })
         },
-        handleNewWindow({ name, content, color }): void {
-            const index = this.currentDesktop.windows.findIndex(window => window.name === name)
-            if (index === -1) { // new window
-                const currentDesktop = this.createDesktopIfShould()
-                this.currentWindowIndex = currentDesktop.windows.length
-                this.currentWindow = { title: name, content, color, size: 0 }
-                currentDesktop.windows.push(this.currentWindow)
-            } else { // existing window
-                this.currentWindowIndex = index
-                this.currentWindow = this.desktops[this.currentDesktopIndex].windows[this.currentWindowIndex]
-            }
+        handleNewWindow({ title, content, color, icon }): void {
+            const currentDesktop = this.createDesktopIfShould()
+            this.currentWindowIndex = currentDesktop.windows.length
+            this.currentWindow = { title, content, color, icon, size: 0 }
+            currentDesktop.windows.push(this.currentWindow)
+        },
+        handleDraggingNewWindow(name) {
+            this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
+            if (this.currentWindowIndex < 0) return
+            this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
+            const { size } = this.currentWindow
+            this.currentWindow.size = 0
+            console.log(size, window.innerWidth, window.innerWidth * size / MAX_SIZE)
+            // this.currentWindowRef.$el.style.width = `${window.innerWidth * size / MAX_SIZE}px`
         },
         handleMovingWindow(deltaX: number): void {
-            if (this.currentWindowRef)
-                this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
+            console.log(deltaX)
+            if (this.currentWindowIndex < 0) return
+            this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
+        },
+        handleDraggingWindowEnd(size: number): void {
+            console.log(size)
+            if (!size) {
+                this.translateCurrentWindow(0, () => {
+                    const { icon, title, color } = this.currentWindow
+                    this.windowLabels.push({ icon, title, color })
+                    this.currentDesktop.windows.pop()
+                })
+            }
         },
         handleMovingWindowEnd(size: number): void {
             if (!this.currentWindow) return
@@ -126,6 +145,7 @@ export default {
             else if (size < -MAX_SIZE) size = -MAX_SIZE
             this.currentWindow.size += size
             if (this.currentWindow.size < 0) this.currentWindow.size = 0
+            this.windowLabels.splice(this.windowLabels.findIndex(label => label.title === this.currentWindow.title), 1)
             if (windows.length === 0 || windows.length + this.currentWindow.size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
@@ -137,15 +157,6 @@ export default {
         }
     },
     computed: {
-        windowLabels() {
-            return [
-                { icon: 'dashboard', name: 'dashboard', color: '#EF9A9A' },
-                { icon: 'face', name: 'face', color: '#9FA8DA' },
-                { icon: 'favorite', name: 'favorite', color: '#80DEEA' },
-                { icon: 'delete', name: 'delete', color: '#80CBC4' },
-                { icon: 'polymer', name: 'polymer', color: '#E6EE9C' }
-            ]
-        },
         isFirstDesktop() {
             return this.currentDesktopIndex === 0
         },
@@ -174,6 +185,8 @@ export default {
             handleNewWindow,
             handleMovingWindow,
             handleMovingWindowEnd,
+            handleDraggingNewWindow,
+            handleDraggingWindowEnd,
             gotoLastDesktop,
             gotoNextDesktop,
             isFirstDesktop,
@@ -188,16 +201,22 @@ export default {
                             title={window.title}
                             key={window.title}
                             color={window.color}
-                            onNewWindow={handleNewWindow}
                             onMovingWindow={handleMovingWindow}
                             onMovingWindowEnd={handleMovingWindowEnd}
+                            onStartDraggingWindow={handleDraggingNewWindow}
+                            onDraggingWindowEnd={handleDraggingWindowEnd}
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
-                <WindowLabelList labels={windowLabels}
-                                 onNewWindow={handleNewWindow}
-                                 onMovingWindow={handleMovingWindow}
-                                 onMovingWindowEnd={handleMovingWindowEnd}/>
+                <div class={styles.windowLabelList}>
+                    {windowLabels.map(label => <WindowLabel icon={label.icon}
+                                                            title={label.title}
+                                                            color={label.color}
+                                                            key={label.title}
+                                                            onNewWindow={handleNewWindow}
+                                                            onMovingWindow={handleMovingWindow}
+                                                            onMovingWindowEnd={handleMovingWindowEnd}/>)}
+                </div>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
                     <FloatButton mini
                                  icon="keyboard_arrow_left"

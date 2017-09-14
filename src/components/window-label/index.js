@@ -14,7 +14,7 @@ export default {
         icon: {
             required: true
         },
-        name: {
+        title: {
             type: String,
             required: true
         },
@@ -61,7 +61,7 @@ export default {
             this.$el.style.transition = haveTransition ? 'transform 0.3s ease' : 'none'
         },
         handleTouchStart(): void {
-            this.$emit('newWindow', { name: this.name, content: null, color: this.color })
+            this.$emit('newWindow', { title: this.title, content: null, color: this.color, icon: this.icon })
             this.isDragging = true
         },
         handleTouchMove(deltaX): void {
@@ -80,13 +80,10 @@ export default {
                     this.isDragging = false
                 })
                 window.requestAnimationFrame(() => this.setTransform(0))
-                this.$emit('movingWindowEnd', { labelName: this.name, size: 0 })
+                this.$emit('movingWindowEnd', 0)
             } else {
                 // add new window
-                this.$emit('movingWindowEnd', {
-                    labelName: this.name,
-                    size: Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
-                })
+                this.$emit('movingWindowEnd', Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
                 stopDragging()
                 this.shouldClear = true
                 this.isDragging = false
@@ -96,7 +93,7 @@ export default {
     render() {
         const {
             icon,
-            name,
+            title,
             color,
             hide,
             show,
@@ -122,7 +119,7 @@ export default {
                     dragMin={-window.innerWidth}>
                     <Card class={styles.card} style={{ background: color }}>
                         <Icon className={styles.icon} icon={icon} size={32}/>
-                        <div class={styles.name}>{name}</div>
+                        <div class={styles.title}>{title}</div>
                     </Card>
                 </Draggable>
             </Hideable>
