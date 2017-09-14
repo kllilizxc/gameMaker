@@ -23,20 +23,20 @@ export default {
     }),
     mounted() {
         if (!this.isLocked)
-            this.hideFunction(this.$el.style)
+            this.hideFunction(this.$refs.toHide.style)
     },
     methods: {
         hide(): void {
             if (this.isLocked || this.isHide) return
-            this.hideFunction(this.$el.style)
-            afterTransition(this.$el, () => {
+            this.hideFunction(this.$refs.toHide.style)
+            afterTransition(this.$refs.toHide, () => {
                 this.isHide = true
             })
         },
         show(): void {
             if (this.isLocked || !this.isHide) return
-            this.showFunction(this.$el.style)
-            afterTransition(this.$el, () => {
+            this.showFunction(this.$refs.toHide.style)
+            afterTransition(this.$refs.toHide, () => {
                 this.isHide = false
             })
         },
@@ -55,7 +55,7 @@ export default {
             this.t = setTimeout(() => {
                 if (!this.isHide)
                     this.hide()
-            }, 500)
+            }, 1000)
         }
     },
     render() {
@@ -68,9 +68,10 @@ export default {
         return <div onMouseenter={handleMouseEnter}
                     onTouchstart={handleMouseEnter}
                     onMouseleave={handleMouseLeave}
-                    onTouchend={handleMouseLeave}
-                    style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
-            {this.$slots.default}
+                    onTouchend={handleMouseLeave}>
+            <div ref="toHide" style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
+                {this.$slots.default}
+            </div>
         </div>
     }
 }
