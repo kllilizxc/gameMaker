@@ -23,20 +23,25 @@ export default {
     }),
     mounted() {
         if (!this.isLocked)
-            this.hideFunction(this.$refs.toHide.style)
+            this.hideFunction(this.toHide.style)
+    },
+    computed: {
+        toHide() {
+            return this.$refs.toHide.$el || this.$refs.toHide
+        }
     },
     methods: {
         hide(): void {
             if (this.isLocked || this.isHide) return
-            this.hideFunction(this.$refs.toHide.style)
-            afterTransition(this.$refs.toHide, () => {
+            this.hideFunction(this.toHide.style)
+            afterTransition(this.toHide, () => {
                 this.isHide = true
             })
         },
         show(): void {
             if (this.isLocked || !this.isHide) return
-            this.showFunction(this.$refs.toHide.style)
-            afterTransition(this.$refs.toHide, () => {
+            this.showFunction(this.toHide.style)
+            afterTransition(this.toHide, () => {
                 this.isHide = false
             })
         },

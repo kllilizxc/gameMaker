@@ -56,13 +56,15 @@ export default {
         },
         translateCurrentWindow(translateWidth: number, callback: () => void) {
             const { currentWindowRef } = this
+            const style = currentWindowRef.$el.style
             afterTransition(currentWindowRef.$el, () => {
-                currentWindowRef.$el.style.transition = 'none'
+                style.transition = 'none'
                 this.currentWindowIndex = -1
+                this.currentWindow = null
                 callback && callback()
             })
-            currentWindowRef.$el.style.transition = 'width 0.3s ease'
-            currentWindowRef.$el.style.width = `${translateWidth}px`
+            style.transition = 'width 0.3s ease'
+            style.width = `${translateWidth}px`
         },
         setCurrentWindowSize(windows: WindowType[], size: number) {
             switch (windows.length) {
@@ -92,6 +94,7 @@ export default {
             const { currentWindow } = this
             currentWindow.size = MAX_SIZE
             this.currentDesktop.windows.pop()
+            this.currentWindowIndex = 0
             this.addDesktop({ windows: [currentWindow] })
         },
         handleNewWindow({ name, content, color }): void {
@@ -153,7 +156,14 @@ export default {
             return this.desktops[this.currentDesktopIndex]
         },
         currentWindowRef() {
-            return this.$refs[`windows${this.currentWindowIndex}`]
+            let totalWindowIndex = 0
+            for (let i = 0; i < this.desktops.length; ++i)
+                if (i < this.currentDesktopIndex)
+                    totalWindowIndex += this.desktops[i].windows.length
+                else
+                    break
+
+            return this.$refs.windows[totalWindowIndex + this.currentWindowIndex]
         }
     },
     render() {
@@ -172,8 +182,9 @@ export default {
 
         return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>
-                {desktop.windows && desktop.windows.map((window, index) =>
-                    <Window ref={`windows${index}`}
+                {desktop.windows && desktop.windows.map(window =>
+                    <Window ref="windows"
+                            refInFor={true}
                             title={window.title}
                             key={window.title}
                             color={window.color}
