@@ -102,35 +102,36 @@ export default {
             this.currentWindowIndex = 0
             this.addDesktop({ windows: [currentWindow] })
         },
+        handleDraggingNewWindow(name: string) {
+            this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
+            if (this.currentWindowIndex < 0) return
+            this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
+            this.currentWindow.size = 0
+        },
+        handleDraggingWindow(deltaX: number) {
+            if (this.currentWindowIndex < 0) return
+            this.currentWindowRef.$el.style.width = `${Math.max(0, this.currentWindowRef.$el.offsetWidth - deltaX)}px`
+        },
+        handleDraggingWindowEnd(size: number): void {
+            if (!size) {
+                this.translateCurrentWindow(0, () => {
+                    const { icon, title, color } = this.currentWindow
+                    this.windowLabels.push({ icon, title, color })
+                    this.currentDesktop.windows.pop()
+                    this.currentWindow = null
+                    this.currentWindowIndex = -1
+                })
+            }
+        },
         handleNewWindow({ title, content, color, icon }): void {
             const currentDesktop = this.createDesktopIfShould()
             this.currentWindowIndex = currentDesktop.windows.length
             this.currentWindow = { title, content, color, icon, size: 0 }
             currentDesktop.windows.push(this.currentWindow)
         },
-        handleDraggingNewWindow(name) {
-            this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
-            if (this.currentWindowIndex < 0) return
-            this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
-            const { size } = this.currentWindow
-            this.currentWindow.size = 0
-            console.log(size, window.innerWidth, window.innerWidth * size / MAX_SIZE)
-            // this.currentWindowRef.$el.style.width = `${window.innerWidth * size / MAX_SIZE}px`
-        },
         handleMovingWindow(deltaX: number): void {
-            console.log(deltaX)
             if (this.currentWindowIndex < 0) return
             this.currentWindowRef.$el.style.width = `${Math.abs(deltaX)}px`
-        },
-        handleDraggingWindowEnd(size: number): void {
-            console.log(size)
-            if (!size) {
-                this.translateCurrentWindow(0, () => {
-                    const { icon, title, color } = this.currentWindow
-                    this.windowLabels.push({ icon, title, color })
-                    this.currentDesktop.windows.pop()
-                })
-            }
         },
         handleMovingWindowEnd(size: number): void {
             if (!this.currentWindow) return
@@ -186,6 +187,7 @@ export default {
             handleMovingWindow,
             handleMovingWindowEnd,
             handleDraggingNewWindow,
+            handleDraggingWindow,
             handleDraggingWindowEnd,
             gotoLastDesktop,
             gotoNextDesktop,
@@ -204,6 +206,7 @@ export default {
                             onMovingWindow={handleMovingWindow}
                             onMovingWindowEnd={handleMovingWindowEnd}
                             onStartDraggingWindow={handleDraggingNewWindow}
+                            onDraggingWindow={handleDraggingWindow}
                             onDraggingWindowEnd={handleDraggingWindowEnd}
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}

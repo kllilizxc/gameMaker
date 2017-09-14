@@ -50,7 +50,6 @@ export default {
                 const nowTime = new Date().getTime()
                 totalTime += nowTime - startTime
                 const deltaX = to + (from - to) * totalTime / duration
-                console.log(deltaX)
                 this.$el.style.transform = `translateX(${deltaX}px)`
                 callback(deltaX)
                 if (Math.abs(deltaX) >= Math.abs(from))

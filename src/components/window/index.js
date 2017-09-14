@@ -17,13 +17,11 @@ export default {
             this.$emit('startDraggingWindow', this.title)
         },
         handleTouchMove(deltaX): void {
-            this.$emit('movingWindow', deltaX)
+            this.$emit('draggingWindow', deltaX)
         },
         handleTouchEnd(deltaX, stopDragging): void {
-            if (deltaX > 40) {
-                this.$emit('draggingWindowEnd', 0)
-                stopDragging()
-            }
+            this.$emit('draggingWindowEnd', 0)
+            stopDragging()
         }
     },
     render() {
