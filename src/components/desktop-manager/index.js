@@ -104,7 +104,7 @@ export default {
         },
         handleDraggingNewWindow(name: string) {
             this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
-            if (this.currentWindowIndex < 0) return
+            if (this.currentWindowIndex <= 0) return
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.currentWindow.size = 0
         },
