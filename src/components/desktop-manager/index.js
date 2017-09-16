@@ -73,26 +73,26 @@ export default {
         },
         setCurrentWindowSize(windows: WindowType[], size: number) {
             switch (windows.length) {
-            case 2:
-                windows[0].size = MAX_SIZE - size
-                break
-            case 3:
-                if (size === 1) {
-                    if (windows[0].size === 3)
-                        windows[0].size = 2
-                    else if (windows[1].size === 3)
-                        windows[1].size = 2
-                } else if (size === 2) {
-                    windows[0].size = 1
-                    windows[1].size = 1
-                    this.currentWindow.size = 1
-                }
-                break
-            case 4:
-                windows.forEach(window => window.size = 1)
-                break
-            default:
-                break
+                case 2:
+                    windows[0].size = MAX_SIZE - size
+                    break
+                case 3:
+                    if (windows[0].size === 2 && windows[1].size === 2) {
+                        windows[0].size = 1
+                        windows[1].size = 1
+                        this.currentWindow.size = 1
+                    } else {
+                        if (windows[0].size === 3)
+                            windows[0].size = 2
+                        else if (windows[1].size === 3)
+                            windows[1].size = 2
+                    }
+                    break
+                case 4:
+                    windows.forEach(window => window.size = 1)
+                    break
+                default:
+                    break
             }
         },
         createNewDesktopToFitWindow() {
@@ -104,7 +104,10 @@ export default {
         },
         handleDraggingNewWindow(name: string) {
             this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
-            if (this.currentWindowIndex <= 0) return
+            if (this.currentWindowIndex !== 0 && this.currentWindowIndex !== this.currentDesktop.windows.length - 1) {
+                this.currentWindowIndex = -1
+                return //only the last window while not being the first window in desktop is draggable
+            }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.currentWindow.size = 0
         },
@@ -117,11 +120,16 @@ export default {
                 this.translateCurrentWindow(0, () => {
                     const { icon, title, color } = this.currentWindow
                     this.windowLabels.push({ icon, title, color })
-                    this.currentDesktop.windows.pop()
-                    this.currentWindow = null
-                    this.currentWindowIndex = -1
+                    this.removeCurrentWindow()
                 })
             }
+        },
+        removeCurrentWindow() {
+            console.log('window removed')
+            let { windows } = this.currentDesktop
+            windows.splice(windows.findIndex(({ title }) => title === this.currentWindow.title))
+            this.currentWindow = null
+            this.currentWindowIndex = -1
         },
         handleNewWindow({ title, content, color, icon }): void {
             const currentDesktop = this.createDesktopIfShould()
@@ -136,24 +144,24 @@ export default {
         handleMovingWindowEnd(size: number): void {
             if (!this.currentWindow) return
             if (!size) {
-                this.translateCurrentWindow(0, () => this.currentDesktop.windows.pop())
+                this.translateCurrentWindow(0, this.removeCurrentWindow)
                 return
             }
 
             const { windows } = this.desktops[this.currentDesktopIndex]
 
-            if (size > MAX_SIZE) size = MAX_SIZE
-            else if (size < -MAX_SIZE) size = -MAX_SIZE
-            this.currentWindow.size += size
-            if (this.currentWindow.size < 0) this.currentWindow.size = 0
+            let handleTransitionEnd = () => {
+                this.currentWindow.size = size
+            }
+
             this.windowLabels.splice(this.windowLabels.findIndex(label => label.title === this.currentWindow.title), 1)
-            if (windows.length === 0 || windows.length + this.currentWindow.size > MAX_SIZE) {
+            if (windows.length === 0 || windows.length + size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
-                this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
+                this.translateCurrentWindow(size / MAX_SIZE * window.innerWidth, handleTransitionEnd)
             } else {
-                this.setCurrentWindowSize(windows, this.currentWindow.size)
-                this.translateCurrentWindow(this.currentWindow.size / MAX_SIZE * window.innerWidth)
+                this.setCurrentWindowSize(windows, size)
+                this.translateCurrentWindow(size / MAX_SIZE * window.innerWidth, handleTransitionEnd)
             }
         }
     },
@@ -168,14 +176,7 @@ export default {
             return this.desktops[this.currentDesktopIndex]
         },
         currentWindowRef() {
-            let totalWindowIndex = 0
-            for (let i = 0; i < this.desktops.length; ++i)
-                if (i < this.currentDesktopIndex)
-                    totalWindowIndex += this.desktops[i].windows.length
-                else
-                    break
-
-            return this.$refs.windows[totalWindowIndex + this.currentWindowIndex]
+            return this.$refs.windows.find(({ title }) => title === this.currentWindow.title)
         }
     },
     render() {
@@ -194,6 +195,8 @@ export default {
             isFirstDesktop,
             isLastDesktop
         } = this
+
+        console.log(windowLabels)
 
         return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>

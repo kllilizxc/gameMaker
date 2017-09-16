@@ -19,9 +19,8 @@ export default {
         handleTouchMove(deltaX): void {
             this.$emit('draggingWindow', deltaX)
         },
-        handleTouchEnd(deltaX, stopDragging): void {
+        handleTouchEnd(deltaX): void {
             this.$emit('draggingWindowEnd', 0)
-            stopDragging()
         }
     },
     render() {

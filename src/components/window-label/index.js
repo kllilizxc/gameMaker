@@ -25,8 +25,7 @@ export default {
     },
     data: () => ({
         isHide: true,
-        shouldClear: false,
-        isDragging: false
+        shouldClear: false
     }),
     methods: {
         hide(style: { transform: string, marginBottom: string }): void {
@@ -61,13 +60,12 @@ export default {
         },
         handleTouchStart(): void {
             this.$emit('newWindow', { title: this.title, content: null, color: this.color, icon: this.icon })
-            this.isDragging = true
         },
         handleTouchMove(deltaX): void {
             window.requestAnimationFrame(() => this.setTransform(deltaX))
             this.$emit('movingWindow', deltaX)
         },
-        handleTouchEnd(deltaX, stopDragging): void {
+        handleTouchEnd(deltaX): void {
             const absDeltaX = Math.abs(deltaX)
             const blockWidth = window.innerWidth / MAX_SIZE
             if (absDeltaX <= blockWidth / 2) {
@@ -75,17 +73,13 @@ export default {
                 this.setTransition(true)
                 afterTransition(this.$el, () => {
                     this.setTransition(false)
-                    stopDragging()
-                    this.isDragging = false
                 })
                 window.requestAnimationFrame(() => this.setTransform(0))
                 this.$emit('movingWindowEnd', 0)
             } else {
                 // add new window
                 this.$emit('movingWindowEnd', Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
-                stopDragging()
                 this.shouldClear = true
-                this.isDragging = false
             }
         }
     },

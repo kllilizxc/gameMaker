@@ -18,30 +18,35 @@ export default {
     },
     data: () => ({
         isDragging: false,
+        draggingStarted: false,
         lastX: 0,
         deltaX: 0
     }),
     methods: {
         handleTouchStart(e): void {
             this.lastX = e.clientX || e.touches[0].clientX
-            this.isDragging = true
+            this.deltaX = 0
+            this.isDragging = false
+            this.draggingStarted = true
             this.touchStart()
         },
         handleTouchMove(e): void {
+            if(!this.draggingStarted) return
             e.stopPropagation()
             e.preventDefault()
 
-            if (!this.isDragging) return
             const clientX = e.clientX || e.touches[0].clientX
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
+            this.isDragging = Math.abs(this.deltaX) > 8
             if (this.isDragging && this.deltaX < this.dragLimit && this.deltaX > this.dragMin)
                 this.touchMove(this.deltaX)
         },
         handleTouchEnd(e): void {
+            this.draggingStarted = false
             if (this.isDragging)
-                this.touchEnd(this.deltaX, () => this.isDragging = false)
+                this.touchEnd(this.deltaX)
         }
     },
     render() {
@@ -58,8 +63,8 @@ export default {
                     onTouchend={handleTouchEnd}
                     onMousedown={handleTouchStart}
                     onMousemove={handleTouchMove}
-                    onMouseleave={handleTouchEnd}
                     onMouseup={handleTouchEnd}
+                    onMouseleave={handleTouchEnd}
                     style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>{this.$slots.default}</div>
     }
 }
