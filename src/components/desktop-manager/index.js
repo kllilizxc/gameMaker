@@ -92,6 +92,8 @@ export default {
                         windows[0].size = 1
                         windows[1].size = 1
                         this.currentWindow.size = 1
+                    } else if (windows[0].size === 1 && windows[1].size === 3 && size === 2) {
+                        windows[1].size = 1
                     } else {
                         if (windows[0].size === 3)
                             windows[0].size = 2
@@ -121,6 +123,7 @@ export default {
             }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.lastWindowWidth = this.currentWindowRef.$el.offsetWidth
+            this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth)
             this.currentWindow.size = 0
         },
         handleMovingNewWindow({ title, content, color, icon }): void {
@@ -138,7 +141,6 @@ export default {
         },
         handleReleasingWindow: function (deltaX: number) {
             const size = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
-            this.windowHintSize = size
             if (this.currentWindowIndex < 0 || !this.currentWindow) return
             if (!size) {
                 this.translateCurrentWindow(0, () => {
@@ -157,6 +159,7 @@ export default {
                 this.currentWindow.size = size
                 this.currentWindowWidth = this.currentWindowRef.$el.offsetWidth
                 this.lastWindowWidth = 0
+                this.windowHintSize = 0
                 this.isNewWindow = false
             }
 
@@ -166,7 +169,6 @@ export default {
             if (windows.length === 0 || windows.length - 1 + size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
-                this.windowHintSize = 0
                 this.translateCurrentWindow(sizeToPX(size), handleTransitionEnd)
             } else {
                 this.setCurrentWindowSize(windows, size)
