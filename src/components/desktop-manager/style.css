@@ -53,4 +53,5 @@
     border: 2px solid Blue-900;
     transition: width 0.3s ease;
     pointer-events: none;
+    margin-left: -2px;
 }
