@@ -23,14 +23,14 @@ export default {
         deltaX: 0
     }),
     methods: {
-        handleTouchStart(e): void {
+        handleTouchStart(e: any): void {
             this.lastX = e.clientX || e.touches[0].clientX
             this.deltaX = 0
             this.isDragging = false
             this.draggingStarted = true
             this.touchStart()
         },
-        handleTouchMove(e): void {
+        handleTouchMove(e: any): void {
             if(!this.draggingStarted) return
             e.stopPropagation()
             e.preventDefault()
@@ -43,7 +43,8 @@ export default {
             if (this.isDragging && this.deltaX < this.dragLimit && this.deltaX > this.dragMin)
                 this.touchMove(this.deltaX)
         },
-        handleTouchEnd(e): void {
+        handleTouchEnd(): void {
+            if (!this.draggingStarted) return
             this.draggingStarted = false
             if (this.isDragging)
                 this.touchEnd(this.deltaX)

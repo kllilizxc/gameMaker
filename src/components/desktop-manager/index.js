@@ -4,7 +4,7 @@ import Desktop from '@/components/desktop'
 import Window from '@/components/window'
 import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
-import WindowLabel from 'Components/window-label'
+import WindowLabel from '@/components/window-label'
 import { afterTransition } from '../../common/util'
 
 type WindowType = {
@@ -14,7 +14,7 @@ type WindowType = {
 }
 
 type DesktopType = {
-    windows: Window[]
+    windows: WindowType[]
 }
 
 export const MAX_SIZE: number = 4
@@ -35,7 +35,7 @@ export default {
         ]
     }),
     watch: {
-        currentDesktopIndex(index) {
+        currentDesktopIndex(index: number): void {
             if (this.$el && this.$el.style)
                 this.$el.style.transform = `translateX(${-100 * index}vw)`
         }
@@ -61,7 +61,7 @@ export default {
             }
             return currentDesktop
         },
-        translateCurrentWindow(translateWidth: number, callback: () => void) {
+        translateCurrentWindow(translateWidth: number, callback: () => void): void {
             const { currentWindowRef } = this
             const style = currentWindowRef.$el.style
             afterTransition(currentWindowRef.$el, () => {
@@ -71,7 +71,7 @@ export default {
             style.transition = 'width 0.3s ease'
             style.width = `${translateWidth}px`
         },
-        setCurrentWindowSize(windows: WindowType[], size: number) {
+        setCurrentWindowSize(windows: WindowType[], size: number): void {
             switch (windows.length) {
                 case 2:
                     windows[0].size = MAX_SIZE - size
@@ -95,14 +95,14 @@ export default {
                     break
             }
         },
-        createNewDesktopToFitWindow() {
+        createNewDesktopToFitWindow(): void {
             const { currentWindow } = this
             currentWindow.size = MAX_SIZE
             this.currentDesktop.windows.pop()
             this.currentWindowIndex = 0
             this.addDesktop({ windows: [currentWindow] })
         },
-        handleDraggingNewWindow(name: string) {
+        handleDraggingNewWindow(name: string): void {
             this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
             if (this.currentWindowIndex !== 0 && this.currentWindowIndex !== this.currentDesktop.windows.length - 1) {
                 this.currentWindowIndex = -1
@@ -111,7 +111,7 @@ export default {
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.currentWindow.size = 0
         },
-        handleDraggingWindow(deltaX: number) {
+        handleDraggingWindow(deltaX: number): void {
             if (this.currentWindowIndex < 0) return
             this.currentWindowRef.$el.style.width = `${Math.max(0, this.currentWindowRef.$el.offsetWidth - deltaX)}px`
         },
@@ -124,8 +124,7 @@ export default {
                 })
             }
         },
-        removeCurrentWindow() {
-            console.log('window removed')
+        removeCurrentWindow(): void {
             let { windows } = this.currentDesktop
             windows.splice(windows.findIndex(({ title }) => title === this.currentWindow.title))
             this.currentWindow = null
@@ -166,16 +165,16 @@ export default {
         }
     },
     computed: {
-        isFirstDesktop() {
+        isFirstDesktop(): boolean {
             return this.currentDesktopIndex === 0
         },
-        isLastDesktop() {
+        isLastDesktop(): boolean {
             return this.currentDesktopIndex === this.desktops.length - 1
         },
-        currentDesktop() {
+        currentDesktop(): DesktopType {
             return this.desktops[this.currentDesktopIndex]
         },
-        currentWindowRef() {
+        currentWindowRef(): any {
             return this.$refs.windows.find(({ title }) => title === this.currentWindow.title)
         }
     },
@@ -195,8 +194,6 @@ export default {
             isFirstDesktop,
             isLastDesktop
         } = this
-
-        console.log(windowLabels)
 
         return <div class={styles.desktopManager}>
             {desktops && desktops.map((desktop, index) => <Desktop>

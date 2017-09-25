@@ -16,10 +16,10 @@ export default {
         handleTouchStart(): void {
             this.$emit('startDraggingWindow', this.title)
         },
-        handleTouchMove(deltaX): void {
+        handleTouchMove(deltaX: number): void {
             this.$emit('draggingWindow', deltaX)
         },
-        handleTouchEnd(deltaX): void {
+        handleTouchEnd(deltaX: number): void {
             this.$emit('draggingWindowEnd', 0)
         }
     },
