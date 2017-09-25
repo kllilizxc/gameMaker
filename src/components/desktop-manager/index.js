@@ -156,7 +156,7 @@ export default {
             const handleTransitionEnd = () => this.currentWindow.size = size
 
             this.windowLabels.splice(this.windowLabels.findIndex(label => label.title === this.currentWindow.title), 1)
-            if (windows.length === 0 || windows.length + size > MAX_SIZE) {
+            if (windows.length === 0 || windows.length - 1 + size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
                 this.translateCurrentWindow(size / MAX_SIZE * window.innerWidth, handleTransitionEnd)
@@ -219,7 +219,7 @@ export default {
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
-                {windowHintSize !== 0 && <div class={styles.windowHint} style={{ width: `${windowHintSize * window.innerWidth / MAX_SIZE}px` }}/>}
+                { <div class={styles.windowHint} style={{ display: windowHintSize ? '' : 'none', width: `${windowHintSize * window.innerWidth / MAX_SIZE}px` }}/>}
                 <div class={styles.windowLabelList}>
                     {windowLabels.map(label => <WindowLabel icon={label.icon}
                                                             title={label.title}
