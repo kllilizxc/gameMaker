@@ -78,7 +78,7 @@ export default {
                 this.$emit('movingWindowEnd', 0)
             } else {
                 // add new window
-                this.$emit('movingWindowEnd', Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE))
+                this.$emit('movingWindowEnd', deltaX)
                 this.shouldClear = true
             }
         }

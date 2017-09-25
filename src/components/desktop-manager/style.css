@@ -1,3 +1,5 @@
+@value Blue-500, Blue-900 from '../../common/colors.css';
+
 .desktopManager {
     overflow: auto;
     transition: transform 0.3s ease;
@@ -39,4 +41,15 @@
 
 .toRightButton {
     right: 20px;
+}
+
+.windowHint {
+    background: Blue-500;
+    height: 100%;
+    position: fixed;
+    right: 0;
+    top: 0;
+    opacity: 0.2;
+    border: 2px solid Blue-900;
+    transition: width 0.3s ease;
 }
