@@ -20,7 +20,7 @@ export default {
             this.$emit('draggingWindow', deltaX)
         },
         handleTouchEnd(deltaX: number): void {
-            this.$emit('draggingWindowEnd', 0)
+            this.$emit('draggingWindowEnd', deltaX)
         }
     },
     render() {

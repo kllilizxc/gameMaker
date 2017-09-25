@@ -52,4 +52,5 @@
     opacity: 0.2;
     border: 2px solid Blue-900;
     transition: width 0.3s ease;
+    pointer-events: none;
 }
