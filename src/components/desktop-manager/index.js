@@ -75,12 +75,16 @@ export default {
         translateCurrentWindow(translateWidth: number, callback: () => void): void {
             const { currentWindowRef } = this
             const style = currentWindowRef.$el.style
-            afterTransition(currentWindowRef.$el, () => {
-                style.transition = 'none'
+            if (translateWidth === currentWindowRef.$el.offsetWidth) {
                 callback && callback()
-            })
-            style.transition = 'width 0.3s ease'
-            style.width = `${translateWidth}px`
+            } else {
+                afterTransition(currentWindowRef.$el, () => {
+                    style.transition = 'none'
+                    callback && callback()
+                })
+                style.transition = 'width 0.3s ease'
+                style.width = `${translateWidth}px`
+            }
         },
         setCurrentWindowSize(windows: WindowType[], size: number): void {
             switch (windows.length) {
@@ -145,7 +149,7 @@ export default {
             this.currentWindowWidth = Math.max(0, this.lastWindowWidth - deltaX)
             this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
         },
-        handleReleasingWindow: function (deltaX: number) {
+        handleReleaseWindow: function (deltaX: number) {
             const size = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
             if (this.currentWindowIndex < 0 || !this.currentWindow) return
             if (!size) {
@@ -155,6 +159,7 @@ export default {
                         this.windowLabels.push({ icon, title, color })
                     }
                     this.removeCurrentWindow()
+                    this.windowHintSize = 0
                 })
                 return
             }
@@ -216,7 +221,7 @@ export default {
             handleMovingNewWindow,
             handleMovingExistingWindow,
             handleMovingWindow,
-            handleReleasingWindow,
+            handleReleaseWindow,
             gotoLastDesktop,
             gotoNextDesktop,
             isFirstDesktop,
@@ -234,7 +239,7 @@ export default {
                             color={window.color}
                             onStartDraggingWindow={handleMovingExistingWindow}
                             onDraggingWindow={handleMovingWindow}
-                            onDraggingWindowEnd={handleReleasingWindow}
+                            onDraggingWindowEnd={handleReleaseWindow}
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
@@ -249,7 +254,7 @@ export default {
                                                             key={label.title}
                                                             onNewWindow={handleMovingNewWindow}
                                                             onMovingWindow={handleMovingWindow}
-                                                            onMovingWindowEnd={handleReleasingWindow}/>)}
+                                                            onMovingWindowEnd={handleReleaseWindow}/>)}
                 </div>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
                     <FloatButton mini

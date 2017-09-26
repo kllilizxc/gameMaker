@@ -31,7 +31,7 @@ export default {
             this.touchStart()
         },
         handleTouchMove(e: any): void {
-            if(!this.draggingStarted) return
+            if (!this.draggingStarted) return
             e.stopPropagation()
             e.preventDefault()
 
@@ -46,8 +46,7 @@ export default {
         handleTouchEnd(): void {
             if (!this.draggingStarted) return
             this.draggingStarted = false
-            if (this.isDragging)
-                this.touchEnd(this.deltaX)
+            this.touchEnd(this.deltaX)
         }
     },
     render() {

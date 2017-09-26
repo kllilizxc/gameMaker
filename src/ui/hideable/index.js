@@ -18,8 +18,7 @@ export default {
         }
     },
     data: () => ({
-        isHide: true,
-        t: null
+        isHide: true
     }),
     mounted() {
         if (!this.isLocked)
@@ -50,17 +49,13 @@ export default {
         },
         handleMouseEnter(): void {
             if (this.isLocked) return
-            clearTimeout(this.t)
             if (this.isHide)
                 this.show()
         },
         handleMouseLeave(): void {
             if (this.isLocked) return
-            clearTimeout(this.t)
-            this.t = setTimeout(() => {
-                if (!this.isHide)
-                    this.hide()
-            }, 1000)
+            if (!this.isHide)
+                this.hide()
         }
     },
     render() {

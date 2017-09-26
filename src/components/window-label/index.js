@@ -25,7 +25,8 @@ export default {
     },
     data: () => ({
         isHide: true,
-        shouldClear: false
+        shouldClear: false,
+        isDragging: false
     }),
     methods: {
         hide(style: { transform: string, marginBottom: string }): void {
@@ -59,6 +60,7 @@ export default {
             this.$el.style.transition = haveTransition ? 'transform 0.3s ease' : 'none'
         },
         handleTouchStart(): void {
+            this.isDragging = true
             this.$emit('newWindow', { title: this.title, content: null, color: this.color, icon: this.icon })
         },
         handleTouchMove(deltaX): void {
@@ -73,6 +75,7 @@ export default {
                 this.setTransition(true)
                 afterTransition(this.$el, () => {
                     this.setTransition(false)
+                    this.isDragging = false
                 })
                 window.requestAnimationFrame(() => this.setTransform(0))
                 this.$emit('movingWindowEnd', 0)
@@ -80,6 +83,7 @@ export default {
                 // add new window
                 this.$emit('movingWindowEnd', deltaX)
                 this.shouldClear = true
+                this.isDragging = false
             }
         }
     },
