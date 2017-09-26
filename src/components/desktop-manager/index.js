@@ -108,12 +108,17 @@ export default {
                     break
             }
         },
+        resetWindowHint(size: number = 0): void {
+            this.$refs.windowHint.style.transition = 'none'
+            this.windowHintSize = size
+        },
         createNewDesktopToFitWindow(): void {
             const { currentWindow } = this
             currentWindow.size = MAX_SIZE
             this.currentDesktop.windows.pop()
-            this.currentWindowIndex = 0
+            this.resetWindowHint()
             this.addDesktop({ windows: [currentWindow] })
+            this.$refs.windowHint.style.transition = ''
         },
         handleMovingExistingWindow(name: string): void {
             this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
@@ -123,7 +128,7 @@ export default {
             }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.lastWindowWidth = this.currentWindowRef.$el.offsetWidth
-            this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth)
+            this.resetWindowHint(this.getWindowSizeByDeltaX(this.lastWindowWidth))
             this.currentWindow.size = 0
         },
         handleMovingNewWindow({ title, content, color, icon }): void {
@@ -136,6 +141,7 @@ export default {
         },
         handleMovingWindow(deltaX: number): void {
             if (this.currentWindowIndex < 0) return
+            this.$refs.windowHint.style.transition = ''
             this.currentWindowWidth = Math.max(0, this.lastWindowWidth - deltaX)
             this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
         },
@@ -232,7 +238,7 @@ export default {
                             style={window.size && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
-                {<div class={styles.windowHint} style={{
+                {<div class={styles.windowHint} ref="windowHint" style={{
                     opacity: (currentWindow && currentWindow.size) ? '0' : '',
                     width: `${sizeToPX(windowHintSize)}px`
                 }}/>}
