@@ -63,7 +63,9 @@ export default {
         addDesktop(desktop: DesktopType): void {
             this.desktops.push(desktop)
             this.$el.style.width = `${this.desktops.length * 100}vw`
-            this.gotoNextDesktop()
+            const offset = this.desktops.length - this.currentDesktopIndex
+            for (let i = 0; i < offset; ++i)
+                this.gotoNextDesktop()
         },
         createDesktopIfShould(): DesktopType {
             let { currentDesktop } = this
@@ -88,28 +90,28 @@ export default {
         },
         setCurrentWindowSize(windows: WindowType[], size: number): void {
             switch (windows.length) {
-                case 2:
-                    windows[0].size = MAX_SIZE - size
-                    break
-                case 3:
-                    if (windows[0].size === 2 && windows[1].size === 2) {
-                        windows[0].size = 1
-                        windows[1].size = 1
-                        this.currentWindow.size = 1
-                    } else if (windows[0].size === 1 && windows[1].size === 3 && size === 2) {
-                        windows[1].size = 1
-                    } else {
-                        if (windows[0].size === 3)
-                            windows[0].size = 2
-                        else if (windows[1].size === 3)
-                            windows[1].size = 2
-                    }
-                    break
-                case 4:
-                    windows.forEach(window => window.size = 1)
-                    break
-                default:
-                    break
+            case 2:
+                windows[0].size = MAX_SIZE - size
+                break
+            case 3:
+                if (windows[0].size === 2 && windows[1].size === 2) {
+                    windows[0].size = 1
+                    windows[1].size = 1
+                    this.currentWindow.size = 1
+                } else if (windows[0].size === 1 && windows[1].size === 3 && size === 2) {
+                    windows[1].size = 1
+                } else {
+                    if (windows[0].size === 3)
+                        windows[0].size = 2
+                    else if (windows[1].size === 3)
+                        windows[1].size = 2
+                }
+                break
+            case 4:
+                windows.forEach(window => window.size = 1)
+                break
+            default:
+                break
             }
         },
         resetWindowHint(size: number = 0): void {
