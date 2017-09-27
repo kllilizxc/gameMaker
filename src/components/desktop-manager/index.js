@@ -132,6 +132,7 @@ export default {
             }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
             this.lastWindowWidth = this.currentWindowRef.$el.offsetWidth
+            this.currentWindowWidth = this.lastWindowWidth
             this.resetWindowHint(this.getWindowSizeByDeltaX(this.lastWindowWidth))
             this.currentWindow.size = 0
         },
@@ -168,7 +169,6 @@ export default {
 
             const handleTransitionEnd = () => {
                 this.currentWindow.size = size
-                this.currentWindowWidth = this.currentWindowRef.$el.offsetWidth
                 this.lastWindowWidth = 0
                 this.windowHintSize = 0
                 this.isNewWindow = false
