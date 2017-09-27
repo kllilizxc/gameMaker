@@ -10,7 +10,8 @@ import { afterTransition } from '../../common/util'
 type WindowType = {
     title: string,
     content: any,
-    size: number
+    size: number,
+    isMoving: boolean
 }
 
 type DesktopType = {
@@ -88,31 +89,23 @@ export default {
                 style.width = `${translateWidth}px`
             }
         },
-        setCurrentWindowSize(windows: WindowType[], size: number): void {
-            switch (windows.length) {
-            case 2:
-                windows[0].size = MAX_SIZE - size
-                break
-            case 3:
-                if (windows[0].size === 2 && windows[1].size === 2) {
-                    windows[0].size = 1
-                    windows[1].size = 1
-                    this.currentWindow.size = 1
-                } else if (windows[0].size === 1 && windows[1].size === 3 && size === 2) {
-                    windows[1].size = 1
+        setCurrentWindowSize(size: number): void {
+            const { windows } = this.desktops[this.currentDesktopIndex]
+            const movingWindow = windows[windows.length - 1]
+            console.assert(windows.length - 1 + movingWindow.size <= MAX_SIZE)
+
+            let sizeToReduce = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
+            for (let i = windows.length - 2; i >= 0 && sizeToReduce > 0; --i) {
+                const window = windows[i]
+                if (window.size >= sizeToReduce + 1) {
+                    window.size -= sizeToReduce
+                    break
                 } else {
-                    if (windows[0].size === 3)
-                        windows[0].size = 2
-                    else if (windows[1].size === 3)
-                        windows[1].size = 2
+                    sizeToReduce -= (window.size - 1)
+                    window.size = 1
                 }
-                break
-            case 4:
-                windows.forEach(window => window.size = 1)
-                break
-            default:
-                break
             }
+            movingWindow.size = size
         },
         resetWindowHint(size: number = 0): void {
             this.$refs.windowHint.style.transition = 'none'
@@ -133,15 +126,15 @@ export default {
                 return
             }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
+            this.currentWindow.isMoving = true
             this.lastWindowWidth = this.currentWindowRef.$el.offsetWidth
             this.currentWindowWidth = this.lastWindowWidth
             this.resetWindowHint(this.getWindowSizeByDeltaX(this.lastWindowWidth))
-            this.currentWindow.size = 0
         },
         handleMovingNewWindow({ title, content, color, icon }): void {
             const currentDesktop = this.createDesktopIfShould()
             this.currentWindowIndex = currentDesktop.windows.length
-            this.currentWindow = { title, content, color, icon, size: 0 }
+            this.currentWindow = { title, content, color, icon, size: 0, isMoving: true }
             currentDesktop.windows.push(this.currentWindow)
             this.lastWindowWidth = 0
             this.isNewWindow = true
@@ -152,7 +145,7 @@ export default {
             this.currentWindowWidth = Math.max(0, this.lastWindowWidth - deltaX)
             this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
         },
-        handleReleaseWindow: function (deltaX: number) {
+        handleReleaseWindow: function (deltaX: number): void {
             const size = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
             if (this.currentWindowIndex < 0 || !this.currentWindow) return
             if (!size) {
@@ -170,10 +163,10 @@ export default {
             const { windows } = this.desktops[this.currentDesktopIndex]
 
             const handleTransitionEnd = () => {
-                this.currentWindow.size = size
                 this.lastWindowWidth = 0
                 this.windowHintSize = 0
                 this.isNewWindow = false
+                this.currentWindow.isMoving = false
             }
 
             if (this.isNewWindow) // remove label
@@ -182,10 +175,12 @@ export default {
             if (windows.length === 0 || windows.length - 1 + size > MAX_SIZE) {
                 // create a new window
                 this.createNewDesktopToFitWindow()
-                this.translateCurrentWindow(sizeToPX(size), handleTransitionEnd)
+                handleTransitionEnd()
             } else {
-                this.setCurrentWindowSize(windows, size)
-                this.translateCurrentWindow(sizeToPX(size), handleTransitionEnd)
+                this.translateCurrentWindow(sizeToPX(size), () => {
+                    handleTransitionEnd()
+                    this.setCurrentWindowSize(size)
+                })
             }
         },
         removeCurrentWindow(): void {
@@ -242,11 +237,11 @@ export default {
                             onStartDraggingWindow={handleMovingExistingWindow}
                             onDraggingWindow={handleMovingWindow}
                             onDraggingWindowEnd={handleReleaseWindow}
-                            style={window.size && { flex: window.size }}>{window.content}</Window>)}
+                            style={!window.isMoving && { flex: window.size }}>{window.content}</Window>)}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
                 {<div class={styles.windowHint} ref="windowHint" style={{
-                    opacity: (currentWindow && currentWindow.size) ? '0' : '',
+                    opacity: (currentWindow && currentWindow.isMoving) ? '' : '0',
                     width: `${sizeToPX(windowHintSize)}px`
                 }}/>}
                 <div class={styles.windowLabelList}>
