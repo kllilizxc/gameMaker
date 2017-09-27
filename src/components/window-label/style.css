@@ -13,6 +13,7 @@
     border-bottom-left-radius: 8px !important;
     padding: 8px;
     overflow: auto;
+    min-width: 68px;
 }
 
 .title {

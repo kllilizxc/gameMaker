@@ -31,14 +31,14 @@ export default {
     },
     methods: {
         hide(): void {
-            if (this.isLocked || this.isHide) return
+            if (this.isHide) return
             this.hideFunction(this.toHide.style)
             afterTransition(this.toHide, () => {
                 this.isHide = true
             })
         },
         show(): void {
-            if (this.isLocked || !this.isHide) return
+            if (!this.isHide) return
             this.showFunction(this.toHide.style)
             afterTransition(this.toHide, () => {
                 this.isHide = false
