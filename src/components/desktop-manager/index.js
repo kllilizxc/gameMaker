@@ -95,7 +95,7 @@ export default {
             console.assert(windows.length - 1 + movingWindow.size <= MAX_SIZE)
 
             let sizeToChange = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
-            for (let i = windows.length - 2; i >= 0; --i) {
+            for (let i = this.currentWindowIndex - 1; i >= 0; --i) {
                 const window = windows[i]
                 if (window.size >= sizeToChange + 1) {
                     window.size -= sizeToChange
@@ -121,8 +121,8 @@ export default {
         },
         handleMovingExistingWindow(name: string): void {
             this.currentWindowIndex = this.currentDesktop.windows.findIndex(window => window.title === name)
-            if (this.currentWindowIndex === 0 || this.currentWindowIndex !== this.currentDesktop.windows.length - 1) {
-                this.currentWindowIndex = -1 // only the last window while not being the first window in desktop is draggable
+            if (this.currentWindowIndex !== this.currentDesktop.windows.length - 1) {
+                this.currentWindowIndex = -1 // only the last window in desktop is draggable
                 return
             }
             this.currentWindow = this.currentDesktop.windows[this.currentWindowIndex]
@@ -154,7 +154,9 @@ export default {
                         const { icon, title, color } = this.currentWindow
                         this.windowLabels.push({ icon, title, color })
                     }
+                    const emptyDesktop = this.currentWindowIndex === 0
                     this.removeCurrentWindow()
+                    if (emptyDesktop) this.removeCurrentDesktop()
                     this.windowHintSize = 0
                 })
                 return
@@ -185,9 +187,13 @@ export default {
         },
         removeCurrentWindow(): void {
             const { windows } = this.currentDesktop
-            windows.splice(windows.findIndex(({ title }) => title === this.currentWindow.title))
+            windows.splice(windows.findIndex(({ title }) => title === this.currentWindow.title), 1)
             this.currentWindow = null
             this.currentWindowIndex = -1
+        },
+        removeCurrentDesktop(): void {
+            this.desktops.splice(this.currentDesktopIndex, 1)
+            this.currentDesktopIndex = this.currentDesktopIndex === 0 ? 0 : this.currentDesktopIndex - 1
         },
         getWindowSizeByDeltaX(deltaX) {
             const absDeltaX = Math.abs(deltaX)
