@@ -35,7 +35,7 @@ export default {
             e.stopPropagation()
             e.preventDefault()
 
-            const clientX = e.clientX || e.touches[0].clientX
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX)
             this.deltaX += clientX - this.lastX
             this.lastX = clientX
 
