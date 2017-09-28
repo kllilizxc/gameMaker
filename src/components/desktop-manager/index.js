@@ -94,14 +94,14 @@ export default {
             const movingWindow = windows[windows.length - 1]
             console.assert(windows.length - 1 + movingWindow.size <= MAX_SIZE)
 
-            let sizeToReduce = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
-            for (let i = windows.length - 2; i >= 0 && sizeToReduce > 0; --i) {
+            let sizeToChange = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
+            for (let i = windows.length - 2; i >= 0; --i) {
                 const window = windows[i]
-                if (window.size >= sizeToReduce + 1) {
-                    window.size -= sizeToReduce
+                if (window.size >= sizeToChange + 1) {
+                    window.size -= sizeToChange
                     break
                 } else {
-                    sizeToReduce -= (window.size - 1)
+                    sizeToChange -= (window.size - 1)
                     window.size = 1
                 }
             }
