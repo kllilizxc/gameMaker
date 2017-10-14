@@ -31,47 +31,47 @@ export default {
         }
     },
     methods: {
-        renderSlider() {
+        renderSlider(h) {
             this.option.type = 'number'
             this.option.label = this.option.name
-            return [createScriptElement('Slider', this.option),
-                    createScriptElement('TextField', this.option)]
+            return [createScriptElement(h, 'Slider', this.option),
+                    createScriptElement(h, 'TextField', this.option)]
         },
-        renderTextField() {
-            return createScriptElement('TextField', this.option)
+        renderTextField(h) {
+            return createScriptElement(h, 'TextField', this.option)
         },
-        renderSwitch() {
+        renderSwitch(h) {
             this.option.label = this.option.name
-            return createScriptElement('Switch', this.option)
+            return createScriptElement(h, 'Switch', this.option)
         },
-        renderPicker() {
+        renderPicker(h) {
             this.option.label = this.option.name
-            return createScriptElement('SelectField', this.option,
+            return createScriptElement(h, 'SelectField', this.option,
                 this.option.options.map(option => <MenuItem title={option.title} value={option.title}/>))
         },
-        renderFilePicker() {
+        renderFilePicker(h) {
             //TODO
             return <div/>
         },
-        parseOption(): any {
+        parseOption(h): any {
             switch (this.option) {
                 case STRING_TYPE:
-                    return this.renderSlider()
+                    return this.renderSlider(h)
                 case NUMBER_TYPE:
-                    return this.renderTextField()
+                    return this.renderTextField(h)
                 case BOOLEAN_TYPE:
-                    return this.renderSwitch()
+                    return this.renderSwitch(h)
                 case ENUM_TYPE:
-                    return this.renderPicker()
+                    return this.renderPicker(h)
                 case FILE_TYPE:
-                    return this.renderFilePicker()
+                    return this.renderFilePicker(h)
                 default:
                     logger.log('Error! Not a valid option type!')
                     return <div/>
             }
         }
     },
-    render(): any {
-        return <div class={styles.script}>{ this.parseOption() }</div>
+    render(h): any {
+        return <div class={styles.script}>{ this.parseOption(h) }</div>
     }
 }
