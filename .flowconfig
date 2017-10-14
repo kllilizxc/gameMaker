@@ -5,3 +5,4 @@ all=off
 [options]
 module.name_mapper='^@\/\(.*\)$' -> '<PROJECT_ROOT>/src/\1'
 module.name_mapper='^Ui\/\(.*\)$' -> '<PROJECT_ROOT>/src/ui\1'
+module.name_mapper='^Component\/\(.*\)$' -> '<PROJECT_ROOT>/src/component\1'
