@@ -34,3 +34,7 @@ export function getFunctionalUIComponent(name, props) {
 }
 
 export const logger = console
+
+export function stateToGetters (state) {
+    return Object.keys(state).reduce((obj, cur) => obj[cur] = (state) => state[cur], {})q1``
+}

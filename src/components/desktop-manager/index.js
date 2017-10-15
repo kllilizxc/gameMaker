@@ -65,7 +65,7 @@ export default {
             this.desktops.push(desktop)
             this.$el.style.width = `${this.desktops.length * 100}vw`
             const offset = this.desktops.length - this.currentDesktopIndex
-            for (let i = 0; i < offset; ++i)
+            for (let i = 0; i < offset; ++i) 
                 this.gotoNextDesktop()
         },
         createDesktopIfShould(): DesktopType {
@@ -267,6 +267,7 @@ export default {
                     <FloatButton mini
                                  icon="keyboard_arrow_right"
                                  onClick={gotoNextDesktop}/></Hideable>}
+
             </div>
         </div>
     }
