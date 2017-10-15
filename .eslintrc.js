@@ -10,11 +10,11 @@ module.exports = {
         browser: true,
     },
     // https://github.com/standard/standard/blob/master/docs/RULES-en.md
-    extends: ['standard', 'vue'],
+    extends: ['standard', 'plugin:flowtype/recommended', 'vue'],
     // required to lint *.vue files
     plugins: [
         'html',
-        'flowtype-errors'
+        'flowtype'
     ],
     // add your custom rules here
     rules: {
@@ -25,9 +25,7 @@ module.exports = {
         // allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
 
-        'flowtype-errors/show-errors': 2,
-
-        'indent': ['warn', 4],
+        'indent': ['warn', 4, { "SwitchCase": 1 }],
 
         'space-before-function-paren': 0,
 

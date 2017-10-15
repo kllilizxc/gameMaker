@@ -8,6 +8,7 @@ import store from './store'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 
+
 Vue.use(MuseUI)
 
 Vue.config.productionTip = false

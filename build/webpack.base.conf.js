@@ -57,6 +57,10 @@ module.exports = {
                 include: [resolve('src'), resolve('test')]
             },
             {
+                test: /\.ts(x?)$/,
+                loader: 'babel-loader!ts-loader',
+            },
+            {
                 test: /\.css$/,
                 oneOf: [
                     {

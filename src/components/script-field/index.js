@@ -1,4 +1,5 @@
 // @flow
+// @jsx createScriptElement
 import styles from './style.css'
 import { logger } from '../../common/util'
 import Switch from '@/ui/switch'
@@ -13,17 +14,21 @@ const BOOLEAN_TYPE = 'BOOLEAN_TYPE'
 const ENUM_TYPE = 'ENUM_TYPE'
 const FILE_TYPE = 'FILE_TYPE'
 
-function createScriptElement(h, name, options, children) {
-    return h(name, {
-        props: Object.keys(options).reduce((obj, option) => obj[option] = this[option], {})
-        on: {
-            input(value) { this.$emit('input', value) }
-        }
-    }, children)
+export type Option = {
+    name: string,
+    value: any,
+    options: any
+}
+
+function createScriptElement(h, component, options: Option, children: [] = []): any {
+    return <component {...{
+        props: Object.keys(options).reduce((obj, option) => obj[option] = this[option], {}),
+        on: { input(value) { this.$emit('input', value) } }
+    }}>{children}</component>
 }
 
 export default {
-    name: 'script',
+    name: 'script-field',
     props: {
         option: {
             type: Object,
@@ -31,29 +36,28 @@ export default {
         }
     },
     methods: {
-        renderSlider(h) {
+        renderSlider(h: any): any {
             this.option.type = 'number'
             this.option.label = this.option.name
-            return [createScriptElement(h, 'Slider', this.option),
-                    createScriptElement(h, 'TextField', this.option)]
+            return [createScriptElement(h, Slider, this.option), createScriptElement(h, 'TextField', this.option)]
         },
-        renderTextField(h) {
-            return createScriptElement(h, 'TextField', this.option)
+        renderTextField(h: any): any {
+            return createScriptElement(h, TextField, this.option)
         },
-        renderSwitch(h) {
+        renderSwitch(h: any): any {
             this.option.label = this.option.name
-            return createScriptElement(h, 'Switch', this.option)
+            return createScriptElement(h, Switch, this.option)
         },
-        renderPicker(h) {
+        renderPicker(h: any): any {
             this.option.label = this.option.name
-            return createScriptElement(h, 'SelectField', this.option,
-                this.option.options.map(option => <MenuItem title={option.title} value={option.title}/>))
+            return createScriptElement(h, SelectField, this.option,
+                this.option.options.map(option => <MenuItem title={option.title} value={option.title} />))
         },
-        renderFilePicker(h) {
-            //TODO
-            return <div/>
+        renderFilePicker(h: any): any {
+            // TODO
+            return <div />
         },
-        parseOption(h): any {
+        parseOption(h: any): any {
             switch (this.option) {
                 case STRING_TYPE:
                     return this.renderSlider(h)
@@ -67,11 +71,11 @@ export default {
                     return this.renderFilePicker(h)
                 default:
                     logger.log('Error! Not a valid option type!')
-                    return <div/>
+                    return <div />
             }
         }
     },
-    render(h): any {
-        return <div class={styles.script}>{ this.parseOption(h) }</div>
+    render(h: any): any {
+        return <div class={styles.script}>{this.parseOption(h)}</div>
     }
 }
