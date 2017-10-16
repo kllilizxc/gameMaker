@@ -11,16 +11,9 @@ import { MAX_SIZE } from '../desktop-manager/index'
 export default {
     name: 'window-label',
     props: {
-        icon: {
+        label: {
+            type: Object,
             required: true
-        },
-        title: {
-            type: String,
-            required: true
-        },
-        color: {
-            type: String,
-            default: '#fff'
         }
     },
     data: () => ({
@@ -40,6 +33,7 @@ export default {
             this.isHide = false
         },
         setTransform(translateX: number): void {
+            if (!this.$el || !this.$el.style) return
             this.$el.style.transform = `translateX(${translateX}px)`
         },
         setTransformAnimated(from: number, to: number, callback: (number) => void): void {
@@ -61,7 +55,7 @@ export default {
         },
         handleTouchStart(): void {
             this.isDragging = true
-            this.$emit('newWindow', { title: this.title, content: null, color: this.color, icon: this.icon })
+            this.$emit('newWindow', this.label)
         },
         handleTouchMove(deltaX): void {
             window.requestAnimationFrame(() => this.setTransform(deltaX))
@@ -89,9 +83,7 @@ export default {
     },
     render() {
         const {
-            icon,
-            title,
-            color,
+            label: { icon, title, color },
             hide,
             show,
             handleTouchStart,

@@ -34,14 +34,20 @@ export default {
             if (this.isHide) return
             this.hideFunction(this.toHide.style)
             afterTransition(this.toHide, () => {
-                this.isHide = true
+                if (!this.isHide)
+                    this.show()
+                else
+                    this.isHide = true
             })
         },
         show(): void {
             if (!this.isHide) return
             this.showFunction(this.toHide.style)
             afterTransition(this.toHide, () => {
-                this.isHide = false
+                if (this.isHide)
+                    this.hide()
+                else
+                    this.isHide = false
             })
         },
         toggle(): void {
@@ -51,11 +57,13 @@ export default {
             if (this.isLocked) return
             if (this.isHide)
                 this.show()
+            this.isHide = false
         },
         handleMouseLeave(): void {
             if (this.isLocked) return
             if (!this.isHide)
                 this.hide()
+            this.isHide = true
         }
     },
     render() {

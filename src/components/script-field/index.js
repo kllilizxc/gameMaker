@@ -1,12 +1,11 @@
 // @flow
-// @jsx createScriptElement
 import styles from './style.css'
 import { logger } from '../../common/util'
 import Switch from '@/ui/switch'
-import Slider from '@/ui/slider'
 import SelectField from '@/ui/select-field'
 import MenuItem from '@/ui/menu-item'
 import TextField from '@/ui/text-field'
+import NumberInput from '@/components/number-input'
 
 const STRING_TYPE = 'STRING_TYPE'
 const NUMBER_TYPE = 'NUMBER_TYPE'
@@ -14,54 +13,63 @@ const BOOLEAN_TYPE = 'BOOLEAN_TYPE'
 const ENUM_TYPE = 'ENUM_TYPE'
 const FILE_TYPE = 'FILE_TYPE'
 
-export type Option = {
-    name: string,
-    value: any,
+export type Field = {
+    type: string,
+    get: () => any,
+    set: any => void,
     options: any
-}
-
-function createScriptElement(h, component, options: Option, children: [] = []): any {
-    return <component {...{
-        props: Object.keys(options).reduce((obj, option) => obj[option] = this[option], {}),
-        on: { input(value) { this.$emit('input', value) } }
-    }}>{children}</component>
 }
 
 export default {
     name: 'script-field',
     props: {
-        option: {
+        field: {
             type: Object,
             required: true
         }
     },
     methods: {
-        renderSlider(h: any): any {
-            this.option.type = 'number'
-            this.option.label = this.option.name
-            return [createScriptElement(h, Slider, this.option), createScriptElement(h, 'TextField', this.option)]
+        createScriptElement(h, component, props, children = []): any {
+            const data = {
+                props,
+                on: {
+                    input: value => {
+                        this.field.set(value)
+                        let newVal = this.field.get()
+                        this.$emit('input', newVal)
+                    }
+                }
+            }
+            return h(component, data, children)
+        },
+        renderNumberInput(h: any): any {
+            let { options } = this.field
+            return this.createScriptElement(h, NumberInput, options)
         },
         renderTextField(h: any): any {
-            return createScriptElement(h, TextField, this.option)
+            let { options } = this.field
+            options.hintText = options.hintText || 'Please input a string'
+            return this.createScriptElement(h, TextField, options)
         },
         renderSwitch(h: any): any {
-            this.option.label = this.option.name
-            return createScriptElement(h, Switch, this.option)
+            let { options } = this.field
+            return this.createScriptElement(h, Switch, options)
         },
         renderPicker(h: any): any {
-            this.option.label = this.option.name
-            return createScriptElement(h, SelectField, this.option,
-                this.option.options.map(option => <MenuItem title={option.title} value={option.title} />))
+            let { options } = this.field
+            return this.createScriptElement(h, SelectField, options,
+                options.options.map(option => <MenuItem title={option} value={option}/>))
         },
         renderFilePicker(h: any): any {
             // TODO
-            return <div />
+            return <div/>
         },
         parseOption(h: any): any {
-            switch (this.option) {
-                case STRING_TYPE:
-                    return this.renderSlider(h)
+            this.getFieldValue()
+            switch (this.field.type) {
                 case NUMBER_TYPE:
+                    return this.renderNumberInput(h)
+                case STRING_TYPE:
                     return this.renderTextField(h)
                 case BOOLEAN_TYPE:
                     return this.renderSwitch(h)
@@ -70,12 +78,15 @@ export default {
                 case FILE_TYPE:
                     return this.renderFilePicker(h)
                 default:
-                    logger.log('Error! Not a valid option type!')
-                    return <div />
+                    logger.error('Error! Not a valid option type!')
+                    return
             }
+        },
+        getFieldValue() {
+            this.field.options.value = this.field.get()
         }
     },
     render(h: any): any {
-        return <div class={styles.script}>{this.parseOption(h)}</div>
+        return <div class={styles.scriptField}>{this.parseOption(h)}</div>
     }
 }

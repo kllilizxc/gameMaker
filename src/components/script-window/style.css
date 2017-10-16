@@ -1,0 +1,26 @@
+@value Grey-900, White-500 from '@/common/colors.css';
+
+.scriptWindow {
+    width: 100%;
+    overflow: auto;
+}
+
+.dropZone {
+    height: 100px;
+    border: 1px dashed Grey-900;
+    border-radius: 2px;
+    margin: 8px 8px 0;
+    transition: height 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    cursor: pointer;
+}
+
+.dragOver {
+    height: 200px;
+    background-color: White-500;
+}
+
+.addIcon {
+    color: Grey-900;
+    margin: auto;
+}

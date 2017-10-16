@@ -17,17 +17,13 @@ export function doTransition(el): void {
     })
 }
 
-export function getFunctionalUIComponent(name, props) {
+export function getFunctionalUIComponent(name, hasInputEvent = true) {
     return {
         functional: true,
-        props,
-        render(h) {
-            return h(name, {
-                props: Object.keys(props).reduce((obj, key: string) => obj[key] = this[key], {}),
-                on: {
-                    input() { this.$emit('input', value) }
-                }
-            })
+        render(h, { listeners, props, children, data }) {
+            data = { ...data, props }
+            if (hasInputEvent) data.on = { input: listeners['input'] }
+            return h(name, data, children)
         }
 
     }
@@ -35,6 +31,11 @@ export function getFunctionalUIComponent(name, props) {
 
 export const logger = console
 
-export function stateToGetters (state) {
-    return Object.keys(state).reduce((obj, cur) => obj[cur] = (state) => state[cur], {})q1``
+export const stateToGetters = state => {
+    return Object.keys(state).reduce((obj, cur) => {
+        obj[cur] = state => state[cur]
+        return obj
+    }, {})
 }
+
+export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, "")

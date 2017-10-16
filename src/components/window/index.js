@@ -6,15 +6,14 @@ import Draggable from '@/ui/draggable'
 export default {
     name: 'window',
     props: {
-        title: String,
-        color: {
-            type: String,
-            default: '#fff'
+        window: {
+            type: Object,
+            required: true
         }
     },
     methods: {
         handleTouchStart(): void {
-            this.$emit('startDraggingWindow', this.title)
+            this.$emit('startDraggingWindow', this.window.title)
         },
         handleTouchMove(deltaX: number): void {
             this.$emit('draggingWindow', deltaX)
@@ -25,8 +24,7 @@ export default {
     },
     render() {
         const {
-            title,
-            color,
+            window: { title, color },
             handleTouchStart,
             handleTouchMove,
             handleTouchEnd

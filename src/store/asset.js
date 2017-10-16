@@ -1,9 +1,10 @@
 // @flow
 import Vue from 'vue'
 import { stateToGetters } from '../common/util'
-import { readFile } from '../common/file-manager'
+import AssetManager from '../common/asset-manager'
+import { trimFilenameExtension } from '../common/util'
 
-import { Script } from '../common/type'
+import { Script } from '../common/types'
 
 const ADD_SCRIPT = 'ADD_SCRIPT'
 
@@ -12,6 +13,8 @@ const state = {
 }
 
 export default {
+    namespaced: true,
+    state,
     getters: stateToGetters(state),
     mutations: {
         [ADD_SCRIPT](state, { gameObjectID, script }: { gameObjectID: string, script: Script }) {
@@ -19,12 +22,15 @@ export default {
         }
     },
     actions: {
-        readScriptFromFile({ commit }, { gameObjectID, filename }) {
-            readFile(filename).then(content =>
-                commit(ADD_SCRIPT, { gameObjectID, script: {
-                    name: filename,
-                    func: new Function(content)
-                } }))
-        }
+        readScriptFromFile: ({ commit }, { gameObjectID, file }: { gameObjectID: string, file: any }) =>
+            AssetManager.readFile(file).then((content: string) =>
+                commit(ADD_SCRIPT, {
+                    gameObjectID, script: {
+                        name: trimFilenameExtension(file.name),
+                        Behavior: new Function(content)
+                    }
+                })
+            )
+
     }
 }

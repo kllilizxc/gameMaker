@@ -1,0 +1,13 @@
+.numberInput {
+    display: flex;
+}
+
+.textField {
+    flex: 1;
+    margin-right: 16px;
+}
+
+.slider {
+    flex: 4;
+    margin-top: 32px;
+}

@@ -26,6 +26,9 @@ function sizeToPX(size = 1) {
 
 export default {
     name: 'desktop-manager',
+    props: {
+        windowLabels: Array
+    },
     data: () => ({
         desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
         currentDesktopIndex: 0,
@@ -34,14 +37,7 @@ export default {
         lastWindowWidth: 0,
         currentWindowWidth: 0,
         currentWindow: null,
-        isNewWindow: false,
-        windowLabels: [
-            { icon: 'dashboard', title: 'dashboard', color: '#EF9A9A' },
-            { icon: 'face', title: 'face', color: '#9FA8DA' },
-            { icon: 'favorite', title: 'favorite', color: '#80DEEA' },
-            { icon: 'delete', title: 'delete', color: '#80CBC4' },
-            { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
-        ]
+        isNewWindow: false
     }),
     watch: {
         currentDesktopIndex(index: number): void {
@@ -65,7 +61,7 @@ export default {
             this.desktops.push(desktop)
             this.$el.style.width = `${this.desktops.length * 100}vw`
             const offset = this.desktops.length - this.currentDesktopIndex
-            for (let i = 0; i < offset; ++i) 
+            for (let i = 0; i < offset; ++i)
                 this.gotoNextDesktop()
         },
         createDesktopIfShould(): DesktopType {
@@ -151,8 +147,8 @@ export default {
             if (!size) {
                 this.translateCurrentWindow(0, () => {
                     if (!this.isNewWindow) { // restore label
-                        const { icon, title, color } = this.currentWindow
-                        this.windowLabels.push({ icon, title, color })
+                        const { icon, title, color, content } = this.currentWindow
+                        this.windowLabels.push({ icon, title, color, content })
                     }
                     const emptyDesktop = this.currentWindowIndex === 0
                     this.removeCurrentWindow()
@@ -212,7 +208,9 @@ export default {
             return this.desktops[this.currentDesktopIndex]
         },
         currentWindowRef(): any {
-            return this.$refs.windows.find(({ title }) => title === this.currentWindow.title)
+            let currentWindowRef = this.$refs.windows.find(({ window: { title } }) => title === this.currentWindow.title)
+            console.assert(currentWindowRef)
+            return currentWindowRef
         }
     },
     render() {
@@ -237,9 +235,8 @@ export default {
                 {desktop.windows && desktop.windows.map(window =>
                     <Window ref="windows"
                             refInFor={true}
-                            title={window.title}
+                            window={window}
                             key={window.title}
-                            color={window.color}
                             onStartDraggingWindow={handleMovingExistingWindow}
                             onDraggingWindow={handleMovingWindow}
                             onDraggingWindowEnd={handleReleaseWindow}
@@ -251,9 +248,7 @@ export default {
                     width: `${sizeToPX(windowHintSize)}px`
                 }}/>}
                 <div class={styles.windowLabelList}>
-                    {windowLabels.map(label => <WindowLabel icon={label.icon}
-                                                            title={label.title}
-                                                            color={label.color}
+                    {windowLabels.map(label => <WindowLabel label={label}
                                                             key={label.title}
                                                             onNewWindow={handleMovingNewWindow}
                                                             onMovingWindow={handleMovingWindow}
