@@ -1,13 +1,13 @@
 .numberInput {
     display: flex;
+    max-width: 800px;
 }
 
 .textField {
-    flex: 1;
+    max-width: 60px;
     margin-right: 16px;
 }
 
 .slider {
-    flex: 4;
     margin-top: 32px;
 }
