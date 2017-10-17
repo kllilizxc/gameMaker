@@ -4,6 +4,7 @@ export default class AssetManager {
         let reader = new FileReader()
         reader.onload = e => resolve(e.target.result)
         reader.readAsText(file)
+        console.log(file)
     })
     static readFileSync = async file => await this.readFile(file)
 }
