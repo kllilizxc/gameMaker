@@ -1,0 +1,25 @@
+@value Blue-400, White-Text from '@/common/colors.css';
+
+.treeItem {
+    display: flex;
+    line-height: 24px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.treeItem span {
+    padding: 2px;
+}
+
+.chosen {
+    color: Blue-400;
+    font-weight: bold;
+}
+
+.arrowIcon {
+    transition: transform 0.3s ease;
+}
+
+.unFold {
+    transform: rotateZ(180deg);
+}

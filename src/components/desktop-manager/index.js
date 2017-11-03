@@ -208,7 +208,7 @@ export default {
             return this.desktops[this.currentDesktopIndex]
         },
         currentWindowRef(): any {
-            let currentWindowRef = this.$refs.windows.find(({ window: { title } }) => title === this.currentWindow.title)
+            const currentWindowRef = this.$refs.windows.find(({ window: { title } }) => title === this.currentWindow.title)
             console.assert(currentWindowRef)
             return currentWindowRef
         }
