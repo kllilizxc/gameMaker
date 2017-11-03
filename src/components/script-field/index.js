@@ -35,7 +35,7 @@ export default {
                 on: {
                     input: value => {
                         this.field.set(value)
-                        let newVal = this.field.get()
+                        const newVal = this.field.get()
                         this.$emit('input', newVal)
                     }
                 }
@@ -43,20 +43,20 @@ export default {
             return h(component, data, children)
         },
         renderNumberInput(h: any): any {
-            let { options } = this.field
+            const { options } = this.field
             return this.createScriptElement(h, NumberInput, options)
         },
         renderTextField(h: any): any {
-            let { options } = this.field
+            const { options } = this.field
             options.hintText = options.hintText || 'Please input a string'
             return this.createScriptElement(h, TextField, options)
         },
         renderSwitch(h: any): any {
-            let { options } = this.field
+            const { options } = this.field
             return this.createScriptElement(h, Switch, options)
         },
         renderPicker(h: any): any {
-            let { options } = this.field
+            const { options } = this.field
             return this.createScriptElement(h, SelectField, options,
                 options.options.map(option => <MenuItem title={option} value={option}/>))
         },

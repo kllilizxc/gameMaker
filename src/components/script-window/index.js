@@ -33,7 +33,7 @@ export default {
         pickFile() {
             fileDialog({ multiple: true, accept: '.js' })
                 .then(fileList => {
-                    for (let file of fileList)
+                    for (const file of fileList)
                         this.addScript(file)
                 })
         }
