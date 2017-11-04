@@ -5,6 +5,7 @@
     <title>electron-vue-template</title>
     <% if (htmlWebpackPlugin.options.nodeModules) { %>
       <!-- Add `node_modules/` to global paths so `require` works properly in development -->
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
       <script>
         require('module').globalPaths.push('<%= htmlWebpackPlugin.options.nodeModules.replace(/\\/g, '\\\\') %>')
       </script>

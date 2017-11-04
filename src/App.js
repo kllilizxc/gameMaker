@@ -21,7 +21,7 @@ export default {
     render() {
         const { windowLabels } = this
 
-        return <div id="app">
+        return <div id="app" class={styles.app}>
             <DesktopManager ref="desktopManager" windowLabels={windowLabels}/>
         </div>
     }
