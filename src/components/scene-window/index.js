@@ -18,13 +18,15 @@ export default {
     },
     render () {
         const {
+            gameObjects,
             handleInput
         } = this
 
         return <div class={styles.sceneWindow}>
-            <TreeView data={this.gameObjects}
+            <TreeView data={gameObjects}
                       getNameFunction={obj => obj.name}
-                      getChildrenFunction={obj => obj.children}
+                      getChildrenFunction={obj => Promise.resolve(obj.children)}
+                      haveChildrenFunction={obj => Promise.resolve(obj.children && obj.children.length > 0)}
                       onInput={handleInput}/>
         </div>
     }

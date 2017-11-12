@@ -4,11 +4,15 @@ import { stateToGetters } from '../common/util'
 import AssetManager from '../common/asset-manager'
 import { trimFilenameExtension } from '../common/util'
 
-import { Script } from '../common/types'
+import type { Script } from '../common/types'
 
 const ADD_SCRIPT = 'ADD_SCRIPT'
 
-const state = {
+type State = {
+    scripts: any
+}
+
+const state: State = {
     scripts: {}
 }
 
@@ -17,12 +21,12 @@ export default {
     state,
     getters: stateToGetters(state),
     mutations: {
-        [ADD_SCRIPT](state, { gameObjectID, script }: { gameObjectID: string, script: Script }) {
+        [ADD_SCRIPT](state: State, { gameObjectID, script }: { gameObjectID: string, script: Script }) {
             Vue.set(state.scripts, gameObjectID, script)
         }
     },
     actions: {
-        readScriptFromFile: ({ commit }, { gameObjectID, file }: { gameObjectID: string, file: any }) =>
+        readScriptFromFile: ({ commit }: any, { gameObjectID, file }: { gameObjectID: string, file: any }) =>
             AssetManager.readFile(file).then((content: string) =>
                 commit(ADD_SCRIPT, {
                     gameObjectID, script: {
