@@ -33,14 +33,14 @@ export default {
         return <div class={styles.window}>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>
-                <Draggable class={styles.draggable}
-                           touchStart={handleTouchStart}
-                           touchMove={handleTouchMove}
-                           touchEnd={handleTouchEnd}
-                           dragMin={-window.innerWidth}
-                           dragLimit={window.innerWidth}>
+                {title && <Draggable class={styles.draggable}
+                                     touchStart={handleTouchStart}
+                                     touchMove={handleTouchMove}
+                                     touchEnd={handleTouchEnd}
+                                     dragMin={-window.innerWidth}
+                                     dragLimit={window.innerWidth}>
                     <div class={styles.title}>{title}</div>
-                </Draggable>
+                </Draggable>}
                 {this.$slots.default}
             </Card>
         </div>

@@ -3,6 +3,7 @@ import DesktopManager from '@/components/desktop-manager'
 import ScriptWindow from '@/components/script-window'
 import SceneWindow from '@/components/scene-window'
 import ExplorerWindow from '@/components/explorer-window'
+import CanvasWindow from '@/components/canvas-window'
 
 import COLORS from '@/common/colors.css'
 
@@ -17,13 +18,16 @@ export default {
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
                 { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
             ]
+        },
+        defaultWindow() {
+            return { color: '#fff', size: 4, content: <CanvasWindow/> }
         }
     },
     render() {
-        const { windowLabels } = this
+        const { windowLabels, defaultWindow } = this
 
         return <div id="app" class={styles.app}>
-            <DesktopManager ref="desktopManager" windowLabels={windowLabels}/>
+            <DesktopManager ref="desktopManager" windowLabels={windowLabels} defaultWindow={defaultWindow}/>
         </div>
     }
 }

@@ -27,18 +27,24 @@ function sizeToPX(size = 1) {
 export default {
     name: 'desktop-manager',
     props: {
-        windowLabels: Array
+        windowLabels: Array,
+        defaultWindow: {
+            type: Object,
+            required: true
+        }
     },
-    data: () => ({
-        desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
-        currentDesktopIndex: 0,
-        currentWindowIndex: 0,
-        windowHintSize: 0,
-        lastWindowWidth: 0,
-        currentWindowWidth: 0,
-        currentWindow: null,
-        isNewWindow: false
-    }),
+    data() {
+        return {
+            desktops: [{ windows: [ this.defaultWindow ] }],
+            currentDesktopIndex: 0,
+            currentWindowIndex: 0,
+            windowHintSize: 0,
+            lastWindowWidth: 0,
+            currentWindowWidth: 0,
+            currentWindow: null,
+            isNewWindow: false
+        }
+    },
     watch: {
         currentDesktopIndex(index: number): void {
             if (this.$el && this.$el.style)
