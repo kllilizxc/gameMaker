@@ -1,18 +1,25 @@
-var path = require('path')
+const path = require('path')
 
 function resolve (dir) {
-    return path.join(__dirname, '..', dir)
+    return path.join(__dirname, dir)
 }
 
 module.exports = {
+    entry: {
+        app: './src/main.js'
+    },
+    output: {
+        path: path.resolve(__dirname, './dist'),
+        filename: '[name].js'
+    },
     resolve: {
         extensions: ['.vue', '.js', '.svg', '.css', '.less', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             '@': resolve('src'),
-            Components: path.resolve(__dirname, '../src/components/'),
-            Ui: path.resolve(__dirname, '../src/ui/'),
-            Common: path.resolve(__dirname, '../src/ui/')
+            Components: path.resolve(__dirname, 'src/components/'),
+            Ui: path.resolve(__dirname, 'src/ui/'),
+            Common: path.resolve(__dirname, 'src/ui/')
         },
         symlinks: false
     },
@@ -44,7 +51,7 @@ module.exports = {
             },
             {
                 test: /\.ts(x?)$/,
-                loader: 'babel-loader!ts-loader',
+                loader: 'babel-loader!ts-loader'
             },
             {
                 test: /\.css$/,
@@ -79,13 +86,11 @@ module.exports = {
                 loader: 'svg-sprite-loader'
             },
             {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-                use: {
-                    loader: 'url-loader',
-                    query: {
-                        limit: 10000,
-                        name: 'imgs/[name]--[folder].[ext]'
-                    }
+                test: /\.(png|jpe?g|gif)(\?.*)?$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'static/img/[name].[hash:7].[ext]'
                 }
             },
             {
@@ -93,17 +98,15 @@ module.exports = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    name: 'media/[name]--[folder].[ext]'
+                    name: 'static/media/[name].[hash:7].[ext]'
                 }
             },
             {
                 test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                use: {
-                    loader: 'url-loader',
-                    query: {
-                        limit: 10000,
-                        name: 'fonts/[name]--[folder].[ext]'
-                    }
+                loader: 'url-loader',
+                options: {
+                    limit: 10000,
+                    name: 'static/fonts/[name].[hash:7].[ext]'
                 }
             }
         ]
