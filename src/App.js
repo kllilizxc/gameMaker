@@ -6,9 +6,15 @@ import ExplorerWindow from '@/components/explorer-window'
 import CanvasWindow from '@/components/canvas-window'
 
 import COLORS from '@/common/colors.css'
+import THREELib from 'three-js'
+
+const THREE = THREELib()
 
 export default {
     name: 'app',
+    data: () => ({
+        scene: null
+    }),
     computed: {
         windowLabels() {
             return [
@@ -20,8 +26,14 @@ export default {
             ]
         },
         defaultWindow() {
-            return { color: '#fff', size: 4, content: <CanvasWindow/> }
+            return { color: '#fff', size: 4, content: <CanvasWindow scene={this.scene}/> }
         }
+    },
+    created() {
+        new THREE.ObjectLoader().load('static/scenes/scene-animation.json', loadedScene => {
+            this.scene = loadedScene
+            console.log(this.scene)
+        })
     },
     render() {
         const { windowLabels, defaultWindow } = this

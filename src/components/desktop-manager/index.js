@@ -6,6 +6,7 @@ import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
 import WindowLabel from '@/components/window-label'
 import { afterTransition } from '../../common/util'
+import Vue from 'vue'
 
 type WindowType = {
     title: string,
@@ -35,7 +36,7 @@ export default {
     },
     data() {
         return {
-            desktops: [{ windows: [ this.defaultWindow ] }],
+            desktops: [{ windows: [this.defaultWindow] }],
             currentDesktopIndex: 0,
             currentWindowIndex: 0,
             windowHintSize: 0,
@@ -52,6 +53,9 @@ export default {
         },
         currentWindowWidth(val) {
             this.currentWindowRef.$el.style.width = val + 'px'
+        },
+        defaultWindow(val) {
+            Vue.set(this.desktops[0].windows, '0', val)
         }
     },
     methods: {
@@ -237,7 +241,7 @@ export default {
         } = this
 
         return <div class={styles.desktopManager}>
-            {desktops && desktops.map((desktop, index) => <Desktop>
+            {desktops && desktops.map((desktop) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window ref="windows"
                             refInFor={true}

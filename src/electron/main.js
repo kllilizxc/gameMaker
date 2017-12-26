@@ -6,7 +6,6 @@ const winURL = process.env.NODE_ENV === 'production'
     ? path.join(`file://${__dirname}`, '../web/index.html')
     : 'http://localhost:9080'
 
-console.log(winURL)
 function createWindow () {
     /**
      * Initial window options
