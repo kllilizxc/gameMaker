@@ -15,6 +15,10 @@ export default {
         isLocked: {
             type: Boolean,
             default: false
+        },
+        clickFunction: {
+            type: Function,
+            default: e => null
         }
     },
     data: () => ({
@@ -70,12 +74,14 @@ export default {
         const {
             isLocked,
             handleMouseEnter,
-            handleMouseLeave
+            handleMouseLeave,
+            clickFunction
         } = this
 
         return <div onMouseenter={handleMouseEnter}
                     onTouchstart={handleMouseEnter}
                     onMouseleave={handleMouseLeave}
+                    onClick={clickFunction}
                     onTouchend={handleMouseLeave}>
             <div ref="toHide" style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
                 {this.$slots.default}

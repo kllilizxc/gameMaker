@@ -22,7 +22,10 @@ export default {
     },
     watch: {
         gameObject: {
-            handler(val) { this.scripts = val.scripts },
+            handler(val) {
+                this.scripts = val.scripts
+                console.log(val)
+            },
             immediate: true
         }
     },
@@ -59,6 +62,8 @@ export default {
             isDragOver,
             pickFile
         } = this
+
+        console.log(gameObject)
 
         return <div class={styles.scriptWindow}>
             {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}

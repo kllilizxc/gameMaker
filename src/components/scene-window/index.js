@@ -10,7 +10,7 @@ export default {
     }),
     methods: {
         handleInput (obj) {
-            console.log(obj.name)
+            this.$emit('input', obj.raw)
         }
     },
     render () {

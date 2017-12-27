@@ -19,12 +19,18 @@ export default {
         currentGameObject: null,
         gameObjects: []
     }),
+    methods: {
+        chooseGameObject(obj) {
+            this.currentGameObject = obj
+            console.log(this.currentGameObject)
+        }
+    },
     computed: {
         windowLabels() {
-            const { scene } = this
+            const { sceneGameObject, chooseGameObject, currentGameObject } = this
             return [
-                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={this.currentGameObject}/> },
-                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={scene}/> },
+                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={currentGameObject}/> },
+                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
                 { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }

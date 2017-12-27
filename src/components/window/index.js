@@ -20,6 +20,9 @@ export default {
         },
         handleTouchEnd(deltaX: number): void {
             this.$emit('draggingWindowEnd', deltaX)
+        },
+        immediateReleaseWindow() {
+            this.handleTouchEnd(0)
         }
     },
     render() {
@@ -27,7 +30,8 @@ export default {
             window: { title, color },
             handleTouchStart,
             handleTouchMove,
-            handleTouchEnd
+            handleTouchEnd,
+            immediateReleaseWindow
         } = this
 
         return <div class={styles.window}>
@@ -37,6 +41,7 @@ export default {
                                      touchStart={handleTouchStart}
                                      touchMove={handleTouchMove}
                                      touchEnd={handleTouchEnd}
+                                     clickFunction={immediateReleaseWindow}
                                      dragMin={-window.innerWidth}
                                      dragLimit={window.innerWidth}>
                     <div class={styles.title}>{title}</div>
