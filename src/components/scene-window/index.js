@@ -3,13 +3,10 @@ import TreeView from '../tree-view'
 
 export default {
     name: 'scene-window',
+    props: {
+        scene: Object
+    },
     data: () => ({
-        gameObjects: [
-            { name: 'Cube' },
-            { name: 'Sphere' },
-            { name: 'Cube2', children: [{ name: 'hello' }, { name: 'what' }] },
-            { name: 'Cube3', children: [{ name: 'hello2', children: [{ name: 'test3' }] }, { name: 'what' }] }
-        ]
     }),
     methods: {
         handleInput (obj) {
@@ -18,16 +15,16 @@ export default {
     },
     render () {
         const {
-            gameObjects,
-            handleInput
+            handleInput,
+            scene
         } = this
 
         return <div class={styles.sceneWindow}>
-            <TreeView data={gameObjects}
+            {scene && scene.children && <TreeView data={scene.children}
                       getNameFunction={obj => obj.name}
                       getChildrenFunction={obj => Promise.resolve(obj.children)}
                       haveChildrenFunction={obj => Promise.resolve(obj.children && obj.children.length > 0)}
-                      onInput={handleInput}/>
+                      onInput={handleInput}/>}
         </div>
     }
 }

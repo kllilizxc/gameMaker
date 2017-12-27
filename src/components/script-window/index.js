@@ -1,24 +1,36 @@
 // @flow
-import { mapGetters } from 'vuex'
 import Script from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
 import Icon from '@/ui/icon'
 import fileDialog from 'file-dialog'
+import { trimFilenameExtension } from '../../common/util'
+import AssetManager from '../../common/asset-manager'
 
 export default {
     name: 'script-window',
+    props: {
+        initScripts: Array
+    },
     data() {
         return {
-            isDragOver: false
+            isDragOver: false,
+            scripts: []
         }
     },
-    computed: {
-        ...mapGetters('asset', ['scripts'])
+    watch: {
+        initScripts: {
+            handler(val) { this.scripts = val },
+            immediate: true
+        }
     },
     methods: {
         addScript(file) {
-            this.$store.dispatch('asset/readScriptFromFile', { gameObjectID: 0, file })
+            AssetManager.readFile(file).then((content: string) =>
+                this.scripts.push({
+                    name: trimFilenameExtension(file.name),
+                    Behavior: new Function(content)
+                }))
         },
         dropHandler(file) {
             this.addScript(file)
@@ -49,7 +61,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {Object.keys(scripts).map(key => <Script script={scripts[key]}/>)}
+            {scripts && scripts.map(script => <Script script={script}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

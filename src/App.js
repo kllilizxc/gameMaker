@@ -17,9 +17,10 @@ export default {
     }),
     computed: {
         windowLabels() {
+            const { scene } = this
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
-                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow/> },
+                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={scene}/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
                 { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
@@ -32,6 +33,7 @@ export default {
     created() {
         new THREE.ObjectLoader().load('static/scenes/scene-animation.json', loadedScene => {
             this.scene = loadedScene
+            window.scene = this.scene
             console.log(this.scene)
         })
     },
