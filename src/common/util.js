@@ -1,4 +1,6 @@
 // @flow
+import AssetManager from './asset-manager'
+
 export function afterTransition(el, callback: () => void): void {
     const handler: () => void = () => {
         callback()
@@ -38,4 +40,12 @@ export const stateToGetters = state => {
     }, {})
 }
 
-export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, "")
+export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, '')
+
+export const readScriptFromFile = file =>
+    AssetManager.readFile(file).then((content: string) =>
+        Promise.resolve({
+            name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
+            Behavior: new Function('gameObject', content)
+        })
+    )

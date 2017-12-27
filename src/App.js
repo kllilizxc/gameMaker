@@ -7,19 +7,23 @@ import CanvasWindow from '@/components/canvas-window'
 
 import COLORS from '@/common/colors.css'
 import THREELib from 'three-js'
+import { GameObject } from './classes/GameObject'
 
 const THREE = THREELib()
 
 export default {
     name: 'app',
     data: () => ({
-        scene: null
+        scene: null,
+        sceneGameObject: null,
+        currentGameObject: null,
+        gameObjects: []
     }),
     computed: {
         windowLabels() {
             const { scene } = this
             return [
-                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
+                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={this.currentGameObject}/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={scene}/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
@@ -34,7 +38,9 @@ export default {
         new THREE.ObjectLoader().load('static/scenes/scene-animation.json', loadedScene => {
             this.scene = loadedScene
             window.scene = this.scene
-            console.log(this.scene)
+            this.sceneGameObject = new GameObject(this.scene)
+            this.currentGameObject = this.sceneGameObject.children[0]
+            console.log(this.scene, this.sceneGameObject)
         })
     },
     render() {

@@ -4,13 +4,15 @@ import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
 import Icon from '@/ui/icon'
 import fileDialog from 'file-dialog'
-import { trimFilenameExtension } from '../../common/util'
-import AssetManager from '../../common/asset-manager'
+import { readScriptFromFile } from '../../common/util'
 
 export default {
     name: 'script-window',
     props: {
-        initScripts: Array
+        gameObject: {
+            type: Object,
+            required: true
+        }
     },
     data() {
         return {
@@ -19,18 +21,15 @@ export default {
         }
     },
     watch: {
-        initScripts: {
-            handler(val) { this.scripts = val },
+        gameObject: {
+            handler(val) { this.scripts = val.scripts },
             immediate: true
         }
     },
     methods: {
         addScript(file) {
-            AssetManager.readFile(file).then((content: string) =>
-                this.scripts.push({
-                    name: trimFilenameExtension(file.name),
-                    Behavior: new Function(content)
-                }))
+            readScriptFromFile(file).then(script => this.scripts.push(script))
+            // TODO change back to gameObject
         },
         dropHandler(file) {
             this.addScript(file)
@@ -52,6 +51,7 @@ export default {
     },
     render() {
         const {
+            gameObject,
             scripts,
             dropHandler,
             dragOverHandler,
@@ -61,7 +61,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts && scripts.map(script => <Script script={script}/>)}
+            {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

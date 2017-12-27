@@ -4,8 +4,8 @@ import Card from '@/ui/card'
 
 export default {
     functional: true,
-    render (h, { props: { script: { name, Behavior } } }) {
-        const behavior = new Behavior()
+    render (h, { props: { gameObject, script: { name, Behavior } } }) {
+        const behavior = new Behavior(gameObject)
         const { fields, update } = behavior
 
         return <Card class={styles.scriptCard}>

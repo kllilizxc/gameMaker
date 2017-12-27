@@ -9,11 +9,13 @@ function getFunctionFromFs(func) {
 }
 
 export default class AssetManager {
-    static readFile = file => new Promise(resolve => {
-        let reader = new FileReader()
-        reader.onload = e => resolve(e.target.result)
-        reader.readAsText(file)
-    })
+    static readFile = file => typeof file === 'string'
+        ? fetch(file).then(response => Promise.resolve(response.text()))
+        : new Promise(resolve => {
+            const reader = new FileReader()
+            reader.onload = e => resolve(e.target.result)
+            reader.readAsText(file)
+        })
 
     static readFileSync = async file => await this.readFile(file)
 

@@ -19,7 +19,8 @@ module.exports = {
             '@': resolve('src'),
             Components: path.resolve(__dirname, 'src/components/'),
             Ui: path.resolve(__dirname, 'src/ui/'),
-            Common: path.resolve(__dirname, 'src/ui/')
+            Common: path.resolve(__dirname, 'src/ui/'),
+            Scripts: path.resolve(__dirname, 'static/scripts')
         },
         symlinks: false
     },
