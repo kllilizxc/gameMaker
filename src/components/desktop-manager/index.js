@@ -1,4 +1,5 @@
 // @flow
+// @jsx h
 import styles from './style.css'
 import Desktop from '@/components/desktop'
 import Window from '@/components/window'
@@ -223,7 +224,7 @@ export default {
             return currentWindowRef
         }
     },
-    render() {
+    render(h) {
         const {
             desktops,
             windowLabels,
