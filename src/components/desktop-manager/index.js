@@ -1,4 +1,5 @@
 // @flow
+// @jsx h
 import styles from './style.css'
 import Desktop from '@/components/desktop'
 import Window from '@/components/window'
@@ -6,18 +7,8 @@ import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
 import WindowLabel from '@/components/window-label'
 import { afterTransition } from '../../common/util'
+import type { DesktopType, WindowType } from '@/common/types'
 import Vue from 'vue'
-
-type WindowType = {
-    title: string,
-    content: any,
-    size: number,
-    isMoving: boolean
-}
-
-type DesktopType = {
-    windows: WindowType[]
-}
 
 export const MAX_SIZE: number = 4
 
@@ -28,7 +19,7 @@ function sizeToPX(size = 1) {
 export default {
     name: 'desktop-manager',
     props: {
-        windowLabels: Array,
+        windows: Array,
         defaultWindow: {
             type: Object,
             required: true
@@ -36,14 +27,14 @@ export default {
     },
     data() {
         return {
-            desktops: [{ windows: [this.defaultWindow] }],
             currentDesktopIndex: 0,
             currentWindowIndex: 0,
             windowHintSize: 0,
             lastWindowWidth: 0,
             currentWindowWidth: 0,
             currentWindow: null,
-            isNewWindow: false
+            isNewWindow: false,
+            movingWindow: null
         }
     },
     watch: {
@@ -51,10 +42,10 @@ export default {
             if (this.$el && this.$el.style)
                 this.$el.style.transform = `translateX(${-100 * index}vw)`
         },
-        currentWindowWidth(val) {
+        currentWindowWidth(val: number) {
             this.currentWindowRef.$el.style.width = val + 'px'
         },
-        defaultWindow(val) {
+        defaultWindow(val: WindowType) {
             Vue.set(this.desktops[0].windows, '0', val)
         }
     },
@@ -158,7 +149,7 @@ export default {
                 this.translateCurrentWindow(0, () => {
                     if (!this.isNewWindow) { // restore label
                         const { icon, title, color, content } = this.currentWindow
-                        this.windowLabels.push({ icon, title, color, content })
+                        this.windows.push({ icon, title, color, content })
                     }
                     const emptyDesktop = this.currentWindowIndex === 0
                     this.removeCurrentWindow()
@@ -178,7 +169,7 @@ export default {
             }
 
             if (this.isNewWindow) // remove label
-                this.windowLabels.splice(this.windowLabels.findIndex(label => label.title === this.currentWindow.title), 1)
+                this.windows.splice(this.windows.findIndex(label => label.title === this.currentWindow.title), 1)
 
             if (windows.length === 0 || windows.length - 1 + size > MAX_SIZE) {
                 // create a new window
@@ -208,6 +199,16 @@ export default {
         }
     },
     computed: {
+        desktops() {
+            const { defaultWindow, windows } = this
+            const desktops = [{ windows: [defaultWindow] }]
+            desktops.concat(windows.filter(window => !window.isFolded))
+            return desktops
+        },
+        windowLabels() {
+            const { windows } = this
+            return windows.filter(window => window.isFolded)
+        },
         isFirstDesktop(): boolean {
             return this.currentDesktopIndex === 0
         },
@@ -223,10 +224,10 @@ export default {
             return currentWindowRef
         }
     },
-    render() {
+    render(h: any) {
         const {
             desktops,
-            windowLabels,
+            windows,
             currentDesktopIndex,
             currentWindow,
             handleMovingNewWindow,
@@ -244,13 +245,14 @@ export default {
             {desktops && desktops.map((desktop) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window ref="windows"
-                            refInFor={true}
-                            window={window}
-                            key={window.title}
-                            onStartDraggingWindow={handleMovingExistingWindow}
-                            onDraggingWindow={handleMovingWindow}
-                            onDraggingWindowEnd={handleReleaseWindow}
-                            style={!window.isMoving && { flex: window.size }}>{window.content}</Window>)}
+                                   refInFor={true}
+                                   window={window}
+                                   key={window.title}
+                                   onStartDraggingWindow={handleMovingExistingWindow}
+                                   onDraggingWindow={handleMovingWindow}
+                                   onDraggingWindowEnd={handleReleaseWindow}
+                                   style={!window.isMoving && { flex: window.size }}>{window.content}</Window>
+                )}
             </Desktop>)}
             <div class={styles.fixedUI} style={{ transform: `translateX(${currentDesktopIndex * 100}vw)` }}>
                 {<div class={styles.windowHint} ref="windowHint" style={{
@@ -258,11 +260,11 @@ export default {
                     width: `${sizeToPX(windowHintSize)}px`
                 }}/>}
                 <div class={styles.windowLabelList}>
-                    {windowLabels.map(label => <WindowLabel label={label}
-                                                            key={label.title}
-                                                            onNewWindow={handleMovingNewWindow}
-                                                            onMovingWindow={handleMovingWindow}
-                                                            onMovingWindowEnd={handleReleaseWindow}/>)}
+                    {windows.map(label => <WindowLabel label={label}
+                                                       key={label.title}
+                                                       onNewWindow={handleMovingNewWindow}
+                                                       onMovingWindow={handleMovingWindow}
+                                                       onMovingWindowEnd={handleReleaseWindow}/>)}
                 </div>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
                     <FloatButton mini

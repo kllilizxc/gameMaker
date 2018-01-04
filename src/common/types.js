@@ -22,3 +22,16 @@ export type GameObject = {
     type: string,
     raw: any
 }
+
+export type WindowType = {
+    title: string,
+    content: any,
+    icon: string,
+    color: 'string',
+    size: number,
+    isFolded: boolean
+}
+
+export type DesktopType = {
+    windows: WindowType[]
+}

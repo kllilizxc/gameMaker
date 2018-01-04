@@ -28,6 +28,7 @@ export default {
     computed: {
         windowLabels() {
             const { sceneGameObject, chooseGameObject, currentGameObject } = this
+            console.log('windowLabels', currentGameObject)
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={currentGameObject}/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/> },
@@ -53,7 +54,7 @@ export default {
         const { windowLabels, defaultWindow } = this
 
         return <div id="app" class={styles.app}>
-            <DesktopManager ref="desktopManager" windowLabels={windowLabels} defaultWindow={defaultWindow}/>
+            <DesktopManager ref="desktopManager" windows={windowLabels} defaultWindow={defaultWindow}/>
         </div>
     }
 }

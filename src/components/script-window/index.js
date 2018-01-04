@@ -22,9 +22,9 @@ export default {
     },
     watch: {
         gameObject: {
-            handler(val) {
+            handler(val, oldVal) {
                 this.scripts = val.scripts
-                console.log(val)
+                console.log(oldVal, val)
             },
             immediate: true
         }

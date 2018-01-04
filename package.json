@@ -9,7 +9,7 @@
         "dev": "webpack-dev-server --inline --hot --config webpack.config.dev.js",
         "build": "rm -rf dist/* && webpack -p --config webpack.config.prod.js --hide-modules",
         "pack.electron": "cross-env NODE_ENV=production webpack --progress --colors --config webpack.config.main.js",
-        "dev.electron": "cross-env NODE_ENV=development webpack --progress --colors --config webpack.config.main.js && electron dist/electron/main.js",
+        "dev.electron": "cross-env NODE_ENV=development webpack --progress --colors --config webpack.config.main.js && npm run dev | electron dist/electron/main.js",
         "build.electron": "npm run build && npm run pack.electron && electron-builder",
         "build.electron.dir": "npm run build && npm run pack.electron && electron-builder --dir",
         "lint": "eslint --ext .js,.vue src"
