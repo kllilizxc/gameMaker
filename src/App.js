@@ -5,6 +5,7 @@ import SceneWindow from '@/components/scene-window'
 import ExplorerWindow from '@/components/explorer-window'
 import CanvasWindow from '@/components/canvas-window'
 
+import WindowClass from './classes/Window'
 import COLORS from '@/common/colors.css'
 import THREELib from 'three-js'
 import { GameObject } from './classes/GameObject'
@@ -30,15 +31,15 @@ export default {
             const { sceneGameObject, chooseGameObject, currentGameObject } = this
             console.log('windowLabels', currentGameObject)
             return [
-                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={currentGameObject}/> },
-                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/> },
-                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
-                { icon: 'delete', title: 'delete', color: '#80CBC4' },
-                { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
+                new WindowClass('dashboard', 'Inspector', COLORS['Grey-50'], <ScriptWindow gameObject={currentGameObject}/>),
+                new WindowClass('subject', 'Scene', COLORS['Grey-100'], <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/>),
+                new WindowClass('folder', 'Explorer', COLORS['Grey-200'], <ExplorerWindow/>),
+                new WindowClass('delete', 'delete', '#80CBC4'),
+                new WindowClass('polymer', 'polymer', '#E6EE9C')
             ]
         },
         defaultWindow() {
-            return { color: '#fff', size: 4, content: <CanvasWindow scene={this.scene}/> }
+            return new WindowClass('', 'placeHolder', '#fff', <CanvasWindow scene={this.scene}/>, false, 4)
         }
     },
     created() {

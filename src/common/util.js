@@ -1,7 +1,7 @@
 // @flow
 import AssetManager from './asset-manager'
 
-export function afterTransition(el, callback: () => void): void {
+export function afterTransition(el: any, callback: () => void): void {
     const handler: () => void = () => {
         callback()
         el.removeEventListener('transitionend', handler)
@@ -9,7 +9,7 @@ export function afterTransition(el, callback: () => void): void {
     el.addEventListener('transitionend', handler)
 }
 
-export function doTransition(el): void {
+export function doTransition(el: any): Promise<any> {
     return new Promise((resolve, reject) => {
         const handler: () => void = () => {
             resolve()
@@ -19,10 +19,10 @@ export function doTransition(el): void {
     })
 }
 
-export function getFunctionalUIComponent(name, hasInputEvent = true) {
+export function getFunctionalUIComponent(name: string, hasInputEvent: boolean = true) {
     return {
         functional: true,
-        render(h, { listeners, props, children, data }) {
+        render(h: any, { listeners, props, children, data }: any) {
             data = { ...data, props }
             if (hasInputEvent) data.on = { input: listeners['input'] }
             return h(name, data, children)
@@ -33,16 +33,16 @@ export function getFunctionalUIComponent(name, hasInputEvent = true) {
 
 export const logger = console
 
-export const stateToGetters = state => {
+export const stateToGetters = (state: any) => {
     return Object.keys(state).reduce((obj, cur) => {
         obj[cur] = state => state[cur]
         return obj
     }, {})
 }
 
-export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, '')
+export const trimFilenameExtension = (filename: string) => filename.replace(/\.[^/.]+$/, '')
 
-export const readScriptFromFile = file =>
+export const readScriptFromFile = (file: any) =>
     AssetManager.readFile(file).then((content: string) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),

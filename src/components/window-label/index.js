@@ -6,7 +6,7 @@ import Icon from 'Ui/icon'
 import Hideable from '@/ui/hideable'
 import Draggable from '@/ui/draggable'
 import { afterTransition } from '../../common/util'
-import { MAX_SIZE } from '../desktop-manager/index.bak'
+import { MAX_SIZE } from '../desktop-manager/index'
 
 export default {
     name: 'window-label',
