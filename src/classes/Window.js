@@ -18,12 +18,8 @@ export default class Window {
         this.size = size
     }
 
-    setRef(ref: any): void {
-        this.ref = ref
-    }
-
-    startMoving(): void {
-        this.isFolded = false
+    startMoving(ref: any): void {
+        if (ref) this.ref = ref
         this.ref.startMoving()
     }
 
@@ -31,12 +27,12 @@ export default class Window {
         this.ref.move(deltaX)
     }
 
-    release(deltaX: number, containerWidth: number, MAX_SIZE: number): Promise<any> {
-        const blockSize = containerWidth / MAX_SIZE
-        this.size = (this.ref.getCurrentWidth(deltaX) / blockSize).toFixed()
+    release(deltaX: number, blockSize: number): Promise<any> {
+        this.size = (deltaX / blockSize).toFixed()
+        console.log('release size', this.size)
         if (!this.size)
             return this.ref.fold().then(() => this.isFolded = true)
         else
-            return this.ref.expand(this.size * blockSize / containerWidth) // percentage
+            return this.ref.expand(this.size) // percentage
     }
 }

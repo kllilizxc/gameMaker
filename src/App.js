@@ -39,7 +39,7 @@ export default {
             ]
         },
         defaultWindow() {
-            return new WindowClass('', 'placeHolder', '#fff', <CanvasWindow scene={this.scene}/>, false, 4)
+            return new WindowClass('', null, '#fff', <CanvasWindow scene={this.scene}/>, false, 4)
         }
     },
     created() {

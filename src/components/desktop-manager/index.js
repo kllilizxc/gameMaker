@@ -6,14 +6,13 @@ import Window from '@/components/window'
 import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
 import WindowLabel from '@/components/window-label'
-import type { DesktopType } from '@/common/types'
 import WindowClass from '../../classes/Window'
 
 export const MAX_SIZE = 4
 export const CONTAINER_SIZE = window.innerWidth
 
 function sizeToPX(size = 1) {
-    return size * CONTAINER_SIZE/ MAX_SIZE
+    return size * CONTAINER_SIZE / MAX_SIZE
 }
 
 function getMaxSizeOfTheRightMostWindow(windows: WindowClass[], rightMostSize: number): number {
@@ -26,6 +25,7 @@ function setWindowsSizeIndesktop(windows: WindowClass[]): void {
     for (let i = windows.length - 1; i >= 0; --i) {
         const rightMostWindow = windows[i]
         const remainWindows = windows.splice(0, i)
+        console.log(rightMostWindow, remainWindows)
         rightMostWindow.size = getMaxSizeOfTheRightMostWindow(remainWindows, rightMostWindow.size)
     }
 }
@@ -43,13 +43,10 @@ export default {
         movingWindow: null,
         currentViewDesktopIndex: 0,
         windowHintSize: 0,
-        shouldUpdateDesktops: false
+        desktops: []
     }),
     watch: {},
     methods: {
-        updateDesktops() {
-            this.shouldUpdateDesktops = !this.shouldUpdateDesktops
-        },
         gotoLastDesktop(): void {
             if (!this.isViewingFirstDesktop)
                 --this.currentViewDesktopIndex
@@ -59,23 +56,30 @@ export default {
                 ++this.currentViewDesktopIndex
         },
         handleCreateNewWindow(window: WindowClass): void {
-            this.windows.push(window)
+            console.log('new window')
             this.movingWindow = window
-            this.movingWindow.setRef(this.getWindowRef(window.title))
-            this.movingWindow.startMoving()
+            this.movingWindow.isFolded = false
+            // this.updateDesktops()
+            this.$nextTick(() => {
+                console.log(this.$refs)
+                this.movingWindow.startMoving(this.getWindowRef(window.title))
+            })
         },
         handleMovingExistingWindow(name: string): void {
+            console.log('exist window')
             this.movingWindow = this.windows.find(({ title }) => title === name)
             this.movingWindow.startMoving()
         },
         handleMovingWindow(deltaX: number): void {
+            console.log('move window', deltaX)
             if (!this.movingWindow) return
             this.movingWindow.move(-deltaX)
         },
         handleReleaseWindow(deltaX: number): void {
+            console.log('release window', deltaX)
             if (!this.movingWindow) return
-            this.updateDesktops()
-            // this.movingWindow.release(-deltaX, CONTAINER_SIZE MAX_SIZE)
+            // this.updateDesktops()
+            this.movingWindow.release(-deltaX, CONTAINER_SIZE / MAX_SIZE)
         },
         getWindowRef(name: string): any {
             console.log('getWindowRef', this.$refs, name)
@@ -83,37 +87,6 @@ export default {
         }
     },
     computed: {
-        desktops(): DesktopType[] {
-            console.log('update desktop')
-            const { windows, defaultWindow, shouldUpdateDesktops } = this
-            const unfoldWindows = [defaultWindow].concat(windows.filter(({ isFolded }) => !isFolded))
-            let desktops = []
-            let currentDesktop
-
-            // if window size is MAX_SIZE (4 in this case), then it should be placed in a new window, else put it in the current window
-            for (let i = 0, counter = 0; i < unfoldWindows.length; ++i) {
-                const window = unfoldWindows[i]
-
-                if (i === 0 || window.size === MAX_SIZE || counter >= MAX_SIZE) {
-                    // if should create a new desktop
-                    currentDesktop = { windows: [window] }
-                    desktops.push(currentDesktop)
-                    counter = 0
-                } else {
-                    // else put current window into current desktop
-                    currentDesktop && currentDesktop.windows && currentDesktop.windows.push(window)
-                    counter++
-                }
-            }
-
-            // reset windows' size in desktops
-            desktops = desktops.map(desktop => {
-                setWindowsSizeIndesktop(desktop.windows)
-                return desktop
-            })
-
-            return desktops
-        },
         windowLabels(): WindowClass[] {
             const { windows } = this
             return windows.filter(({ isFolded }) => isFolded)
@@ -128,7 +101,8 @@ export default {
     render(h: any): any {
         const {
             // state
-            desktops,
+            windows,
+            defaultWindow,
             movingWindow,
             windowLabels,
             // methods
@@ -146,6 +120,7 @@ export default {
             windowHintSize
         } = this
 
+        const desktops = updateDesktops(windows, defaultWindow)
         console.log(desktops)
 
         return <div class={styles.desktopManager}>
@@ -191,4 +166,36 @@ function leftButtonHide(style: any): void {
 
 function rightButtonHide(style: any): void {
     style.transform = 'translateX(50px)'
+}
+
+function updateDesktops(windows, defaultWindow) {
+    if (!defaultWindow) return []
+    console.log('update desktop', windows)
+    const unfoldWindows = [defaultWindow].concat((windows || []).filter(({ isFolded }) => !isFolded))
+    let desktops = []
+    let currentDesktop
+
+    // if window size is MAX_SIZE (4 in this case), then it should be placed in a new window, else put it in the current window
+    for (let i = 0, counter = 0; i < unfoldWindows.length; ++i) {
+        const window = unfoldWindows[i]
+
+        if (i === 0 || window.size === MAX_SIZE || counter >= MAX_SIZE) {
+            // if should create a new desktop
+            currentDesktop = { windows: [window] }
+            desktops.push(currentDesktop)
+            counter = 0
+        } else {
+            // else put current window into current desktop
+            currentDesktop && currentDesktop.windows && currentDesktop.windows.push(window)
+            counter++
+        }
+    }
+
+    // reset windows' size in desktops
+    desktops = desktops.map(desktop => {
+        setWindowsSizeIndesktop(desktop.windows)
+        return desktop
+    })
+
+    return desktops
 }

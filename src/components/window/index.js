@@ -1,6 +1,6 @@
 // @flow
 import styles from './style.css'
-import Card from '@/ui/card'
+import Card from '../../ui/card'
 import Draggable from '@/ui/draggable'
 import { doTransition } from '../../common/util'
 import { MAX_SIZE } from '../desktop-manager'
@@ -15,23 +15,29 @@ export default {
     },
     data: () => ({
         lastWidth: 0,
-        width: 0
+        width: 0,
+        isMoving: false
     }),
     methods: {
         handleTouchStart(): void {
             this.$emit('startDraggingWindow', this.window.title)
+            this.isMoving = true
         },
         handleTouchMove(deltaX: number): void {
             this.$emit('draggingWindow', deltaX)
         },
         handleTouchEnd(deltaX: number): void {
+            this.isMoving = false
             this.$emit('draggingWindowEnd', deltaX)
         },
         immediateReleaseWindow() {
             this.handleTouchEnd(0)
         },
         getLastWidth(): number {
-            return this.$refs.window.offsetWidth
+            return this.windowRef.offsetWidth
+        },
+        getCurrentWidth(): number {
+            return this.width
         },
         startMoving(): void {
             this.lastWidth = this.getLastWidth()
@@ -45,10 +51,10 @@ export default {
         expand(actualSize: number): Promise<any> {
             return this.translateWindow(actualSize)
         },
-        translateWindow(widthPercent: number): Promise<any> {
+        translateWindow(size: number): Promise<any> {
             this.windowRef.style.transition = 'width 0.3s ease'
-            this.windowRef.style.width = `${widthPercent * 100}%`
-            return doTransition(this.$refs.window).then(() => {
+            this.windowRef.style.width = `${size / MAX_SIZE * 100}%`
+            return doTransition(this.windowRef).then(() => {
                 this.windowRef.style.transition = ''
             })
         }
@@ -61,25 +67,25 @@ export default {
     computed: {
         windowRef() {
             console.log(this)
-            return this.$refs.window
+            return this.$el
         }
     },
     watch: {
         ['window.size'](val: number) {
-            this.translateWindow(val / MAX_SIZE)
+            this.translateWindow(val)
         }
     },
     render() {
         const {
             window: { title, color, content },
-            width,
+            width, isMoving,
             handleTouchStart,
             handleTouchMove,
             handleTouchEnd,
             immediateReleaseWindow
         } = this
 
-        return <div class={styles.window} ref={window} style={{ width }}>
+        return <div class={styles.window} style={{ width, position: isMoving ? 'absolute' : '' }}>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>
                 {title && <Draggable class={styles.draggable}

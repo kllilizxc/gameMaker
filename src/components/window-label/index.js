@@ -1,10 +1,10 @@
 // @flow
 import styles from './style.css'
-import Card from 'Ui/card'
-import Icon from 'Ui/icon'
 
 import Hideable from '@/ui/hideable'
 import Draggable from '@/ui/draggable'
+import Card from '@/ui/card'
+import Icon from '@/ui/icon'
 import { afterTransition } from '../../common/util'
 import { MAX_SIZE } from '../desktop-manager/index'
 
@@ -57,11 +57,11 @@ export default {
             this.isDragging = true
             this.$emit('newWindow', this.label)
         },
-        handleTouchMove(deltaX): void {
+        handleTouchMove(deltaX: number): void {
             window.requestAnimationFrame(() => this.setTransform(deltaX))
             this.$emit('movingWindow', deltaX)
         },
-        handleTouchEnd(deltaX): void {
+        handleTouchEnd(deltaX: number): void {
             const absDeltaX = Math.abs(deltaX)
             const blockWidth = window.innerWidth / MAX_SIZE
             if (absDeltaX <= blockWidth / 2) {
