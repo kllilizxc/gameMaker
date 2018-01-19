@@ -19,7 +19,7 @@ function getMaxSizeOfTheRightMostWindow(windows: WindowType[], rightMostSize: nu
     return Math.max(MAX_SIZE - windows.length, rightMostSize)
 }
 
-function setWindowsSizeIndesktop(windows: WindowType[]): void {
+function setWindowsSizeInDesktop(windows: WindowType[]): void {
     console.assert(windows.length <= 4)
 
     for (let i = windows.length - 1; i >= 0; --i) {
@@ -63,11 +63,12 @@ export default {
         desktops(): DesktopType[] {
             const { windows, defaultWindow } = this
             const unfoldWindows = [defaultWindow].concat(windows.filter(({ isFolded }) => !isFolded))
-            let desktops = [], currentDesktop
+            let desktops = []
+            let currentDesktop
 
             // if window size is MAX_SIZE (4 in this case), then it should be placed in a new window, else put it in the current window
             for (let i = 0, counter = 0; i < unfoldWindows.length; ++i) {
-                let window = unfoldWindows[i]
+                const window = unfoldWindows[i]
 
                 if (i === 0 || window.size === MAX_SIZE || counter >= MAX_SIZE) {
                     // if should create a new window
@@ -81,7 +82,7 @@ export default {
 
             // reset windows' size in desktops
             desktops = desktops.map(desktop => {
-                setWindowsSizeIndesktop(desktop.windows)
+                setWindowsSizeInDesktop(desktop.windows)
                 return desktop
             })
 
