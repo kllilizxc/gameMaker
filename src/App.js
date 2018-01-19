@@ -16,20 +16,18 @@ export default {
     data: () => ({
         scene: null,
         sceneGameObject: null,
-        currentGameObject: null,
         gameObjects: []
     }),
     methods: {
         chooseGameObject(obj) {
-            this.currentGameObject = obj
-            console.log(this.currentGameObject)
+            this.$store.dispatch('setGameObject', obj)
         }
     },
     computed: {
         windowLabels() {
-            const { sceneGameObject, chooseGameObject, currentGameObject } = this
+            const { sceneGameObject, chooseGameObject } = this
             return [
-                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow gameObject={currentGameObject}/> },
+                { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
@@ -45,8 +43,7 @@ export default {
             this.scene = loadedScene
             window.scene = this.scene
             this.sceneGameObject = new GameObject(this.scene)
-            this.currentGameObject = this.sceneGameObject.children[0]
-            console.log(this.scene, this.sceneGameObject)
+            this.$store.dispatch('setGameObject', this.sceneGameObject.children[0])
         })
     },
     render() {

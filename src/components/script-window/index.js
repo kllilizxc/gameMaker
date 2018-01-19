@@ -5,14 +5,11 @@ import FileDropper from '@/ui/file-dropper'
 import Icon from '@/ui/icon'
 import fileDialog from 'file-dialog'
 import { readScriptFromFile } from '../../common/util'
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'script-window',
     props: {
-        gameObject: {
-            type: Object,
-            required: true
-        }
     },
     data() {
         return {
@@ -29,6 +26,7 @@ export default {
             immediate: true
         }
     },
+    computed: mapGetters(['gameObject']),
     methods: {
         addScript(file) {
             readScriptFromFile(file).then(script => this.scripts.push(script))
