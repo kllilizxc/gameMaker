@@ -1,10 +1,6 @@
-// @flow
-// @jsx h
-
 import styles from './style.css'
 import JigsawView from '@/ui/jigsaw-view'
 import WindowLabel from '../window-label'
-import Window from '../window'
 import Set from '../set'
 
 export default {
@@ -62,7 +58,7 @@ export default {
             }
         }
     },
-    render(h: any): any {
+    render() {
         const {
             sets,
             renderSets,

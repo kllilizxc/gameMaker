@@ -1,9 +1,11 @@
 <template>
     <mu-card :class="{[$style.card]: true, [$style.rounded]: rounded}">
-        <div :class="$style.header" v-if="title">
-            <mu-card-title :title="title" :sub-title="subTitle"/>
+        <div :class="$style.container">
+            <div :class="$style.header" v-if="title">
+                <mu-card-title :title="title" :sub-title="subTitle"/>
+            </div>
+            <slot/>
         </div>
-        <slot/>
     </mu-card>
 </template>
 <script>
@@ -27,10 +29,11 @@
     }
 </script>
 <style module>
-    .card {
+    .container {
         user-select: none;
+        width: 100%;
+        height: 100%;
     }
-
     .rounded {
         border-radius: 50%;
     }

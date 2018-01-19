@@ -1,11 +1,6 @@
-// @flow
-// @jsx h
-
 import styles from './style.css'
 import dragula from 'dragula'
-import { handlerClass } from '../../components/set'
-
-type ColumnType = any[]
+import { handleClass } from '../../components/set'
 
 export default {
     name: 'jigsaw-view',
@@ -13,10 +8,6 @@ export default {
         columns: {
             type: Array,
             default: () => []
-        },
-        getItemsInColumn: {
-            type: Function,
-            default: col => col
         },
         renderColumn: {
             type: Function,
@@ -28,20 +19,12 @@ export default {
         }
     },
     data: () => ({
-        innerColumns: [],
         columnDrake: null
     }),
-    methods: {
-        getInnerColumns(columns: any[]): ColumnType[] {
-            return columns
-                ? columns.map(col => this.getItemsInColumn(col))
-                : []
-        }
-    },
+    methods: {},
     watch: {
         columns: {
-            handler(val: any[]): void {
-                this.innerColumns = this.getInnerColumns(val)
+            handler(val) {
                 this.$nextTick(() => {
                     this.columnDrake =
                         dragula(this.$refs.columns
@@ -59,18 +42,18 @@ export default {
             direction: 'horizontal',
             revertOnSpill: true,
             moves: (el, source, handle) => !el.dataset.fixed &&
-                handle.classList.contains(handlerClass)
+                handle.classList.contains(handleClass)
         })
     },
-    render(h: any): any {
+    render(h) {
         const {
-            innerColumns,
+            columns,
             renderColumn,
             renderItem
         } = this
 
         return <div class={styles.jigsawView} ref="container">
-            {innerColumns.map(column =>
+            {columns.map(column =>
                 renderColumn(h, column, {
                     class: styles.column,
                     ref: 'columns',

@@ -16,6 +16,7 @@ export default {
             window: { color, content }
         } = this
 
+        console.log(content)
         return <div class={styles.window}>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>

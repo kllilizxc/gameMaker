@@ -1,7 +1,7 @@
 import styles from './style.css'
 import Window from '../window'
 
-export const handlerClass = styles.title
+export const handleClass = styles.title
 
 export default {
     name: 'set',
