@@ -7,6 +7,7 @@ import store from './store'
 
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
+import 'dragula/dist/dragula.min.css'
 
 Vue.use(MuseUI)
 

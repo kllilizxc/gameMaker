@@ -29,7 +29,6 @@ export default class Window {
 
     release(deltaX: number, blockSize: number): Promise<any> {
         this.size = (deltaX / blockSize).toFixed()
-        console.log('release size', this.size)
         if (!this.size)
             return this.ref.fold().then(() => this.isFolded = true)
         else

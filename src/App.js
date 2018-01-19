@@ -23,13 +23,11 @@ export default {
     methods: {
         chooseGameObject(obj) {
             this.currentGameObject = obj
-            console.log(this.currentGameObject)
         }
     },
     computed: {
         windowLabels() {
             const { sceneGameObject, chooseGameObject, currentGameObject } = this
-            console.log('windowLabels', currentGameObject)
             return [
                 new WindowClass('dashboard', 'Inspector', COLORS['Grey-50'], <ScriptWindow gameObject={currentGameObject}/>),
                 new WindowClass('subject', 'Scene', COLORS['Grey-100'], <SceneWindow scene={sceneGameObject} onInput={chooseGameObject}/>),
@@ -39,7 +37,7 @@ export default {
             ]
         },
         defaultWindow() {
-            return new WindowClass('', null, '#fff', <CanvasWindow scene={this.scene}/>, false, 4)
+            return new WindowClass('', 'Canvas', '#fff', <CanvasWindow scene={this.scene}/>, false, 4)
         }
     },
     created() {
@@ -48,7 +46,6 @@ export default {
             window.scene = this.scene
             this.sceneGameObject = new GameObject(this.scene)
             this.currentGameObject = this.sceneGameObject.children[0]
-            console.log(this.scene, this.sceneGameObject)
         })
     },
     render() {

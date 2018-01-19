@@ -15,6 +15,7 @@
         "lint": "eslint --ext .js,.vue src"
     },
     "dependencies": {
+        "dragula": "^3.7.2",
         "file-dialog": "0.0.6",
         "muse-ui": "^2.1.0",
         "three-js": "^79.0.0",

@@ -24,7 +24,6 @@ export default {
         gameObject: {
             handler(val, oldVal) {
                 this.scripts = val.scripts
-                console.log(oldVal, val)
             },
             immediate: true
         }
@@ -63,7 +62,6 @@ export default {
             pickFile
         } = this
 
-        console.log(gameObject)
 
         return <div class={styles.scriptWindow}>
             {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}

@@ -1,59 +1,14 @@
-@value Blue-500, Blue-900 from '../../common/colors.css';
-
 .desktopManager {
-    overflow: auto;
-    transition: transform 0.3s ease;
-    width: 100%;
-    height: 100%;
-}
-
-.currentWindow {
-    width: 0;
-}
-
-.windowLabelList {
-    position: fixed;
-    top: 32px;
-    right: 0;
-}
-
-.fixedUI {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100vw;
     height: 100vh;
-    transform: translate(0);
-    pointer-events: none;
 }
 
-.fixedUI * {
-    pointer-events: auto;
-}
-
-.toLeftButton, .toRightButton {
+.windowLabels {
     position: fixed;
-    margin-top: -20px;
-    top: 50%;
-}
-
-.toLeftButton {
-    left: 20px;
-}
-
-.toRightButton {
-    right: 20px;
-}
-
-.windowHint {
-    background: Blue-500;
-    height: 100%;
-    position: fixed;
-    right: 0;
+    width: 200px;
+    right: -16px;
     top: 0;
-    opacity: 0.2;
-    border: 2px solid Blue-900;
-    transition: width 0.3s ease;
-    pointer-events: none;
-    margin-left: -2px;
+}
+
+.sets {
 }
