@@ -2,38 +2,59 @@ let { position, rotation, scale } = gameObject.transform
 
 this.fields = [
     {
-        type: 'NUMBER_TYPE',
-        get() {
-            return position.x
-        },
-        set(val) {
-            position.x = val
-        },
+        type: 'GROUP_TYPE',
         options: {
-            name: 'x',
-            label: 'x'
-        }
+            label: 'position'
+        },
+        children: [
+            {
+                type: 'NUMBER_TYPE',
+                get() {
+                    return position.x
+                },
+                set(val) {
+                    position.x = val
+                },
+                options: {
+                    name: 'x',
+                    label: 'x'
+                }
+            },
+            {
+                type: 'NUMBER_TYPE',
+                get() {
+                    return position.y
+                },
+                set(val) {
+                    position.y = val
+                },
+                options: {
+                    name: 'y',
+                    label: 'y'
+                }
+            },
+            {
+                type: 'NUMBER_TYPE',
+                get() {
+                    return position.z
+                },
+                set(val) {
+                    position.z = val
+                },
+                options: {
+                    name: 'z',
+                    label: 'z'
+                }
+            }
+        ]
     },
     {
         type: 'NUMBER_TYPE',
         get() {
-            return position.y
+            return rotation.z
         },
         set(val) {
-            position.y = val
-        },
-        options: {
-            name: 'y',
-            label: 'y'
-        }
-    },
-    {
-        type: 'NUMBER_TYPE',
-        get() {
-            return position.z
-        },
-        set(val) {
-            position.z = val
+            rotation.z = val
         },
         options: {
             name: 'z',

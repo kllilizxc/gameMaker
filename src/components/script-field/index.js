@@ -12,6 +12,7 @@ const NUMBER_TYPE = 'NUMBER_TYPE'
 const BOOLEAN_TYPE = 'BOOLEAN_TYPE'
 const ENUM_TYPE = 'ENUM_TYPE'
 const FILE_TYPE = 'FILE_TYPE'
+const GROUP_TYPE = 'GROUP_TYPE'
 
 export type Field = {
     type: string,
@@ -29,61 +30,75 @@ export default {
         }
     },
     methods: {
-        createScriptElement(h, component, props, children = []): any {
+        createScriptElement(h, component, props, field, children = []): any {
             const data = {
                 props,
                 on: {
                     input: value => {
-                        this.field.set(value)
-                        const newVal = this.field.get()
+                        field.set(value)
+                        const newVal = field.get()
                         this.$emit('input', newVal)
                     }
                 }
             }
             return h(component, data, children)
         },
-        renderNumberInput(h: any): any {
-            const { options } = this.field
-            return this.createScriptElement(h, NumberInput, options)
+        renderNumberInput(h: any, field): any {
+            const { options } = field
+            return this.createScriptElement(h, NumberInput, options, field)
         },
-        renderTextField(h: any): any {
-            const { options } = this.field
+        renderTextField(h: any, field): any {
+            const { options } = field
             options.hintText = options.hintText || 'Please input a string'
-            return this.createScriptElement(h, TextField, options)
+            return this.createScriptElement(h, TextField, options, field)
         },
-        renderSwitch(h: any): any {
-            const { options } = this.field
-            return this.createScriptElement(h, Switch, options)
+        renderSwitch(h: any, field): any {
+            const { options } = field
+            return this.createScriptElement(h, Switch, options, field)
         },
-        renderPicker(h: any): any {
-            const { options } = this.field
-            return this.createScriptElement(h, SelectField, options,
+        renderPicker(h: any, field): any {
+            const { options } = field
+            return this.createScriptElement(h, SelectField, options, field,
                 options.options.map(option => <MenuItem title={option} value={option}/>))
         },
-        renderFilePicker(h: any): any {
+        renderInputGroup(h: any, field): any {
+            const { options, children } = field
+
+            return <div class={styles.inputGroup}>
+                <div class={styles.label}>{options.label}</div>
+                <div class={styles.container}>
+                    {children.map(child => this.parseOption(h, child))}
+                </div>
+            </div>
+        },
+        renderFilePicker(h: any, field): any {
             // TODO
             return <div/>
         },
-        parseOption(h: any): any {
-            this.getFieldValue()
-            switch (this.field.type) {
+        parseOption(h: any, field = this.field): any {
+            this.getFieldValue(field)
+            switch (field.type) {
                 case NUMBER_TYPE:
-                    return this.renderNumberInput(h)
+                    return this.renderNumberInput(h, field)
                 case STRING_TYPE:
-                    return this.renderTextField(h)
+                    return this.renderTextField(h, field)
                 case BOOLEAN_TYPE:
-                    return this.renderSwitch(h)
+                    return this.renderSwitch(h, field)
                 case ENUM_TYPE:
-                    return this.renderPicker(h)
+                    return this.renderPicker(h, field)
                 case FILE_TYPE:
-                    return this.renderFilePicker(h)
+                    return this.renderFilePicker(h, field)
+                case GROUP_TYPE:
+                    return this.renderInputGroup(h, field)
                 default:
                     logger.error('Error! Not a valid option type!')
                     return
             }
         },
-        getFieldValue() {
-            this.field.options.value = this.field.get()
+        getFieldValue(field) {
+            field.options.value = field.type === GROUP_TYPE
+                ? field.children.map(child => child.get())
+                : field.get()
         }
     },
     render(h: any): any {

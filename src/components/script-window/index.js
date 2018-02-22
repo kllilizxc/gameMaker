@@ -21,7 +21,7 @@ export default {
         gameObject: {
             handler(val) {
                 this.scripts = val.scripts
-                console.log(val)
+                console.log('gameObject', val)
             },
             immediate: true
         }

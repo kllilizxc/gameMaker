@@ -1,3 +1,18 @@
+@value Black-Text from '@/common/colors.css';
+
 .scriptField {
-    margin: 8px 0;
+    margin: 8px;
+}
+
+.inputGroup {
+}
+
+.label {
+    margin-right: auto;
+    color: Black-Text;
+}
+
+.container {
+    margin-right: auto;
+    display: flex;
 }

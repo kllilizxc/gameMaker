@@ -1,4 +1,3 @@
-import Slider from '@/ui/slider'
 import TextField from '@/ui/text-field'
 import styles from './style.css'
 
@@ -8,11 +7,24 @@ export default {
         name: String,
         icon: String,
         label: String,
-        labelFloat: Boolean,
-        disabled: Boolean,
+        labelFloat: {
+            type: Boolean,
+            default: true
+        },
+        disabled: {
+            type: Boolean,
+            default: false
+        },
         hintText: String,
         errorText: String,
-        underlineShow: Boolean,
+        fullWidth: {
+            type: Boolean,
+            default: true
+        },
+        underlineShow: {
+            type: Boolean,
+            default: true
+        },
         multiLine: Boolean,
         rows: Number,
         rowsMax: Number,
@@ -22,8 +34,7 @@ export default {
             default: 0
         },
         max: Number,
-        min: Number,
-        step: Number
+        min: Number
     },
     data() {
         return {
@@ -51,7 +62,6 @@ export default {
             maxLength,
             max,
             min,
-            step,
             handleInput
         } = this
 
@@ -73,14 +83,6 @@ export default {
                        max={max}
                        min={min}
                        onInput={handleInput}/>
-            <Slider class={styles.slider}
-                    name={name || label}
-                    step={step}
-                    disabled={disabled}
-                    value={this.inputValue}
-                    max={max}
-                    min={min}
-                    onInput={handleInput}/>
         </div>
     }
 }

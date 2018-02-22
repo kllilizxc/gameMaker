@@ -46,7 +46,7 @@ export default {
             window.scene = this.scene
             this.sceneGameObject = new GameObject(this.scene)
             this.$store.dispatch('setGameObject', this.sceneGameObject.children[0])
-            console.log(this.sceneGameObject)
+            console.log('scene', this.sceneGameObject)
             this.$store.dispatch('setGameObjects', this.sceneGameObject.children)
         })
     },
