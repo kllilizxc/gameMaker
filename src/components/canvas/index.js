@@ -1,5 +1,6 @@
 import styles from './style.css'
 import THREELib from 'three-js'
+import { mapGetters } from 'vuex'
 
 const THREE = THREELib(['OrbitControls'])
 
@@ -18,6 +19,7 @@ export default {
         t: -1
     }),
     computed: {
+        ...mapGetters(['gameObjects', 'isPlaying', 'shouldRender']),
         container() {
             return this.$refs.container
         },
@@ -67,10 +69,17 @@ export default {
 
                 this._scene = scene
 
-                window.cancelAnimationFrame(this.t)
-                this.animate()
+                this.render()
             },
             immediate: true
+        },
+        isPlaying(val) {
+            window.cancelAnimationFrame(this.t)
+            if (val)
+                this.animate()
+        },
+        shouldRender() {
+            this.render()
         }
     },
     methods: {
@@ -81,6 +90,14 @@ export default {
         animate() {
             this.t = requestAnimationFrame(this.animate)
             this.render()
+            this.update()
+        },
+        update() {
+            this.gameObjects.forEach(gameObject =>
+                gameObject.scripts.forEach(({ Behavior }) => {
+                    const { update } = new Behavior(gameObject)
+                    update()
+                }))
         },
         render() {
             const { clock, mixer, renderer, camera } = this

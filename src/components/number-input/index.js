@@ -37,7 +37,7 @@ export default {
         }
     },
     render() {
-        let {
+        const {
             icon,
             label,
             labelFloat,

@@ -4,7 +4,6 @@
     </div>
 </template>
 <script>
-    //    @flow
     import iconButton from '@/ui/material-icon-button'
 
     export default {
@@ -12,7 +11,7 @@
         components: { iconButton },
         props: {
             icon: String,
-            disabled: Boolean
+            disabled: Boolean,
         },
         methods: {
             clickHandler(e) {

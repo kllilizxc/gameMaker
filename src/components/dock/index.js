@@ -1,3 +1,5 @@
+// @flow
+// @jsx h
 import card from '@/ui/card'
 import dockItem from '@/components/dock-item'
 import hideable from '@/ui/hideable'

@@ -39,11 +39,15 @@ export default {
         }
     },
     created() {
+        window.$vm0 = this  // for debug
+
         new THREE.ObjectLoader().load('static/scenes/scene-animation.json', loadedScene => {
             this.scene = loadedScene
             window.scene = this.scene
             this.sceneGameObject = new GameObject(this.scene)
             this.$store.dispatch('setGameObject', this.sceneGameObject.children[0])
+            console.log(this.sceneGameObject)
+            this.$store.dispatch('setGameObjects', this.sceneGameObject.children)
         })
     },
     render() {

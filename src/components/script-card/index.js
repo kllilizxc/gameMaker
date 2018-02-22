@@ -4,14 +4,14 @@ import Card from '@/ui/card'
 
 export default {
     functional: true,
-    render (h, { props: { gameObject, script: { name, Behavior } } }) {
+    render (h, { props: { gameObject, script: { name, Behavior } }, parent: { $store } }) {
         const behavior = new Behavior(gameObject)
-        const { fields, update } = behavior
+        const { fields } = behavior
 
         return <Card class={styles.scriptCard}>
             <div class={styles.title}>{name}</div>
-            {fields.map((field, index) => <div>
-                <ScriptField field={field} onInput={update}/>
+            {fields.map((field) => <div>
+                <ScriptField field={field} onInput={() => $store.dispatch('rerender')}/>
             </div>)}
         </Card>
     }

@@ -61,8 +61,6 @@ export default {
             pickFile
         } = this
 
-        console.log(gameObject)
-
         return <div class={styles.scriptWindow}>
             {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}
             <FileDropper onFileDrop={dropHandler}
