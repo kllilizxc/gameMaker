@@ -16,3 +16,9 @@
     margin-right: auto;
     display: flex;
 }
+
+.filePicker {
+    display: flex;
+}
+
+

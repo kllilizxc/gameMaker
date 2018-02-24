@@ -1,26 +1,14 @@
 <template>
-    <mu-card :class="{[$style.card]: true, [$style.rounded]: rounded}">
-        <div :class="$style.container">
-            <div :class="$style.header" v-if="title">
-                <mu-card-title :title="title" :sub-title="subTitle"/>
-            </div>
-            <slot/>
-        </div>
-    </mu-card>
+    <div :class="[[$style.card], { [$style.rounded]: rounded }]">
+        <div v-if="title" :class="$style.title">{{ title }}</div>
+        <slot/>
+    </div>
 </template>
 <script>
-    // @flow
     export default {
         name: 'card',
         props: {
-            title: {
-                type: String,
-                default: ''
-            },
-            subTitle: {
-                type: String,
-                default: ''
-            },
+            title: String,
             rounded: {
                 type: Boolean,
                 default: false
@@ -29,10 +17,10 @@
     }
 </script>
 <style module>
-    .container {
-        user-select: none;
-        width: 100%;
-        height: 100%;
+    @value White-500 from '@/common/colors.css';
+    .card {
+        box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
+        background: White-500;
     }
     .rounded {
         border-radius: 50%;

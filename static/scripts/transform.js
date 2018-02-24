@@ -1,5 +1,7 @@
 let { position, rotation, scale } = gameObject.transform
 
+let file
+
 this.fields = [
     {
         type: 'GROUP_TYPE',
@@ -60,6 +62,12 @@ this.fields = [
             name: 'z',
             label: 'z'
         }
+    },
+    {
+        type: 'FILE_TYPE',
+        get: () => file,
+        set: val => file = val,
+        options: { label: 'file' }
     }
 ]
 

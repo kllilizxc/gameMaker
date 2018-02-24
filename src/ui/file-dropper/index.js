@@ -10,10 +10,9 @@ export default {
                 for (let i = 0; i < dataTransfer.items.length; ++i) {
                     const item = dataTransfer.items[i]
                     if (item.kind === 'file') {
-                        let file = item.getAsFile()
+                        const file = item.getAsFile()
                         this.$emit('fileDrop', file)
                     }
-
                 }
             }
         },
@@ -32,7 +31,7 @@ export default {
         const {
             dropHandler,
             dragOverHandler,
-            dragLeaveHandler,
+            dragLeaveHandler
         } = this
 
         return <div onDrop={dropHandler}

@@ -6,6 +6,7 @@ import SelectField from '@/ui/select-field'
 import MenuItem from '@/ui/menu-item'
 import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
+import FilePicker from '@/components/file-picker'
 
 const STRING_TYPE = 'STRING_TYPE'
 const NUMBER_TYPE = 'NUMBER_TYPE'
@@ -72,8 +73,11 @@ export default {
             </div>
         },
         renderFilePicker(h: any, field): any {
-            // TODO
-            return <div/>
+            const { options } = field
+            return <div class={styles.filePicker}>
+                <div class={styles.label}>{options.label}</div>
+                <FilePicker onInput={file => console.log(file)}/>
+            </div>
         },
         parseOption(h: any, field = this.field): any {
             this.getFieldValue(field)
