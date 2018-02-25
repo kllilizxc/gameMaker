@@ -1,10 +1,10 @@
 
-@value Grey-100, Grey-200 from '@/common/colors.css';
+@value Grey-100, BlueGrey-200 from '@/common/colors.css';
 
 .fileDropper {
     width: 100%;
     margin-left: 16px;
-    background: Grey-200;
+    background: BlueGrey-200;
     cursor: pointer;
 }
 

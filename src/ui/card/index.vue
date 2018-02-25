@@ -21,6 +21,7 @@
     .card {
         box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
         background: White-500;
+        border-radius: 2px;
     }
     .rounded {
         border-radius: 50%;

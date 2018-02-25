@@ -3,13 +3,11 @@ import { stateToGetters } from '../common/util'
 const SET_GAMEOBJECT = 'SET_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
 const SET_PLAY = 'SET_PLAY'
-const RERENDER = 'RERENDER'
 
 const state = {
     gameObject: null,
     gameObjects: [],
-    isPlaying: false,
-    shouldRender: false
+    isPlaying: false
 }
 
 export default {
@@ -24,9 +22,6 @@ export default {
         },
         [SET_PLAY](state, isPlaying) {
             state.isPlaying = isPlaying
-        },
-        [RERENDER](state) {
-            state.shouldRender = !state.shouldRender
         }
     },
     actions: {
@@ -35,8 +30,6 @@ export default {
         setGameObjects: ({ commit }, gameObjects) =>
             commit(SET_GAMEOBJECTS, gameObjects),
         setPlay: ({ commit }, isPlaying) =>
-            commit(SET_PLAY, isPlaying),
-        rerender: ({ commit }) =>
-            commit(RERENDER)
+            commit(SET_PLAY, isPlaying)
     }
 }

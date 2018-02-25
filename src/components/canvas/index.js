@@ -5,7 +5,7 @@ import { mapGetters } from 'vuex'
 const THREE = THREELib(['OrbitControls'])
 
 export default {
-    name: 'canvas',
+    name: 'draw-canvas',
     props: {
         scene: Object
     },
@@ -19,7 +19,7 @@ export default {
         t: -1
     }),
     computed: {
-        ...mapGetters(['gameObjects', 'isPlaying', 'shouldRender']),
+        ...mapGetters(['gameObjects', 'isPlaying']),
         container() {
             return this.$refs.container
         },
@@ -69,17 +69,10 @@ export default {
 
                 this._scene = scene
 
+                window.cancelAnimationFrame(this.t)
                 this.render()
             },
             immediate: true
-        },
-        isPlaying(val) {
-            window.cancelAnimationFrame(this.t)
-            if (val)
-                this.animate()
-        },
-        shouldRender() {
-            this.render()
         }
     },
     methods: {
@@ -88,9 +81,9 @@ export default {
             this.camera.updateProjectionMatrix()
         },
         animate() {
-            this.t = requestAnimationFrame(this.animate)
-            this.render()
-            this.update()
+            const { clock, mixer } = this
+            const delta = 0.75 * clock.getDelta()
+            mixer.update(delta)
         },
         update() {
             this.gameObjects.forEach(gameObject =>
@@ -100,9 +93,11 @@ export default {
                 }))
         },
         render() {
-            const { clock, mixer, renderer, camera } = this
-            const delta = 0.75 * clock.getDelta()
-            mixer.update(delta)
+            const { renderer, camera, isPlaying } = this
+            if (isPlaying) {
+                this.update()
+                this.animate()
+            }
             renderer.render(this._scene, camera)
         }
     },
