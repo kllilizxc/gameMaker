@@ -7,7 +7,7 @@ const THREE = THREELib()
 
 export default {
     functional: true,
-    render (h, { props: { gameObject, script: { name, Behavior } }, parent: { $store } }) {
+    render (h, { props: { gameObject, script: { name, Behavior } } }) {
         const behavior = new Behavior(THREE, gameObject)
         const { fields, update } = behavior
 

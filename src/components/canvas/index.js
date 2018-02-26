@@ -6,11 +6,7 @@ const THREE = THREELib(['OrbitControls'])
 
 export default {
     name: 'draw-canvas',
-    props: {
-        scene: Object
-    },
     data: () => ({
-        _scene: null,
         camera: null,
         mixer: null,
         controls: null,
@@ -19,7 +15,7 @@ export default {
         t: -1
     }),
     computed: {
-        ...mapGetters(['gameObjects', 'isPlaying']),
+        ...mapGetters(['scene', 'gameObjects', 'isPlaying']),
         container() {
             return this.$refs.container
         },
@@ -35,8 +31,10 @@ export default {
     },
     watch: {
         scene: {
-            handler(scene) {
+            handler(val) {
+                console.log('scene', val)
                 if (!scene) return
+                const scene = val.raw
                 scene.background = new THREE.Color(0xffffff)
 
                 scene.traverse(sceneChild => {
@@ -67,10 +65,8 @@ export default {
                 this.mixer = new THREE.AnimationMixer(scene)
                 this.mixer.clipAction(animationClip).play()
 
-                this._scene = scene
-
                 window.cancelAnimationFrame(this.t)
-                this.render()
+                this.t = window.requestAnimationFrame(this.render)
             },
             immediate: true
         }
@@ -98,8 +94,12 @@ export default {
                 this.update()
                 this.animate()
             }
-            renderer.render(this._scene, camera)
+            renderer.render(this.scene.raw, camera)
+            this.t = window.requestAnimationFrame(this.render)
         }
+    },
+    created() {
+        this.$store.dispatch('setScene', new THREE.Scene())
     },
     mounted() {
         const { container, renderer, screenWidth, screenHeight } = this

@@ -10,7 +10,7 @@ export default {
     }),
     methods: {
         handleInput (obj) {
-            this.$emit('input', obj.raw)
+            this.$store.dispatch('setGameObject', obj)
         }
     },
     render () {
