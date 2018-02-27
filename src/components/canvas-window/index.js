@@ -3,10 +3,7 @@ import Canvas from 'Components/canvas'
 import Dock from 'Components/dock'
 import { mapGetters } from 'vuex'
 import { GameObject } from '../../classes/GameObject'
-import THREELib from 'three-js'
 import AssetManager from '@/common/asset-manager'
-
-const THREE = THREELib()
 
 export default {
     name: 'canvas-window',

@@ -35,7 +35,7 @@ export default {
     methods: {
         getItemDataFromPropData(data) {
             return data.map(obj => {
-                let d = {
+                const d = {
                     name: this.getNameFunction(obj),
                     children: [],
                     isFolded: true,
@@ -54,7 +54,7 @@ export default {
                 obj.isFolded = !obj.isFolded
                 this.getChildrenFunction(obj.raw).then(data => obj.children = this.getItemDataFromPropData(data))
             }
-            this.$emit('input', obj)
+            this.$emit('input', obj.raw)
         },
         renderItem(obj) {
             const INDENT_LENGTH = 16

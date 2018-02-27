@@ -1,9 +1,6 @@
 import styles from './style.css'
 import ScriptField from '../script-field'
 import Card from '@/ui/card'
-import THREELib from 'three-js'
-
-const THREE = THREELib()
 
 export default {
     functional: true,

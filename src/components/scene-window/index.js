@@ -1,11 +1,9 @@
 import styles from './style.css'
 import TreeView from '../tree-view'
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'scene-window',
-    props: {
-        scene: Object
-    },
     data: () => ({
     }),
     methods: {
@@ -13,6 +11,7 @@ export default {
             this.$store.dispatch('setGameObject', obj)
         }
     },
+    computed: mapGetters(['scene']),
     render () {
         const {
             handleInput,

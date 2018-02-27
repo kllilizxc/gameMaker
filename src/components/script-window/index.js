@@ -21,7 +21,6 @@ export default {
             handler(val) {
                 if (!val) return
                 this.scripts = val.scripts
-                console.log('gameObject', val)
             },
             immediate: true
         }
@@ -63,8 +62,6 @@ export default {
             isDragOver,
             pickFile
         } = this
-
-        console.log(scripts)
 
         return <div class={styles.scriptWindow}>
             {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}

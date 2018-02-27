@@ -4,7 +4,6 @@ import { remote } from 'electron'
 
 const fs = remote.require('fs')
 const { dialog } = remote
-console.log(fs, dialog)
 
 function getFunctionFromFs(func) {
     return (...args) => new Promise((resolve, reject) => fs[func](...args, (err, data) => err ? reject(err) : resolve(data)))

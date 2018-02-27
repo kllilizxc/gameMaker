@@ -16,7 +16,7 @@
     },
     "dependencies": {
         "muse-ui": "^2.1.0",
-        "three-js": "^79.0.0",
+        "three": "^0.90.0",
         "vue": "^2.5.13",
         "vue-router": "^2.8.1",
         "vuex": "^2.5.0"

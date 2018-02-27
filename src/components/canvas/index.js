@@ -1,9 +1,6 @@
 import styles from './style.css'
-import THREELib from 'three-js'
 import { mapGetters } from 'vuex'
 import { GameObject } from '../../classes/GameObject'
-
-const THREE = THREELib(['OrbitControls'])
 
 export default {
     name: 'draw-canvas',
@@ -32,34 +29,19 @@ export default {
     },
     watch: {
         scene(val) {
-            console.log('scene', val)
             if (!val) return
             const scene = val.raw
-            scene.background = new THREE.Color(0xffffff)
+            window.scene = scene
 
-            scene.traverse(sceneChild => {
-                if (sceneChild.type === 'PerspectiveCamera') {
-                    this.camera = sceneChild
-                    this.resetCameraSize()
-                }
-            })
-
-            if (!this.camera) {
-                this.camera = new THREE.PerspectiveCamera(30, this.screenRatio, 1, 1000)
-                this.camera.position.set(-200, 0, 200)
-            }
-
-            this.controls = new THREE.OrbitControls(this.camera)
-
-            const geometry = new THREE.PlaneBufferGeometry(20000, 20000)
-            const material = new THREE.MeshPhongMaterial({ shininess: 0.1 })
-            const ground = new THREE.Mesh(geometry, material)
-
-            ground.position.set(0, -250, 0)
-            ground.rotation.x = -Math.PI / 2
-
-            scene.add(ground)
-            scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
+            if (!scene.children || scene.children.length === 0)
+                this.initScene(scene, this.screenRatio)
+            else
+                scene.traverse(sceneChild => {
+                    if (sceneChild.type === 'PerspectiveCamera') {
+                        this.camera = sceneChild
+                        this.resetCameraSize()
+                    }
+                })
 
             if (scene.animations) {
                 const animationClip = scene.animations[0]
@@ -67,11 +49,41 @@ export default {
                 this.mixer.clipAction(animationClip).play()
             }
 
+            this.controls = new THREE.OrbitControls(this.camera)
+
             window.cancelAnimationFrame(this.t)
             this.t = window.requestAnimationFrame(this.render)
         }
     },
     methods: {
+        initScene(scene) {
+            // background
+            scene.background = new THREE.Color(0xffffff)
+            // camera
+            this.camera = new THREE.PerspectiveCamera(70, this.screenRatio, 1, 1000)
+            this.camera.position.set(0, 0, 400)
+            scene.add(this.camera)
+            // ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040)
+            scene.add(ambientLight)
+            // point lights
+            const pointLight1 = new THREE.PointLight(0xffffff, 0.8)
+            pointLight1.position.set(-22, 52, -28)
+            scene.add(pointLight1)
+            const pointLight2 = new THREE.PointLight(0xffffff, 0.8)
+            pointLight2.position.set(18, 34, 80)
+            scene.add(pointLight2)
+            // ground plane
+            const geometry = new THREE.PlaneBufferGeometry(20000, 20000)
+            const material = new THREE.MeshPhongMaterial({ shininess: 0.1 })
+            const ground = new THREE.Mesh(geometry, material)
+
+            ground.position.set(0, -250, 0)
+            ground.rotation.x = -Math.PI / 2
+            scene.add(ground)
+            // fog
+            scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
+        },
         resetCameraSize() {
             this.camera.aspect = this.screenWidth / this.screenHeight
             this.camera.updateProjectionMatrix()

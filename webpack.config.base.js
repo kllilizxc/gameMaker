@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const path = require('path')
 
 function resolve(dir) {
@@ -20,11 +21,18 @@ module.exports = {
             Components: path.resolve(__dirname, 'src/components/'),
             Ui: path.resolve(__dirname, 'src/ui/'),
             Common: path.resolve(__dirname, 'src/ui/'),
-            Scripts: path.resolve(__dirname, 'static/scripts')
+            Scripts: path.resolve(__dirname, 'static/scripts'),
+            'three/OrbitControls': path.join(__dirname, 'node_modules/three/examples/js/controls/OrbitControls.js'),
+            'three/OBJLoader': path.join(__dirname, 'node_modules/three/examples/js/loaders/OBJLoader.js')
         },
         symlinks: false
     },
     target: 'electron',
+    plugins: [
+        new webpack.ProvidePlugin({
+            THREE: 'three'
+        })
+    ],
     module: {
         rules: [
             // {
