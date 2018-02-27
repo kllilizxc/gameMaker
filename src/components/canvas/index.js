@@ -1,6 +1,7 @@
 import styles from './style.css'
 import THREELib from 'three-js'
 import { mapGetters } from 'vuex'
+import { GameObject } from '../../classes/GameObject'
 
 const THREE = THREELib(['OrbitControls'])
 
@@ -30,45 +31,44 @@ export default {
         }
     },
     watch: {
-        scene: {
-            handler(val) {
-                console.log('scene', val)
-                if (!scene) return
-                const scene = val.raw
-                scene.background = new THREE.Color(0xffffff)
+        scene(val) {
+            console.log('scene', val)
+            if (!val) return
+            const scene = val.raw
+            scene.background = new THREE.Color(0xffffff)
 
-                scene.traverse(sceneChild => {
-                    if (sceneChild.type === 'PerspectiveCamera') {
-                        this.camera = sceneChild
-                        this.resetCameraSize()
-                    }
-                })
-
-                if (!this.camera) {
-                    this.camera = new THREE.PerspectiveCamera(30, this.screenRatio, 1, 1000)
-                    this.camera.position.set(-200, 0, 200)
+            scene.traverse(sceneChild => {
+                if (sceneChild.type === 'PerspectiveCamera') {
+                    this.camera = sceneChild
+                    this.resetCameraSize()
                 }
+            })
 
-                this.controls = new THREE.OrbitControls(this.camera)
+            if (!this.camera) {
+                this.camera = new THREE.PerspectiveCamera(30, this.screenRatio, 1, 1000)
+                this.camera.position.set(-200, 0, 200)
+            }
 
-                const geometry = new THREE.PlaneBufferGeometry(20000, 20000)
-                const material = new THREE.MeshPhongMaterial({ shininess: 0.1 })
-                const ground = new THREE.Mesh(geometry, material)
+            this.controls = new THREE.OrbitControls(this.camera)
 
-                ground.position.set(0, -250, 0)
-                ground.rotation.x = -Math.PI / 2
+            const geometry = new THREE.PlaneBufferGeometry(20000, 20000)
+            const material = new THREE.MeshPhongMaterial({ shininess: 0.1 })
+            const ground = new THREE.Mesh(geometry, material)
 
-                scene.add(ground)
-                scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
+            ground.position.set(0, -250, 0)
+            ground.rotation.x = -Math.PI / 2
 
+            scene.add(ground)
+            scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
+
+            if (scene.animations) {
                 const animationClip = scene.animations[0]
                 this.mixer = new THREE.AnimationMixer(scene)
                 this.mixer.clipAction(animationClip).play()
+            }
 
-                window.cancelAnimationFrame(this.t)
-                this.t = window.requestAnimationFrame(this.render)
-            },
-            immediate: true
+            window.cancelAnimationFrame(this.t)
+            this.t = window.requestAnimationFrame(this.render)
         }
     },
     methods: {
@@ -78,13 +78,14 @@ export default {
         },
         animate() {
             const { clock, mixer } = this
+            if (!mixer) return
             const delta = 0.75 * clock.getDelta()
             mixer.update(delta)
         },
         update() {
             this.gameObjects.forEach(gameObject =>
                 gameObject.scripts.forEach(({ Behavior }) => {
-                    const { update } = new Behavior(gameObject)
+                    const { update } = new Behavior(THREE, gameObject)
                     update()
                 }))
         },
@@ -99,7 +100,7 @@ export default {
         }
     },
     created() {
-        this.$store.dispatch('setScene', new THREE.Scene())
+        this.$store.dispatch('setScene', new GameObject(new THREE.Scene()))
     },
     mounted() {
         const { container, renderer, screenWidth, screenHeight } = this

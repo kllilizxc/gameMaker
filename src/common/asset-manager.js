@@ -3,19 +3,15 @@
 import { remote } from 'electron'
 
 const fs = remote.require('fs')
+const { dialog } = remote
+console.log(fs, dialog)
 
 function getFunctionFromFs(func) {
-    return path => new Promise((resolve, reject) => fs[func](path, (err, data) => err ? reject(err) : resolve(data)))
+    return (...args) => new Promise((resolve, reject) => fs[func](...args, (err, data) => err ? reject(err) : resolve(data)))
 }
 
 export default class AssetManager {
-    static readFile = file => typeof file === 'string'
-        ? fetch(file).then(response => Promise.resolve(response.text()))
-        : new Promise(resolve => {
-            const reader = new FileReader()
-            reader.onload = e => resolve(e.target.result)
-            reader.readAsText(file)
-        })
+    static readFile = file => fetch(file).then(response => Promise.resolve(response.text()))
 
     static readFileSync = async file => await this.readFile(file)
 
@@ -26,10 +22,25 @@ export default class AssetManager {
             resolve(files)
     }))
 
+    static readLocalFile = getFunctionFromFs('readFile')
+
     static readLocalStat = path => new Promise((resolve, reject) => fs.stat(path, (err, stats) => {
         if (err)
             reject(err)
         else
             resolve(stats)
     }))
+
+    static pickFile = (title, options = [], filters = {}, defaultPath = '/') => new Promise((resolve, reject) =>
+        dialog.showOpenDialog({ title, defaultPath, filters, properties: ['openFile', ...options] }, filePaths => {
+            if (!filePaths || filePaths.length === 0) reject()
+            else resolve(filePaths[0])
+        }))
+
+    static pickFiles = (title, options = [], filters = {}, defaultPath = '/') => new Promise((resolve, reject) =>
+        dialog.showOpenDialog({ title, defaultPath, filters, properties: ['openFile', 'multiSelections', ...options] }, filePaths => {
+            if (!filePaths || filePaths.length === 0) reject()
+            else resolve(filePaths)
+        }))
 }
+

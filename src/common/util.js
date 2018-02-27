@@ -57,7 +57,7 @@ export const stateToActions = state =>
 export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, '')
 
 export const readScriptFromFile = file =>
-    AssetManager.readFile(file).then((content: string) =>
+    AssetManager.readLocalFile(file).then((content: string) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
             Behavior: new Function('THREE', 'gameObject', content)

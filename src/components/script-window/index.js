@@ -3,14 +3,13 @@ import Script from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
 import Icon from '@/ui/icon'
-import fileDialog from 'file-dialog'
 import { readScriptFromFile } from '../../common/util'
 import { mapGetters } from 'vuex'
+import AssetManager from '@/common/asset-manager'
 
 export default {
     name: 'script-window',
-    props: {
-    },
+    props: {},
     data() {
         return {
             isDragOver: false,
@@ -20,6 +19,7 @@ export default {
     watch: {
         gameObject: {
             handler(val) {
+                if (!val) return
                 this.scripts = val.scripts
                 console.log('gameObject', val)
             },
@@ -43,7 +43,10 @@ export default {
             this.isDragOver = false
         },
         pickFile() {
-            fileDialog({ multiple: true, accept: '.js' })
+            AssetManager.pickFiles(
+                'Now pick your scripts',
+                [],
+                [{ name: 'Scripts', extensions: ['js'] }])
                 .then(fileList => {
                     for (const file of fileList)
                         this.addScript(file)
@@ -68,7 +71,7 @@ export default {
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>
-                <div class={{[styles.dropZone]: true, [styles.dragOver]: isDragOver}} onClick={pickFile}>
+                <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }} onClick={pickFile}>
                     <Icon className={styles.addIcon} icon={'add'} size={48}/>
                 </div>
             </FileDropper>
