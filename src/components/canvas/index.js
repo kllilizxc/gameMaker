@@ -1,6 +1,5 @@
 import styles from './style.css'
 import { mapGetters } from 'vuex'
-import { GameObject } from '../../classes/GameObject'
 
 export default {
     name: 'draw-canvas',
@@ -30,7 +29,7 @@ export default {
     watch: {
         scene(val) {
             if (!val) return
-            const scene = val.raw
+            const scene = val
             window.scene = scene
 
             if (!scene.children || scene.children.length === 0)
@@ -61,17 +60,20 @@ export default {
             scene.background = new THREE.Color(0xffffff)
             // camera
             this.camera = new THREE.PerspectiveCamera(70, this.screenRatio, 1, 1000)
-            this.camera.position.set(0, 0, 400)
+            this.camera.name = 'camera'
             scene.add(this.camera)
             // ambient light
             const ambientLight = new THREE.AmbientLight(0x404040)
+            ambientLight.name = 'ambientLight'
             scene.add(ambientLight)
             // point lights
             const pointLight1 = new THREE.PointLight(0xffffff, 0.6)
             pointLight1.position.set(-22, 52, -28)
+            pointLight1.name = 'pointLight1'
             scene.add(pointLight1)
             const pointLight2 = new THREE.PointLight(0xffffff, 0.8)
             pointLight2.position.set(18, 34, 80)
+            pointLight2.name = 'pointLight2'
             scene.add(pointLight2)
             // ground plane
             const geometry = new THREE.PlaneBufferGeometry(20000, 20000)
@@ -80,6 +82,7 @@ export default {
 
             ground.position.set(0, -250, 0)
             ground.rotation.x = -Math.PI / 2
+            ground.name = 'ground'
             scene.add(ground)
             // fog
             scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
@@ -107,12 +110,12 @@ export default {
                 this.update()
                 this.animate()
             }
-            renderer.render(this.scene.raw, camera)
+            renderer.render(this.scene, camera)
             this.t = window.requestAnimationFrame(this.render)
         }
     },
     created() {
-        this.$store.dispatch('setScene', new GameObject(new THREE.Scene()))
+        this.$store.dispatch('setScene', new THREE.Scene())
     },
     mounted() {
         const { container, renderer, screenWidth, screenHeight } = this

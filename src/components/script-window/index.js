@@ -12,17 +12,7 @@ export default {
     props: {},
     data() {
         return {
-            isDragOver: false,
-            scripts: []
-        }
-    },
-    watch: {
-        gameObject: {
-            handler(val) {
-                if (!val) return
-                this.scripts = val.scripts
-            },
-            immediate: true
+            isDragOver: false
         }
     },
     computed: mapGetters(['gameObject']),
@@ -54,8 +44,7 @@ export default {
     },
     render() {
         const {
-            gameObject,
-            scripts,
+            gameObject: { scripts },
             dropHandler,
             dragOverHandler,
             dragLeaveHandler,
@@ -64,7 +53,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts && scripts.map(script => <Script script={script} gameObject={gameObject}/>)}
+            {scripts && scripts.map(script => <Script script={script}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

@@ -4,7 +4,7 @@ import Card from '@/ui/card'
 
 export default {
     functional: true,
-    render (h, { props: { gameObject, script: { name, Behavior } } }) {
+    render (h, { props: { script: { name, Behavior } }, parent: { $store: { getters: { gameObject } } } }) {
         const behavior = new Behavior(THREE, gameObject)
         const { fields, update } = behavior
 

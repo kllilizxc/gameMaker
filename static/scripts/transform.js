@@ -1,4 +1,4 @@
-let { position, rotation, scale } = gameObject.transform
+let { position, rotation, scale } = gameObject
 
 let file
 

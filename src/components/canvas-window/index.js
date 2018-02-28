@@ -2,13 +2,13 @@ import styles from './style.css'
 import Canvas from 'Components/canvas'
 import Dock from 'Components/dock'
 import { mapGetters } from 'vuex'
-import { GameObject } from '../../classes/GameObject'
 import AssetManager from '@/common/asset-manager'
 
 function newBoxObject(scene) {
     const geometry = new THREE.BoxBufferGeometry(200, 200, 200)
     const material = new THREE.MeshBasicMaterial()
     const mesh = new THREE.Mesh(geometry, material)
+    mesh.name = 'box'
     scene.add(mesh)
 }
 
@@ -29,12 +29,9 @@ export default {
                     AssetManager.pickFile('Please pick the scene json file')
                         .then(filePath => {
                             new THREE.ObjectLoader().load(filePath, loadedScene => {
-                                window.scene = loadedScene
-                                const scene = new GameObject(loadedScene)
-                                console.log('scene', scene)
+                                const scene = loadedScene
+                                window.scene = scene
                                 this.$store.dispatch('setScene', scene)
-                                this.$store.dispatch('setGameObject', scene.children[0])
-                                this.$store.dispatch('setGameObjects', scene.children)
                             })
                         })
                 }
@@ -46,7 +43,7 @@ export default {
             return {
                 icon: 'add',
                 clickHandler() {
-                    newBoxObject(scene.raw)
+                    newBoxObject(scene)
                 }
             }
         }
