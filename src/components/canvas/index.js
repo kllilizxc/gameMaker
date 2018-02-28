@@ -67,7 +67,7 @@ export default {
             const ambientLight = new THREE.AmbientLight(0x404040)
             scene.add(ambientLight)
             // point lights
-            const pointLight1 = new THREE.PointLight(0xffffff, 0.8)
+            const pointLight1 = new THREE.PointLight(0xffffff, 0.6)
             pointLight1.position.set(-22, 52, -28)
             scene.add(pointLight1)
             const pointLight2 = new THREE.PointLight(0xffffff, 0.8)

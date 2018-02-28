@@ -5,10 +5,17 @@ import { mapGetters } from 'vuex'
 import { GameObject } from '../../classes/GameObject'
 import AssetManager from '@/common/asset-manager'
 
+function newBoxObject(scene) {
+    const geometry = new THREE.BoxBufferGeometry(200, 200, 200)
+    const material = new THREE.MeshBasicMaterial()
+    const mesh = new THREE.Mesh(geometry, material)
+    scene.add(mesh)
+}
+
 export default {
     name: 'canvas-window',
     computed: {
-        ...mapGetters(['isPlaying']),
+        ...mapGetters(['isPlaying', 'scene']),
         playTool() {
             const { isPlaying, $store: { dispatch } } = this
             return isPlaying
@@ -32,11 +39,21 @@ export default {
                         })
                 }
             }
+        },
+        newGameObjectTool() {
+            const { scene } = this
+
+            return {
+                icon: 'add',
+                clickHandler() {
+                    newBoxObject(scene.raw)
+                }
+            }
         }
     },
     render(h) {
-        const { openSceneTool, playTool } = this
-        const leftTools = [openSceneTool, playTool]
+        const { openSceneTool, newGameObjectTool, playTool } = this
+        const leftTools = [openSceneTool, newGameObjectTool, playTool]
 
         return <div class={styles.canvasWindow}>
             <Canvas/>
