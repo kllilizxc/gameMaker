@@ -66,7 +66,7 @@ export default {
         } = this
 
         return <div class={styles.numberInput}>
-            <TextField class={styles.textField}
+            <input class={styles.textField}
                        type={'number'}
                        icon={icon}
                        label={label || name}
