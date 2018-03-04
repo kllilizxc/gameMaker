@@ -1,16 +1,9 @@
 @value Blue-400, White-Text from '@/common/colors.css';
 
 .treeItem {
-    display: flex;
-    line-height: 28px;
-    margin-left: 8px;
-    cursor: pointer;
-    height: 28px;
-    overflow: hidden;
 }
 
 .treeItem span {
-    padding: 2px;
 }
 
 .chosen {
@@ -20,7 +13,6 @@
 
 .arrowIcon {
     transition: transform 0.3s ease;
-    line-height: 28px;
 }
 
 .unFold {

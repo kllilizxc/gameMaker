@@ -102,9 +102,8 @@ export default {
             }
         },
         getFieldValue(field) {
-            field.options.value = field.type === GROUP_TYPE
-                ? field.children.map(child => child.get())
-                : field.get()
+            if (field.type !== GROUP_TYPE)
+                field.options.value = field.get()
 
             console.log(field.options.label, field.options.value)
         }
