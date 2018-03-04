@@ -32,6 +32,7 @@ export default {
     },
     methods: {
         createScriptElement(h, component, props, field, children = []): any {
+            console.log(props)
             const data = {
                 props,
                 on: {

@@ -15,15 +15,6 @@ export default {
         ...mapGetters(['scene', 'gameObjects', 'isPlaying']),
         container() {
             return this.$refs.container
-        },
-        screenWidth() {
-            return this.container.clientWidth
-        },
-        screenHeight() {
-            return this.container.clientHeight
-        },
-        screenRatio() {
-            return this.screenWidth / this.screenHeight
         }
     },
     watch: {
@@ -33,12 +24,11 @@ export default {
             window.scene = scene
 
             if (!scene.children || scene.children.length === 0)
-                this.initScene(scene, this.screenRatio)
+                this.initScene(scene)
             else
                 scene.traverse(sceneChild => {
                     if (sceneChild.type === 'PerspectiveCamera') {
                         this.camera = sceneChild
-                        this.resetCameraSize()
                     }
                 })
 
@@ -48,7 +38,7 @@ export default {
                 this.mixer.clipAction(animationClip).play()
             }
 
-            this.controls = new THREE.OrbitControls(this.camera)
+            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
 
             window.cancelAnimationFrame(this.t)
             this.t = window.requestAnimationFrame(this.render)
@@ -59,7 +49,7 @@ export default {
             // background
             scene.background = new THREE.Color(0xffffff)
             // camera
-            this.camera = new THREE.PerspectiveCamera(70, this.screenRatio, 1, 1000)
+            this.camera = new THREE.PerspectiveCamera(70, 1, 1, 1000)
             this.camera.name = 'camera'
             scene.add(this.camera)
             // ambient light
@@ -87,9 +77,22 @@ export default {
             // fog
             scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
         },
-        resetCameraSize() {
-            this.camera.aspect = this.screenWidth / this.screenHeight
-            this.camera.updateProjectionMatrix()
+        resizeCanvasToDisplaySize(force = false) {
+            const { renderer, camera } = this
+            const canvas = renderer.domElement
+            // look up the size the canvas is being displayed
+            const width = canvas.clientWidth
+            const height = canvas.clientHeight
+
+            // adjust displayBuffer size to match
+            if (force || canvas.width !== width || canvas.height !== height) {
+                // you must pass false here or three.js sadly fights the browser
+                renderer.setSize(width, height, false)
+                camera.aspect = width / height
+                camera.updateProjectionMatrix()
+
+                // update any render target sizes here
+            }
         },
         animate() {
             const { clock, mixer } = this
@@ -106,6 +109,7 @@ export default {
         },
         render() {
             const { renderer, camera, isPlaying } = this
+            this.resizeCanvasToDisplaySize()
             if (isPlaying) {
                 this.update()
                 this.animate()
@@ -118,15 +122,10 @@ export default {
         this.$store.dispatch('setScene', new THREE.Scene())
     },
     mounted() {
-        const { container, renderer, screenWidth, screenHeight } = this
+        const { container, renderer } = this
 
-        renderer.setSize(screenWidth, screenHeight)
         renderer.setPixelRatio(window.devicePixelRatio)
         container.appendChild(renderer.domElement)
-
-        container.onresize = () => {
-            this.resetCameraSize()
-        }
     },
     render() {
         return <div class={styles.container} ref="container"/>

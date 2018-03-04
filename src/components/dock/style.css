@@ -1,7 +1,7 @@
 @value Grey-400, Pink-500 from '@/common/colors.css';
 
 .dock {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 50%;
     margin: 0 auto;
@@ -12,32 +12,30 @@
 }
 
 .container {
-    width: 100%;
-    height: 100%;
-    margin-left: -50%;
+    position: relative;
+    left: -50%;
     padding-bottom: 32px;
 }
 
 .card {
     border-radius: 16px;
     overflow: auto;
+    display: flex;
 }
 
 .left {
     border-right: 1px solid Grey-400;
-    float: left;
+    display: flex;
 }
 
 .right {
-    float: right;
+    display: flex;
 }
 
 .leftTool {
-    float: left;
     margin-right: 16px;
 }
 
 .rightTool {
-    float: right;
     margin-left: 16px;
 }

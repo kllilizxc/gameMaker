@@ -43,8 +43,12 @@ export default {
     },
     methods: {
         handleInput(value) {
+            console.log(value)
             this.inputValue = +value
             this.$emit('input', this.inputValue)
+        },
+        handleClick() {
+            this.$refs.input.focus()
         }
     },
     render() {
@@ -62,13 +66,16 @@ export default {
             maxLength,
             max,
             min,
+            handleClick,
             handleInput
         } = this
 
         return <div class={styles.numberInput}>
-            <input class={styles.textField}
+            <TextField class={styles.textField}
+                       ref={'input'}
                        type={'number'}
                        icon={icon}
+                       fullWidth
                        label={label || name}
                        labelFloat={labelFloat}
                        disabled={disabled}
@@ -79,9 +86,10 @@ export default {
                        rows={rows}
                        rowsMax={rowsMax}
                        maxLength={maxLength}
-                       value={'' + this.inputValue}
+                       value={this.inputValue}
                        max={max}
                        min={min}
+                       onClick={handleClick}
                        onInput={handleInput}/>
         </div>
     }

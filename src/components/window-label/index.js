@@ -80,10 +80,10 @@ export default {
                 this.isDragging = false
             }
         },
-        immediateShowWindow() {
-            if (this.isDragging) return
-            this.$emit('newWindow', this.label)
-            window.requestAnimationFrame(() => this.$emit('movingWindowEnd', window.innerWidth / MAX_SIZE))
+        immediateShowWindow() { // TODO buggy
+            // if (this.isDragging) return
+            // this.$emit('newWindow', this.label)
+            // window.requestAnimationFrame(() => this.$emit('movingWindowEnd', window.innerWidth / MAX_SIZE))
         }
     },
     render() {

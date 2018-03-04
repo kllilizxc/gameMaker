@@ -18,8 +18,8 @@ export default {
     computed: mapGetters(['gameObject']),
     methods: {
         addScript(file) {
-            readScriptFromFile(file).then(script => this.scripts.push(script))
-            // TODO change back to gameObject
+            readScriptFromFile(file).then(script =>
+                this.gameObject.scripts.push(script))
         },
         dropHandler(file) {
             this.addScript(file)

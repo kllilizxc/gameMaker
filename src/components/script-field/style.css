@@ -1,7 +1,7 @@
 @value Black-Text from '@/common/colors.css';
 
 .scriptField {
-    margin: 8px;
+    overflow: hidden;
 }
 
 .inputGroup {
