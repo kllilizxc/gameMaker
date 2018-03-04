@@ -1,4 +1,4 @@
-@value Blue-400, White-Text from '@/common/colors.css';
+@value DeepPurple-400, White-Text, Black-Text from '@/common/colors.css';
 
 .treeItem {
     display: flex;
@@ -7,25 +7,28 @@
     cursor: pointer;
     height: 32px;
     overflow: hidden;
+    color: Black-Text;
 }
 
 .treeItem span {
     padding: 2px;
     line-height: 32px;
+    font-size: 16px;
     height: 32px;
 }
 
 .chosen {
-    color: Blue-400;
-    font-weight: bold;
+    color: DeepPurple-400;
 }
 
 .arrowIcon {
     transition: transform 0.3s ease;
-    height: 32px;
-    line-height: 32px;
 }
 
 .unFold {
     transform: rotateZ(180deg);
+}
+
+.treeView {
+    margin: 0 8px;
 }

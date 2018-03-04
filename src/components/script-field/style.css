@@ -4,7 +4,12 @@
     overflow: hidden;
 }
 
-.inputGroup {
+.inputGroup .container {
+    margin: 0 -4px;
+}
+
+.inputGroup .container > * {
+    margin: 0 4px;
 }
 
 .label {

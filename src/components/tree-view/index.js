@@ -60,12 +60,12 @@ export default {
             const INDENT_LENGTH = 16
             return <div key={this.getNameFunction(obj)}>
                 <div class={styles.treeItem}
-                     onClick={e => this.toggleItem(obj)}>
+                     onClick={() => this.toggleItem(obj)}>
                     <span class={{ [styles.chosen]: this.chosenObj === obj }}>{this.getNameFunction(obj)}</span>
                     {obj.haveChildren &&
-                    <Icon className={{ [styles.arrowIcon]: true, [styles.unFold]: !obj.isFolded }}
+                    <Icon className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
                           icon={'arrow_drop_down'}
-                          size={24}/>}
+                          size={32}/>}
                 </div>
                 {obj.children.length > 0 && !obj.isFolded &&
                 <div class={styles.children} style={{ marginLeft: `${INDENT_LENGTH}px` }}>
