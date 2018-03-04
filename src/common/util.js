@@ -54,7 +54,7 @@ export const stateToActions = state =>
         return obj
     }, {})
 
-export const trimFilenameExtension = filename => filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '')
+export const trimFilenameExtension = filename => filename.replace(/\.[^/.]+$/, '')
 
 export const readScriptFromFile = file =>
     AssetManager.readLocalFile(file).then((content: string) =>

@@ -2,15 +2,17 @@
 
 .treeItem {
     display: flex;
-    line-height: 28px;
+    line-height: 32px;
     margin-left: 8px;
     cursor: pointer;
-    height: 28px;
+    height: 32px;
     overflow: hidden;
 }
 
 .treeItem span {
     padding: 2px;
+    line-height: 32px;
+    height: 32px;
 }
 
 .chosen {
@@ -20,7 +22,8 @@
 
 .arrowIcon {
     transition: transform 0.3s ease;
-    line-height: 28px;
+    height: 32px;
+    line-height: 32px;
 }
 
 .unFold {
