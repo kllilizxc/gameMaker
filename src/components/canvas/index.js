@@ -20,8 +20,7 @@ export default {
             const scripts = []
             this.gameObjects.forEach(gameObject =>
                 gameObject.scripts && gameObject.scripts.forEach(({ Behavior }) => {
-                    const { update, init } = new Behavior(THREE, gameObject)
-                    scripts.push({ update, init })
+                    scripts.push(new Behavior(THREE, gameObject))
                 }))
             return scripts
         }
