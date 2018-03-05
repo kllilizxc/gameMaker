@@ -82,6 +82,7 @@ export default {
             </div>
         },
         parseOption(h: any, field = this.field): any {
+            if (!field) return
             this.getFieldValue(field)
             switch (field.type) {
                 case NUMBER_TYPE:
@@ -102,6 +103,7 @@ export default {
             }
         },
         getFieldValue(field) {
+            if (!field.options) field.options = {}
             field.options.value = field.type !== GROUP_TYPE && field.get()
         }
     },

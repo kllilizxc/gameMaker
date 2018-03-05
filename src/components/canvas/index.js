@@ -64,7 +64,8 @@ export default {
             // background
             scene.background = new THREE.Color(0xffffff)
             // camera
-            this.camera = new THREE.PerspectiveCamera(70, 1, 1, 1000)
+            this.camera = new THREE.PerspectiveCamera(30, 1, 1, 10000)
+            this.camera.position.set(-200, 0, 200)
             this.camera.name = 'camera'
             scene.add(this.camera)
             // ambient light
