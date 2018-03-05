@@ -49,25 +49,6 @@ this.fields = [
                 }
             }
         ]
-    },
-    {
-        type: 'NUMBER_TYPE',
-        get() {
-            return rotation.z
-        },
-        set(val) {
-            rotation.z = val
-        },
-        options: {
-            name: 'z',
-            label: 'z'
-        }
-    },
-    {
-        type: 'FILE_TYPE',
-        get: () => file,
-        set: val => file = val,
-        options: { label: 'file' }
     }
 ]
 

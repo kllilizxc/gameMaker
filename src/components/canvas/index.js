@@ -15,6 +15,15 @@ export default {
         ...mapGetters(['scene', 'gameObjects', 'isPlaying']),
         container() {
             return this.$refs.container
+        },
+        scripts() {
+            const scripts = []
+            this.gameObjects.forEach(gameObject =>
+                gameObject.scripts && gameObject.scripts.forEach(({ Behavior }) => {
+                    const { update, init } = new Behavior(THREE, gameObject)
+                    scripts.push({ update, init })
+                }))
+            return scripts
         }
     },
     watch: {
@@ -40,6 +49,13 @@ export default {
 
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
 
+            this.resizeCanvasToDisplaySize(true)
+            window.cancelAnimationFrame(this.t)
+            this.t = window.requestAnimationFrame(this.render)
+        },
+        isPlaying() {
+            this.clock.start()
+            this.init()
             window.cancelAnimationFrame(this.t)
             this.t = window.requestAnimationFrame(this.render)
         }
@@ -83,29 +99,27 @@ export default {
             // look up the size the canvas is being displayed
             const width = canvas.clientWidth
             const height = canvas.clientHeight
+            const size = renderer.getSize()
 
             // adjust displayBuffer size to match
-            if (force || canvas.width !== width || canvas.height !== height) {
+            if (force || size.width !== width || size.height !== height) {
                 // you must pass false here or three.js sadly fights the browser
                 renderer.setSize(width, height, false)
                 camera.aspect = width / height
                 camera.updateProjectionMatrix()
-
-                // update any render target sizes here
             }
         },
         animate() {
             const { clock, mixer } = this
             if (!mixer) return
-            const delta = 0.75 * clock.getDelta()
+            const delta = clock.getDelta()
             mixer.update(delta)
         },
+        init() {
+            this.scripts.forEach(({ init }) => init && init())
+        },
         update() {
-            this.gameObjects.forEach(gameObject =>
-                gameObject.scripts.forEach(({ Behavior }) => {
-                    const { update } = new Behavior(THREE, gameObject)
-                    update()
-                }))
+            this.scripts.forEach(({ update }) => update && update())
         },
         render() {
             const { renderer, camera, isPlaying } = this

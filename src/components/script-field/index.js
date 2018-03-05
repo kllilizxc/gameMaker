@@ -32,12 +32,10 @@ export default {
     },
     methods: {
         createScriptElement(h, component, props, field, children = []): any {
-            console.log(props)
             const data = {
                 props,
                 on: {
                     input: value => {
-                        console.log('input', value)
                         field.set(value)
                         const newVal = field.get()
                         this.$emit('input', newVal)
@@ -78,7 +76,9 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker onInput={file => console.log(file)}/>
+                <FilePicker onInput={({ path, name }) => {
+                    field.set(path)
+                }}/>
             </div>
         },
         parseOption(h: any, field = this.field): any {
@@ -102,11 +102,7 @@ export default {
             }
         },
         getFieldValue(field) {
-            field.options.value = field.type === GROUP_TYPE
-                ? field.children.map(child => child.get())
-                : field.get()
-
-            console.log(field.options.label, field.options.value)
+            field.options.value = field.type !== GROUP_TYPE && field.get()
         }
     },
     render(h: any): any {

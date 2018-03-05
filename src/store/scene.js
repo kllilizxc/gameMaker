@@ -41,6 +41,7 @@ export default {
         ...stateToActions(simpleState),
         setScene: ({ commit, dispatch }, scene) => {
             commit(SET_SCENE, scene)
+            window.scene = scene
             console.log(scene)
             dispatch('setGameObject', scene)
             dispatch('setGameObjects', scene.children)

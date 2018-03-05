@@ -5,8 +5,8 @@ import { mapGetters } from 'vuex'
 import AssetManager from '@/common/asset-manager'
 
 function newBoxObject(scene) {
-    const geometry = new THREE.BoxBufferGeometry(200, 200, 200)
-    const material = new THREE.MeshBasicMaterial()
+    const geometry = new THREE.BoxBufferGeometry(50, 50, 50)
+    const material = new THREE.MeshPhysicalMaterial()
     const mesh = new THREE.Mesh(geometry, material)
     mesh.name = 'box'
     scene.add(mesh)
@@ -29,9 +29,7 @@ export default {
                     AssetManager.pickFile('Please pick the scene json file')
                         .then(filePath => {
                             new THREE.ObjectLoader().load(filePath, loadedScene => {
-                                const scene = loadedScene
-                                window.scene = scene
-                                this.$store.dispatch('setScene', scene)
+                                this.$store.dispatch('setScene', loadedScene)
                             })
                         })
                 }

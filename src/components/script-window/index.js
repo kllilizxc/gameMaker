@@ -12,14 +12,21 @@ export default {
     props: {},
     data() {
         return {
-            isDragOver: false
+            isDragOver: false,
+            refresh: false
         }
     },
     computed: mapGetters(['gameObject']),
     methods: {
         addScript(file) {
-            readScriptFromFile(file).then(script =>
-                this.gameObject.scripts.push(script))
+            readScriptFromFile(file).then(script => {
+                this.gameObject.scripts = this.gameObject.scripts || []
+                this.gameObject.scripts.push(script)
+                this.forceRefresh()
+            })
+        },
+        forceRefresh() {
+            this.refresh = !this.refresh
         },
         dropHandler(file) {
             this.addScript(file)
@@ -49,7 +56,8 @@ export default {
             dragOverHandler,
             dragLeaveHandler,
             isDragOver,
-            pickFile
+            pickFile,
+            refresh
         } = this
 
         return <div class={styles.scriptWindow}>

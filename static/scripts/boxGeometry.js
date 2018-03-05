@@ -1,5 +1,4 @@
-let width, height, depth
-width = height = depth = 200
+let { width, height, depth } = gameObject.geometry.parameters
 
 this.fields = [
     {

@@ -36,19 +36,9 @@ export default {
         max: Number,
         min: Number
     },
-    data() {
-        return {
-            inputValue: this.value
-        }
-    },
     methods: {
         handleInput(value) {
-            console.log(value)
-            this.inputValue = +value
-            this.$emit('input', this.inputValue)
-        },
-        handleClick() {
-            this.$refs.input.focus()
+            this.$emit('input', +value)
         }
     },
     render() {
@@ -67,7 +57,8 @@ export default {
             max,
             min,
             handleClick,
-            handleInput
+            handleInput,
+            value
         } = this
 
         return <div class={styles.numberInput}>
@@ -86,7 +77,7 @@ export default {
                        rows={rows}
                        rowsMax={rowsMax}
                        maxLength={maxLength}
-                       value={this.inputValue}
+                       value={value}
                        max={max}
                        min={min}
                        onClick={handleClick}

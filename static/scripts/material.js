@@ -5,7 +5,7 @@ this.fields = [
         type: 'FILE_TYPE',
         get: () => texture,
         set: val => {
-            texture = new THREE.textureLoader().load(val)
+            texture = new THREE.TextureLoader().load(val)
             gameObject.material = new THREE.MeshBasicMaterial({ map: texture })
         },
         options: {

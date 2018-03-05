@@ -3,11 +3,14 @@ import FileDropper from '@/ui/file-dropper'
 
 export default {
     name: 'file-picker',
+    props: {
+        title: String
+    },
     data: () => ({
         dragOver: false
     }),
     render() {
-        const { dragOver } = this
+        const { dragOver, title } = this
 
         return <FileDropper class={[styles.fileDropper, { [styles.dragOver]: dragOver }]}
                              onFileDrop={file => {
@@ -15,6 +18,6 @@ export default {
                                  this.dragOver = false
                              }}
                              onFileDragOver={() => this.dragOver = true }
-                             onFileDragLeave={() => this.dragOver = false}/>
+                            onFileDragLeave={() => this.dragOver = false}>{title}</FileDropper>
     }
 }

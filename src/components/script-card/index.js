@@ -6,12 +6,12 @@ export default {
     functional: true,
     render (h, { props: { script: { name, Behavior } }, parent: { $store: { getters: { gameObject } } } }) {
         const behavior = new Behavior(THREE, gameObject)
-        const { fields, update } = behavior
+        const { fields } = behavior
 
         return <Card class={styles.scriptCard}>
             <div class={styles.title}>{name}</div>
-            {fields.map((field) => <div>
-                <ScriptField field={field} onInput={update}/>
+            {fields && fields.map((field) => <div>
+                <ScriptField field={field}/>
             </div>)}
         </Card>
     }
