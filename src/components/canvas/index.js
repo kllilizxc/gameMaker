@@ -6,7 +6,7 @@ export default {
     data: () => ({
         camera: null,
         mixer: null,
-        controls: null,
+        orbitControls: null,
         transformControls: null,
         renderer: new THREE.WebGLRenderer({ antialias: true }),
         clock: new THREE.Clock(),
@@ -50,8 +50,10 @@ export default {
                 this.mixer.clipAction(animationClip).play()
             }
 
-            this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
+            this.orbitControls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
             this.transformControls = new THREE.TransformControls(this.camera, this.renderer.domElement)
+            this.transformControls.addEventListener('mouseDown', this.disableOrbitControls)
+            this.transformControls.addEventListener('mouseUp', this.enableOrbitControls)
 
             this.resizeCanvasToDisplaySize(true)
             window.cancelAnimationFrame(this.t)
@@ -161,6 +163,12 @@ export default {
                 scene.add(transformControls)
                 this.$store.dispatch('setGameObject', intersected)
             }
+        },
+        enableOrbitControls() {
+            this.orbitControls.enabled = true
+        },
+        disableOrbitControls() {
+            this.orbitControls.enabled = false
         }
     },
     created() {
@@ -176,7 +184,15 @@ export default {
         canvas.addEventListener('click', onCanvasClick, false)
     },
     beforeDestory() {
-        this.renderer.domElement.removeEventListener('click', this.onCanvasClick)
+        const {
+            renderer, transformControls,
+            onCanvasClick, enableOrbitControls, diableOrbitControls
+        } = this
+        renderer.domElement.removeEventListener('click', onCanvasClick)
+        if (transformControls) {
+            transformControls.removeEventListener('mouseDown', diableOrbitControls)
+            transformControls.removeEventListener('mouseUp', enableOrbitControls)
+        }
     },
     render() {
         return <div class={styles.container} ref="container"/>
