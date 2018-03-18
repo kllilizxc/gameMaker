@@ -7,8 +7,12 @@ export default {
         camera: null,
         mixer: null,
         controls: null,
+        transformControls: null,
         renderer: new THREE.WebGLRenderer({ antialias: true }),
         clock: new THREE.Clock(),
+        raycaster: new THREE.Raycaster(),
+        clickPoint: new THREE.Vector2(),
+        intersected: null,
         t: -1
     }),
     computed: {
@@ -47,6 +51,7 @@ export default {
             }
 
             this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
+            this.transformControls = new THREE.TransformControls(this.camera, this.renderer.domElement)
 
             this.resizeCanvasToDisplaySize(true)
             window.cancelAnimationFrame(this.t)
@@ -93,6 +98,15 @@ export default {
             // fog
             scene.fog = new THREE.Fog(0xffffff, 1000, 10000)
         },
+        castRay() {
+            const { raycaster, camera, scene, clickPoint } = this
+            raycaster.setFromCamera(clickPoint, camera)
+            const intersects = raycaster.intersectObjects(scene.children)
+            if (intersects.length > 0)
+                this.intersected = intersects[0].object
+            else
+                this.intersected = null
+        },
         resizeCanvasToDisplaySize(force = false) {
             const { renderer, camera } = this
             const canvas = renderer.domElement
@@ -122,26 +136,49 @@ export default {
             this.scripts.forEach(({ update }) => update && update())
         },
         render() {
-            const { renderer, camera, isPlaying } = this
-            this.resizeCanvasToDisplaySize()
+            const {
+                renderer, scene, camera, isPlaying,
+                resizeCanvasToDisplaySize, update, animate, render
+            } = this
+
+            resizeCanvasToDisplaySize()
             if (isPlaying) {
-                this.update()
-                this.animate()
+                update()
+                animate()
             }
-            renderer.render(this.scene, camera)
-            this.t = window.requestAnimationFrame(this.render)
+            renderer.render(scene, camera)
+            this.t = window.requestAnimationFrame(render)
+        },
+        onCanvasClick(e) {
+            const { renderer, intersected, scene, transformControls } = this
+            const canvas = renderer.domElement
+            e.preventDefault()
+            this.clickPoint.x = (event.clientX / canvas.clientWidth) * 2 - 1
+            this.clickPoint.y = -(event.clientY / canvas.clientHeight) * 2 + 1
+            this.castRay()
+            if (intersected) {
+                transformControls.attach(intersected)
+                scene.add(transformControls)
+            }
         }
     },
     created() {
         this.$store.dispatch('setScene', new THREE.Scene())
     },
     mounted() {
-        const { container, renderer } = this
+        const { container, renderer, onCanvasClick } = this
+        const canvas = renderer.domElement
 
         renderer.setPixelRatio(window.devicePixelRatio)
-        container.appendChild(renderer.domElement)
+        container.appendChild(canvas)
+
+        canvas.addEventListener('click', onCanvasClick, false)
+    },
+    beforeDestory() {
+        this.renderer.domElement.removeEventListener('click', this.onCanvasClick)
     },
     render() {
         return <div class={styles.container} ref="container"/>
     }
 }
+

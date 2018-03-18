@@ -23,6 +23,7 @@ module.exports = {
             Common: path.resolve(__dirname, 'src/ui/'),
             Scripts: path.resolve(__dirname, 'static/scripts'),
             'three/OrbitControls': path.join(__dirname, 'node_modules/three/examples/js/controls/OrbitControls.js'),
+            'three/TransformControls': path.join(__dirname, 'node_modules/three/examples/js/controls/TransformControls.js'),
             'three/OBJLoader': path.join(__dirname, 'node_modules/three/examples/js/loaders/OBJLoader.js')
         },
         symlinks: false

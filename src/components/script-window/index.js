@@ -49,6 +49,12 @@ export default {
                 })
         }
     },
+    watch: {
+        gameObject: {
+            handler() { this.refresh = !this.refresh },
+            deep: true
+        }
+    },
     render() {
         const {
             gameObject: { scripts },

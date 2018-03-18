@@ -10,6 +10,7 @@ import 'muse-ui/dist/muse-ui.css'
 
 import 'three'
 import 'three/OrbitControls'
+import 'three/TransformControls'
 
 Vue.use(MuseUI)
 
