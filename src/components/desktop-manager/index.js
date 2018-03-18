@@ -104,7 +104,7 @@ export default {
             let sizeToChange = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
             for (let i = this.currentWindowIndex - 1; i >= 0; --i) {
                 const window = windows[i]
-                if (window.size >= sizeToChange + 1) {
+                if (window.size > sizeToChange) {
                     window.size -= sizeToChange
                     break
                 } else {
@@ -119,11 +119,10 @@ export default {
             this.windowHintSize = size
         },
         createNewDesktopToFitWindow(): void {
-            const { currentWindow } = this
+            const currentWindow = this.currentDesktop.windows.pop()
             currentWindow.size = MAX_SIZE
-            this.currentDesktop.windows.pop()
-            this.resetWindowHint()
             this.addDesktop({ windows: [currentWindow] })
+            this.resetWindowHint(MAX_SIZE)
             this.$refs.windowHint.style.transition = ''
         },
         handleMovingExistingWindow(name: string): void {
@@ -153,6 +152,7 @@ export default {
             this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
         },
         handleReleaseWindow: function (deltaX: number): void {
+            if (!deltaX) return
             const size = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
             if (this.currentWindowIndex < 0 || !this.currentWindow) return
             if (!size) {

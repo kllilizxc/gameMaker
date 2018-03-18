@@ -61,6 +61,11 @@ export default {
             this.touchEnd(this.deltaX)
         }
     },
+    created() {
+        document.addEventListener('mousemove', this.handleTouchMove)
+        document.addEventListener('mouseup', this.handleTouchEnd)
+        document.addEventListener('mouseleave', this.handleTouchEnd)
+    },
     render() {
         const {
             handleTouchStart,
@@ -75,9 +80,6 @@ export default {
                     onTouchmove={handleTouchMove}
                     onTouchend={handleTouchEnd}
                     onMousedown={handleTouchStart}
-                    onMousemove={handleTouchMove}
-                    onMouseup={handleTouchEnd}
-                    onMouseleave={handleTouchEnd}
                     onClick={clickFunction}
                     style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>{this.$slots.default}</div>
     }
