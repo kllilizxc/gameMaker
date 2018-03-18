@@ -13,6 +13,7 @@ export default {
         raycaster: new THREE.Raycaster(),
         clickPoint: new THREE.Vector2(),
         intersected: null,
+        boxHelper: new THREE.BoxHelper(),
         t: -1
     }),
     computed: {
@@ -139,7 +140,7 @@ export default {
         },
         render() {
             const {
-                renderer, scene, camera, isPlaying,
+                renderer, scene, camera, isPlaying, boxHelper,
                 resizeCanvasToDisplaySize, update, animate, render
             } = this
 
@@ -148,20 +149,24 @@ export default {
                 update()
                 animate()
             }
+            boxHelper.update()
             renderer.render(scene, camera)
             this.t = window.requestAnimationFrame(render)
         },
         onCanvasClick(e) {
-            const { renderer, intersected, scene, transformControls } = this
+            const { renderer, intersected, scene, transformControls, boxHelper } = this
             const canvas = renderer.domElement
             e.preventDefault()
             this.clickPoint.x = (event.clientX / canvas.clientWidth) * 2 - 1
             this.clickPoint.y = -(event.clientY / canvas.clientHeight) * 2 + 1
             this.castRay()
+            scene.remove(boxHelper)
             if (intersected) {
                 transformControls.attach(intersected)
                 scene.add(transformControls)
                 this.$store.dispatch('setGameObject', intersected)
+                boxHelper.setFromObject(intersected)
+                scene.add(boxHelper)
             }
         },
         enableOrbitControls() {
