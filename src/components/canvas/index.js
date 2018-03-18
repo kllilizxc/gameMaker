@@ -159,6 +159,7 @@ export default {
             if (intersected) {
                 transformControls.attach(intersected)
                 scene.add(transformControls)
+                this.$store.dispatch('setGameObject', intersected)
             }
         }
     },

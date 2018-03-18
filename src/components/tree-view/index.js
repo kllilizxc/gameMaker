@@ -19,7 +19,8 @@ export default {
         getChildrenFunction: {
             type: Function,
             default: () => Promise.resolve([])
-        }
+        },
+        selected: Object
     },
     data() {
         return {
@@ -30,6 +31,9 @@ export default {
     watch: {
         data(value) {
             this.treeData = this.getItemDataFromPropData(value)
+        },
+        selected(value) {
+            this.chosenObj = this.treeData.find(d => d.raw === value)
         }
     },
     methods: {

@@ -51,7 +51,7 @@ export default {
     },
     watch: {
         gameObject: {
-            handler() { this.refresh = !this.refresh },
+            handler: 'forceRefresh',
             deep: true
         }
     },
