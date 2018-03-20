@@ -76,10 +76,10 @@ export default {
         animate() {
         },
         init() {
-            this.gameObject.scripts.forEach(({ init }) => init && init())
+            this.gameObject.scripts.forEach(({ init }) => init && init.bind(this.gameObject)())
         },
         update() {
-            this.gameObject.scripts.forEach(({ update }) => update && update())
+            this.gameObject.scripts.forEach(({ update }) => update && update.bind(this.gameObject)())
         },
         render() {
             const {

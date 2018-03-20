@@ -9,7 +9,7 @@ fields = [
     }
 ]
 
-update = () => {
+function update() {
     console.log('update', speed)
     this.rotation.x += speed
 }
