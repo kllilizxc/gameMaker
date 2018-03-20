@@ -14,17 +14,9 @@ export default {
         t: -1
     }),
     computed: {
-        ...mapGetters(['scene', 'gameObjects', 'isPlaying']),
+        ...mapGetters(['scene', 'gameObjects', 'isPlaying', 'gameObject']),
         canvas() {
             return this.$refs.canvas
-        },
-        scripts() {
-            const scripts = []
-            this.gameObjects.forEach(gameObject =>
-                gameObject.scripts && gameObject.scripts.forEach(({ Behavior }) => {
-                    scripts.push(new Behavior(BABYLON, gameObject))
-                }))
-            return scripts
         }
     },
     watch: {
@@ -46,6 +38,7 @@ export default {
                         this.editControl.show()
                         this.editControl.switchTo(this.pickedMesh)
                     }
+                    this.setGameObject(this.pickedMesh)
                 } else {
                     this.pickedMesh = null
                     this.editControl && this.editControl.hide()
@@ -61,7 +54,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['addGameObject']),
+        ...mapActions(['addGameObject', 'setGameObject']),
         initScene(scene) {
             const { canvas } = this
             this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
@@ -83,10 +76,10 @@ export default {
         animate() {
         },
         init() {
-            this.scripts.forEach(({ init }) => init && init())
+            this.gameObject.scripts.forEach(({ init }) => init && init())
         },
         update() {
-            this.scripts.forEach(({ update }) => update && update())
+            this.gameObject.scripts.forEach(({ update }) => update && update())
         },
         render() {
             const {

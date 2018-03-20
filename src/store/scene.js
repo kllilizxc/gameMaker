@@ -1,22 +1,42 @@
 import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile } from '../common/util'
+import * as BABYLON from 'babylonjs'
 
-const readDefaultScript = name => readScriptFromFile(`static/scripts/${name}.js`)
+const readDefaultScript = (name, gameObject) => {
+    console.log(gameObject)
+    return readScriptFromFile(`static/scripts/${name}.js`, gameObject)
+}
+
+function getScriptObject(gameObject, script) {
+    const { name, Behavior } = script
+    const { fields, init, update } = Behavior(BABYLON)
+    return { name, fields, init, update }
+}
 
 function initScript(gameObject) {
     const promises = []
     if (gameObject.position)
-        promises.push(readDefaultScript('transform'))
+        promises.push(readDefaultScript('transform', gameObject))
 
-    return Promise.all(promises).then(scripts => gameObject.scripts = scripts)
+    return Promise.all(promises).then(scripts =>
+        gameObject.scripts = scripts.map(script =>
+            getScriptObject(gameObject, script)))
 }
 
 function initScripts(gameObjects) {
-    gameObjects.forEach(gameObject => initScript(gameObject).then(() => initScripts(gameObject.getChildren())))
+    gameObjects.forEach(gameObject =>
+        initScript(gameObject).then(() =>
+            initScripts(gameObject.getChildren())))
+}
+
+function addScript(gameObject, script) {
+    gameObject.scripts = gameObject.scripts || []
+    gameObject.scripts.push(getScriptObject(gameObject, script))
 }
 
 const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
+const ADD_SCRIPT = 'ADD_SCRIPT'
 
 const simpleState = {
     gameObject: null,
@@ -45,6 +65,9 @@ export default {
         [SET_GAMEOBJECTS](state, gameObjects) {
             initScripts(state.gameObjects)
             state.gameObjects = gameObjects
+        },
+        [ADD_SCRIPT](state, script) {
+            addScript(state.gameObject, script)
         }
     },
     actions: {
@@ -57,6 +80,8 @@ export default {
             dispatch('setGameObjects', scene.meshes.concat(scene.lights))
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
-        setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects)
+        setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
+        addScript: ({ commit, state: { gameObject } }, file) =>
+            readScriptFromFile(file, gameObject).then(script => commit(ADD_SCRIPT, script))
     }
 }

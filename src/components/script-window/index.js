@@ -19,11 +19,8 @@ export default {
     computed: mapGetters(['gameObject']),
     methods: {
         addScript(file) {
-            readScriptFromFile(file).then(script => {
-                this.gameObject.scripts = this.gameObject.scripts || []
-                this.gameObject.scripts.push(script)
-                this.forceRefresh()
-            })
+            this.$store.dispatch('addScript', file)
+                .then(() => this.forceRefresh())
         },
         forceRefresh() {
             this.refresh = !this.refresh

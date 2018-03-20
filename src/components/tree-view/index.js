@@ -32,8 +32,12 @@ export default {
         data(value) {
             this.treeData = this.getItemDataFromPropData(value)
         },
-        selected(value) {
-            this.chosenObj = this.treeData.find(d => d.raw === value)
+        selected: {
+            handler(value) {
+                console.log(value)
+                this.chosenObj = this.treeData.find(d => d.raw === value)
+            },
+            immediate: true
         }
     },
     methods: {

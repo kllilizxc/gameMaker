@@ -1,6 +1,7 @@
-let { position, rotation, scaling } = gameObject
+let { position, rotation, scaling } = this
+console.log(this)
 
-this.fields = [
+const fields = [
     {
         type: 'GROUP_TYPE',
         options: {
@@ -50,5 +51,8 @@ this.fields = [
     }
 ]
 
-this.update = function () {
+function init() {
+}
+
+const update = function () {
 }
