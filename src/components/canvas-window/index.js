@@ -3,13 +3,12 @@ import Canvas from 'Components/canvas'
 import Dock from 'Components/dock'
 import { mapGetters } from 'vuex'
 import AssetManager from '@/common/asset-manager'
+import * as BABYLON from 'babylonjs'
 
-function newBoxObject(scene) {
-    const geometry = new THREE.BoxBufferGeometry(50, 50, 50)
-    const material = new THREE.MeshPhysicalMaterial()
-    const mesh = new THREE.Mesh(geometry, material)
-    mesh.name = 'box'
-    scene.add(mesh)
+function newSphere(scene) {
+    const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene, false, BABYLON.Mesh.FRONTSIDE)
+    // Move the sphere upward 1/2 of its height
+    sphere.position.y = 1
 }
 
 export default {
@@ -27,11 +26,7 @@ export default {
                 icon: 'folder_open',
                 clickHandler: () => {
                     AssetManager.pickFile('Please pick the scene json file')
-                        .then(filePath => {
-                            new THREE.ObjectLoader().load(filePath, loadedScene => {
-                                this.$store.dispatch('setScene', loadedScene)
-                            })
-                        })
+                        .then(filePath => null) // TODO import scene
                 }
             }
         },
@@ -41,7 +36,7 @@ export default {
             return {
                 icon: 'add',
                 clickHandler() {
-                    newBoxObject(scene)
+                    newSphere(scene)
                 }
             }
         }

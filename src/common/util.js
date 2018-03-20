@@ -60,6 +60,6 @@ export const readScriptFromFile = file =>
     AssetManager.readLocalFile(typeof file === 'string' ? file : file.path).then((content: string) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
-            Behavior: new Function('THREE', 'gameObject', content)
+            Behavior: new Function('BABYLON', 'gameObject', content)
         })
     )

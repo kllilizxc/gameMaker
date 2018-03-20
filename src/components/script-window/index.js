@@ -49,12 +49,6 @@ export default {
                 })
         }
     },
-    watch: {
-        gameObject: {
-            handler: 'forceRefresh',
-            deep: true
-        }
-    },
     render() {
         const {
             gameObject: { scripts },

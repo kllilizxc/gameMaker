@@ -8,10 +8,6 @@ import store from './store'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
 
-import 'three'
-import 'three/OrbitControls'
-import 'three/TransformControls'
-
 Vue.use(MuseUI)
 
 Vue.config.productionTip = false

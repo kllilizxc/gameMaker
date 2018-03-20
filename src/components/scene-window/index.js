@@ -18,15 +18,13 @@ export default {
         } = this
 
         return <div class={styles.sceneWindow}>
-            {scene && scene.children && <TreeView data={scene.children.filter(filterFunc)}
+            {scene && scene.meshes && <TreeView data={scene.meshes.filter(filterFunc)}
                                                   getNameFunction={obj => obj.name}
-                                                  getChildrenFunction={obj => Promise.resolve(obj.children)}
-                                                  haveChildrenFunction={obj => Promise.resolve(obj.children && obj.children.length > 0)}
+                                                  getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
+                                                  haveChildrenFunction={obj => Promise.resolve(obj.getChildren().length > 0)}
                                                   onInput={handleInput} selected={gameObject}/>}
         </div>
     }
 }
 
-const filterFunc = o =>
-    !(o instanceof THREE.TransformControls
-        || o instanceof THREE.BoxHelper)
+const filterFunc = o => true

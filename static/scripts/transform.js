@@ -1,6 +1,4 @@
-let { position, rotation, scale } = gameObject
-
-let file
+let { position, rotation, scaling } = gameObject
 
 this.fields = [
     {
