@@ -1,6 +1,6 @@
 let speed = 0.001
 
-this.fields = [
+fields = [
     {
         type: 'NUMBER_TYPE',
         get: () => speed,
@@ -9,7 +9,7 @@ this.fields = [
     }
 ]
 
-this.update = () => {
+update = () => {
     console.log('update', speed)
-    gameObject.rotation.x += speed
+    this.rotation.x += speed
 }

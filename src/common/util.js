@@ -57,9 +57,10 @@ export const stateToActions = state =>
 export const trimFilenameExtension = filename => filename.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '')
 
 const events = ['fields', 'init', 'update']
+const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
     AssetManager.readLocalFile(typeof file === 'string' ? file : file.path).then((content: string) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
-            Behavior: new Function('BABYLON', `${content}\nreturn {${events.join(',')}}`).bind(gameObject)
+            Behavior: new Function('BABYLON', ...events, `${content}\n${returnValues}`).bind(gameObject)
         }))

@@ -1,7 +1,7 @@
 let { position, rotation, scaling } = this
 console.log(this)
 
-const fields = [
+fields = [
     {
         type: 'GROUP_TYPE',
         options: {
@@ -54,5 +54,5 @@ const fields = [
 function init() {
 }
 
-const update = function () {
+function update () {
 }
