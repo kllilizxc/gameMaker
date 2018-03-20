@@ -35,7 +35,7 @@ export default {
 
             this.initScene(scene)
             scene.onPointerDown = () => {
-                if (this.editControl && this.editControl.isEditing()) return
+                if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
                 if (pickResult.hit) {
                     this.pickedMesh = pickResult.pickedMesh
