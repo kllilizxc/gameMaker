@@ -71,8 +71,6 @@ export default {
             sphere.position.y = 1
             this.addGameObject(sphere)
         },
-        castRay() {
-        },
         animate() {
         },
         init() {
