@@ -3,18 +3,11 @@ import Canvas from 'Components/canvas'
 import Dock from 'Components/dock'
 import { mapGetters } from 'vuex'
 import AssetManager from '@/common/asset-manager'
-import * as BABYLON from 'babylonjs'
-
-function newSphere(scene) {
-    const sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene, false, BABYLON.Mesh.FRONTSIDE)
-    // Move the sphere upward 1/2 of its height
-    sphere.position.y = 1
-}
 
 export default {
     name: 'canvas-window',
     computed: {
-        ...mapGetters(['isPlaying', 'scene']),
+        ...mapGetters(['isPlaying']),
         playTool() {
             const { isPlaying, $store: { dispatch } } = this
             return isPlaying
@@ -31,13 +24,9 @@ export default {
             }
         },
         newGameObjectTool() {
-            const { scene } = this
-
             return {
                 icon: 'add',
-                clickHandler() {
-                    newSphere(scene)
-                }
+                clickHandler: () => this.$refs.canvas.newSphere()
             }
         }
     },
@@ -46,7 +35,7 @@ export default {
         const leftTools = [openSceneTool, newGameObjectTool, playTool]
 
         return <div class={styles.canvasWindow}>
-            <Canvas/>
+            <Canvas ref='canvas'/>
             <Dock class={styles.dock} leftTools={leftTools}/>
         </div>
     }

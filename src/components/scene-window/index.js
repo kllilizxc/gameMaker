@@ -9,16 +9,16 @@ export default {
             this.$store.dispatch('setGameObject', obj)
         }
     },
-    computed: mapGetters(['scene', 'gameObject']),
+    computed: mapGetters(['gameObject', 'gameObjects']),
     render() {
         const {
             handleInput,
             gameObject,
-            scene
+            gameObjects
         } = this
 
         return <div class={styles.sceneWindow}>
-            {scene && scene.meshes && <TreeView data={scene.meshes.filter(filterFunc)}
+            {<TreeView data={gameObjects.filter(filterFunc)}
                                                   getNameFunction={obj => obj.name}
                                                   getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
                                                   haveChildrenFunction={obj => Promise.resolve(obj.getChildren().length > 0)}
