@@ -1,12 +1,16 @@
 import styles from './style.css'
 import TreeView from '../tree-view'
 import { mapGetters } from 'vuex'
+import SceneItem from '../scene-item'
 
 export default {
     name: 'scene-window',
     methods: {
         handleInput(obj) {
             this.$store.dispatch('setGameObject', obj)
+        },
+        editGameObjectName(name, obj) {
+            obj.name = name
         }
     },
     computed: mapGetters(['gameObject', 'gameObjects']),
@@ -14,15 +18,17 @@ export default {
         const {
             handleInput,
             gameObject,
-            gameObjects
+            gameObjects,
+            editGameObjectName
         } = this
 
         return <div class={styles.sceneWindow}>
             {<TreeView data={gameObjects.filter(filterFunc)}
-                                                  getNameFunction={obj => obj.name} getIdFunction={obj => obj.id}
-                                                  getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
-                                                  haveChildrenFunction={obj => Promise.resolve(obj.getChildren().length > 0)}
-                                                  onInput={handleInput} selected={gameObject}/>}
+                       getIdFunction={obj => obj.id}
+                       getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
+                       haveChildrenFunction={obj => Promise.resolve(obj.getChildren().length > 0)}
+                       renderItemFunction={obj => <SceneItem value={obj.name} onInput={val => editGameObjectName(val, obj)}/>}
+                       onInput={handleInput} selected={gameObject}/>}
         </div>
     }
 }

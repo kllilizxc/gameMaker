@@ -64,3 +64,5 @@ export const readScriptFromFile = (file, gameObject) =>
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
             Behavior: new Function('BABYLON', ...events, `${content}\n${returnValues}`).bind(gameObject)
         }))
+
+export const UUID = () => Date.now() + Math.random()

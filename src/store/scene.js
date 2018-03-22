@@ -1,4 +1,4 @@
-import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile } from '../common/util'
+import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile, UUID } from '../common/util'
 import * as BABYLON from 'babylonjs'
 
 const readDefaultScript = (name, gameObject) => {
@@ -57,6 +57,7 @@ export default {
         },
         [ADD_GAMEOBJECT](state, gameObjects) {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
+            gameObjects.forEach(gameObject => gameObject.id = UUID())
             initScripts(gameObjects)
             state.gameObjects = state.gameObjects.concat(gameObjects)
         },

@@ -8,11 +8,14 @@ export default {
             type: Array,
             default: []
         },
-        getNameFunction: Function,
         getIdFunction: Function,
         haveChildrenFunction: {
             type: Function,
             default: () => Promise.resolve(true)
+        },
+        renderItemFunction: {
+            type: Function,
+            required: true
         },
         getChildrenFunction: {
             type: Function,
@@ -41,7 +44,6 @@ export default {
         getItemDataFromPropData(data) {
             return data.map(obj => {
                 const d = {
-                    name: this.getNameFunction(obj),
                     children: [],
                     isFolded: true,
                     haveChildren: false,
@@ -63,10 +65,10 @@ export default {
         },
         renderItem(obj) {
             const INDENT_LENGTH = 16
-            return <div key={this.getIdFunction(obj)}>
-                <div class={styles.treeItem}
+            return <div key={this.getIdFunction(obj.raw)}>
+                <div class={[styles.treeItem, { [styles.chosen]: this.chosenObj === obj }]}
                      onClick={() => this.toggleItem(obj)}>
-                    <span class={{ [styles.chosen]: this.chosenObj === obj }}>{this.getNameFunction(obj)}</span>
+                    {this.renderItemFunction(obj.raw)}
                     {obj.haveChildren &&
                     <Icon className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
                           icon={'arrow_drop_down'}
