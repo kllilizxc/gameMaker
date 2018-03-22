@@ -1,3 +1,22 @@
+@value DeepPurple-400, Black-Icons from '@/common/colors.css';
+
 .sceneWindow {
     padding: 0 8px;
+}
+
+.item {
+    display: flex;
+    transition: height 0.3s ease;
+    height: 32px;
+}
+
+.deleteIcon {
+    margin-left: auto;
+    color: Black-Icons;
+}
+
+.chosen {
+    color: DeepPurple-400;
+    height: 48px;
+    line-height: 48px;
 }

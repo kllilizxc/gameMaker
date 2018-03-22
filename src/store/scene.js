@@ -81,6 +81,10 @@ export default {
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
         addScript: ({ commit, state: { gameObject } }, file) =>
-            readScriptFromFile(file, gameObject).then(script => commit(ADD_SCRIPT, script))
+            readScriptFromFile(file, gameObject).then(script => commit(ADD_SCRIPT, script)),
+        removeGameObject: ({ state: { gameObjects } }, obj) => {
+            obj.dispose()
+            gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
+        }
     }
 }

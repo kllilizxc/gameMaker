@@ -1,5 +1,5 @@
 import styles from './style.css'
-import Icon from '@/ui/icon'
+import IconButton from '@/ui/material-icon-button'
 
 export default {
     name: 'tree-view',
@@ -66,13 +66,12 @@ export default {
         renderItem(obj) {
             const INDENT_LENGTH = 16
             return <div key={this.getIdFunction(obj.raw)}>
-                <div class={[styles.treeItem, { [styles.chosen]: this.chosenObj === obj }]}
+                <div class={styles.treeItem}
                      onClick={() => this.toggleItem(obj)}>
                     {this.renderItemFunction(obj.raw)}
                     {obj.haveChildren &&
-                    <Icon className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
-                          icon={'arrow_drop_down'}
-                          size={32}/>}
+                    <IconButton className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
+                          icon={'arrow_drop_down'} size={32}/>}
                 </div>
                 {obj.children.length > 0 && !obj.isFolded &&
                 <div class={styles.children} style={{ marginLeft: `${INDENT_LENGTH}px` }}>

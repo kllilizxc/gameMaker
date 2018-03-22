@@ -1,4 +1,4 @@
-@value DeepPurple-400, White-Text, Black-Text from '@/common/colors.css';
+@value Black-Text from '@/common/colors.css';
 
 .treeItem {
     display: flex;
@@ -6,10 +6,6 @@
     cursor: pointer;
     overflow: hidden;
     color: Black-Text;
-}
-
-.chosen {
-    color: DeepPurple-400;
 }
 
 .arrowIcon {
@@ -23,3 +19,4 @@
 .treeView {
     margin: 0 8px;
 }
+
