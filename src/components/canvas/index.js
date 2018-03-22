@@ -72,6 +72,10 @@ export default {
             this.createHemisphericLight('light1', 0, 1, 0)
             this.createGround('ground1')
         },
+        dispose() {
+            this.editControl = null
+            this.scene.dispose()
+        },
         enableTranslation() {
             const { editControl } = this
             if (!editControl) return
@@ -153,7 +157,7 @@ export default {
     mounted() {
         const { canvas } = this
 
-        this.engine = new BABYLON.Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true})
+        this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setEngine', this.engine)
         this.$store.dispatch('setScene', new BABYLON.Scene(this.engine))
     },

@@ -2,9 +2,15 @@ import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile, U
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
 
+const getDefaultScriptsPath = name => `static/scripts/${name}.js`
+
 const readDefaultScript = (name, gameObject) => {
-    return readScriptFromFile(`static/scripts/${name}.js`, gameObject)
+    return readScriptFromFile(getDefaultScriptsPath(name), gameObject)
 }
+
+const defaultScripts = [
+    { name: 'transform', check: 'position' }
+]
 
 function getScriptObject(gameObject, script) {
     const { name, Behavior } = script
@@ -14,8 +20,8 @@ function getScriptObject(gameObject, script) {
 
 function initScript(gameObject) {
     const promises = []
-    if (gameObject.position)
-        promises.push(readDefaultScript('transform', gameObject))
+    defaultScripts.forEach(({ name, check }) =>
+        gameObject[check] && promises.push(readDefaultScript(name, gameObject)))
 
     return Promise.all(promises).then(scripts =>
         gameObject.scripts = scripts.map(script =>
@@ -37,6 +43,7 @@ const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
 const ADD_SCRIPT = 'ADD_SCRIPT'
+const RESTORE_SCRIPTS = 'RESTORE_SCRIPTS'
 
 const simpleState = {
     gameObject: null,
@@ -46,7 +53,8 @@ const simpleState = {
 
 const state = {
     scene: null,
-    gameObjects: []
+    gameObjects: [],
+    scriptsMap: {}
 }
 
 export default {
@@ -59,7 +67,14 @@ export default {
         },
         [ADD_GAMEOBJECT](state, gameObjects) {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
-            gameObjects.forEach(gameObject => gameObject.id = UUID())
+            gameObjects.forEach(gameObject => {
+                gameObject.id = UUID()
+                defaultScripts.forEach(({ name, check }) => {
+                    if (!gameObject[check]) return
+                    if (!state.scriptsMap[gameObject.id]) state.scriptsMap[gameObject.id] = []
+                    state.scriptsMap[gameObject.id].push(getDefaultScriptsPath(name))
+                })
+            })
             initScripts(gameObjects)
             state.gameObjects = state.gameObjects.concat(gameObjects)
         },
@@ -67,8 +82,21 @@ export default {
             initScripts(state.gameObjects)
             state.gameObjects = gameObjects
         },
-        [ADD_SCRIPT](state, script) {
-            addScript(state.gameObject, script)
+        [ADD_SCRIPT]({ gameObject, scriptsMap }, script) {
+            if (!scriptsMap[gameObject.id]) scriptsMap[gameObject.id] = []
+            scriptsMap[gameObject.id].push(script.path)
+            addScript(gameObject, script)
+        },
+        [RESTORE_SCRIPTS]({ gameObjects, scriptsMap }) {
+            console.log(gameObjects.map(({id}) => id), scriptsMap)
+            Object.keys(scriptsMap).forEach(id => {
+                const gameObject = gameObjects.find(obj => obj.id === id)
+                if (!gameObject) return
+                gameObject.scripts = gameObject.scripts || []
+                scriptsMap[id].forEach(path =>
+                    readScriptFromFile(path, gameObject)
+                        .then(script => gameObject.scripts.push(getScriptObject(gameObject, script))))
+            })
         }
     },
     actions: {
@@ -88,12 +116,16 @@ export default {
             obj.dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
-        saveScene: ({ state: { scene } }, filename) => {
+        saveScene: ({ state: { scene, scriptsMap } }, filename) => {
             const serializedScene = BABYLON.SceneSerializer.Serialize(scene)
+            serializedScene.scriptsMap = scriptsMap
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
         },
-        openScene: ({ state: { scene, engine }, dispatch }, filename) => {
-            BABYLON.SceneLoader.Load('', filename, engine, newScene => dispatch('setScene', newScene))
+        openScene: ({ state: { scene, engine }, dispatch, commit }, filename) => {
+            BABYLON.SceneLoader.Load('', filename, engine, newScene =>
+                dispatch('setScene', newScene).then(() => commit(RESTORE_SCRIPTS)))
+            AssetManager.readLocalFile(filename, 'utf8')
+                .then(data => state.scriptsMap = JSON.parse(data).scriptsMap)
         }
     }
 }

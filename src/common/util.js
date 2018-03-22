@@ -62,7 +62,10 @@ export const readScriptFromFile = (file, gameObject) =>
     AssetManager.readLocalFile(typeof file === 'string' ? file : file.path).then((content: string) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
+            path: typeof file === 'string' ? file : file.name,
             Behavior: new Function('BABYLON', ...events, `${content}\n${returnValues}`).bind(gameObject)
         }))
 
-export const UUID = () => Date.now() + Math.random()
+export const random16Bytes = () => btoa(Math.random().toString(16).substr(7))
+export const random64Bytes = () => random16Bytes() + random16Bytes() + random16Bytes() + random16Bytes()
+export const UUID = random64Bytes

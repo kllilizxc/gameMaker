@@ -13,7 +13,7 @@ Vue.use(MuseUI)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+window.vm0 = new Vue({
     el: '#app',
     // router,
     store,

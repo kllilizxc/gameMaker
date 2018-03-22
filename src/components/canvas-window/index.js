@@ -20,6 +20,7 @@ export default {
     },
     methods: {
         openScene() {
+            this.canvas.dispose()
             AssetManager.pickFile('Please pick the scene json file')
                 .then(filename => this.$store.dispatch('openScene', filename))
         },

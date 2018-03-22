@@ -48,7 +48,7 @@ export default {
     },
     render() {
         const {
-            gameObject: { scripts },
+            gameObject,
             dropHandler,
             dragOverHandler,
             dragLeaveHandler,
@@ -58,7 +58,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts && scripts.map(script => <Script script={script}/>)}
+            {gameObject.scripts && gameObject.scripts.map(script => <Script script={script}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>
