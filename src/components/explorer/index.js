@@ -50,7 +50,7 @@ export default {
 
         return <div class={styles.explorer}>
             <TreeView data={data}
-                      renderItemFunction={obj => <span>{obj.name}</span>}
+                      renderItemFunction={obj => <span class={styles.item}>{obj.name}</span>}
                       getIdFunction={d => d.name}
                       getChildrenFunction={getFolderFiles}
                       haveChildrenFunction={haveChildren}

@@ -1,5 +1,5 @@
 import styles from './style.css'
-import IconButton from '@/ui/material-icon-button'
+import Icon from '@/ui/icon'
 
 export default {
     name: 'tree-view',
@@ -70,7 +70,7 @@ export default {
                      onClick={() => this.toggleItem(obj)}>
                     {this.renderItemFunction(obj.raw)}
                     {obj.haveChildren &&
-                    <IconButton className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
+                    <Icon className={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
                           icon={'arrow_drop_down'} size={32}/>}
                 </div>
                 {obj.children.length > 0 && !obj.isFolded &&

@@ -23,9 +23,15 @@ export default {
         scene(scene) {
             if (!scene) return
             window.scene = scene
-            const { engine, render } = this
+            const { engine, render, canvas } = this
 
-            this.initScene(scene)
+            if (scene.activeCamera) {
+                scene.activeCamera.attachControl(canvas)
+                this.camera = scene.activeCamera
+            } else {
+                this.initScene(scene)
+            }
+            this.editControl && this.editControl.detach()
             scene.onPointerDown = () => {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
@@ -42,6 +48,7 @@ export default {
                 } else {
                     this.pickedMesh = null
                     this.editControl && this.editControl.hide()
+                    this.setGameObject(null)
                 }
             }
 
@@ -60,10 +67,31 @@ export default {
             this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
             this.camera.attachControl(canvas, false)
+            this.addGameObject(this.camera)
 
-            const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene)
+            this.createHemisphericLight('light1', 0, 1, 0)
             this.createGround('ground1')
-            this.addGameObject([this.camera, light])
+        },
+        enableTranslation() {
+            const { editControl } = this
+            if (!editControl) return
+            editControl.enableTranslation()
+            editControl.disableRotation()
+            editControl.disableScaling()
+        },
+        enableRotation() {
+            const { editControl } = this
+            if (!editControl) return
+            editControl.disableTranslation()
+            editControl.enableRotation()
+            editControl.disableScaling()
+        },
+        enableScaling() {
+            const { editControl } = this
+            if (!editControl) return
+            editControl.disableTranslation()
+            editControl.disableRotation()
+            editControl.enableScaling()
         },
         createSphere(name = 'sphere', diameter = 1, diameterX = 1) {
             const sphere = BABYLON.MeshBuilder.CreateSphere(name, { diameter, diameterX }, this.scene)
@@ -126,6 +154,7 @@ export default {
         const { canvas } = this
 
         this.engine = new BABYLON.Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true})
+        this.$store.dispatch('setEngine', this.engine)
         this.$store.dispatch('setScene', new BABYLON.Scene(this.engine))
     },
     beforeDestory() {

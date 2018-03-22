@@ -23,6 +23,8 @@ export default class AssetManager {
 
     static readLocalFile = getFunctionFromFs('readFile')
 
+    static writeFile = getFunctionFromFs('writeFile')
+
     static readLocalStat = path => new Promise((resolve, reject) => fs.stat(path, (err, stats) => {
         if (err)
             reject(err)
@@ -41,5 +43,7 @@ export default class AssetManager {
             if (!filePaths || filePaths.length === 0) reject()
             else resolve(filePaths)
         }))
+
+    static saveFile = (title, filters) => new Promise(resolve => dialog.showSaveDialog({ title, filters }, resolve))
 }
 

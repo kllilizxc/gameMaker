@@ -1,5 +1,6 @@
 import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile, UUID } from '../common/util'
 import * as BABYLON from 'babylonjs'
+import AssetManager from '@/common/asset-manager'
 
 const readDefaultScript = (name, gameObject) => {
     return readScriptFromFile(`static/scripts/${name}.js`, gameObject)
@@ -39,7 +40,8 @@ const ADD_SCRIPT = 'ADD_SCRIPT'
 
 const simpleState = {
     gameObject: null,
-    isPlaying: false
+    isPlaying: false,
+    engine: null
 }
 
 const state = {
@@ -76,7 +78,7 @@ export default {
             window.scene = scene
             console.log(scene)
             dispatch('setGameObject', scene)
-            dispatch('setGameObjects', scene.meshes.concat(scene.lights))
+            dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras))
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
@@ -85,6 +87,13 @@ export default {
         removeGameObject: ({ state: { gameObjects } }, obj) => {
             obj.dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
+        },
+        saveScene: ({ state: { scene } }, filename) => {
+            const serializedScene = BABYLON.SceneSerializer.Serialize(scene)
+            AssetManager.writeFile(filename, JSON.stringify(serializedScene))
+        },
+        openScene: ({ state: { scene, engine }, dispatch }, filename) => {
+            BABYLON.SceneLoader.Load('', filename, engine, newScene => dispatch('setScene', newScene))
         }
     }
 }
