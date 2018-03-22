@@ -2,6 +2,7 @@
 
 .scriptField {
     overflow: hidden;
+    margin: 4px 0;
 }
 
 .inputGroup .container {

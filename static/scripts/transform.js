@@ -2,13 +2,13 @@ let { position, rotation, scaling } = this
 
 fields = [
     {
-        type: 'GROUP_TYPE',
+        type: 'GROUP',
         options: {
             label: 'position'
         },
         children: [
             {
-                type: 'NUMBER_TYPE',
+                type: 'NUMBER',
                 get() {
                     return position.x
                 },
@@ -21,7 +21,7 @@ fields = [
                 }
             },
             {
-                type: 'NUMBER_TYPE',
+                type: 'NUMBER',
                 get() {
                     return position.y
                 },
@@ -34,7 +34,7 @@ fields = [
                 }
             },
             {
-                type: 'NUMBER_TYPE',
+                type: 'NUMBER',
                 get() {
                     return position.z
                 },

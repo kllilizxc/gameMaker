@@ -1,4 +1,20 @@
+@value DeepPurple-400 from '@/common/colors.css';
+
 .item {
     height: 32px;
     line-height: 32px;
+}
+
+.hint {
+    text-align: center;
+    font-size: 18px;
+}
+
+.explorer {
+    overflow: auto;
+    height: 100%;
+}
+
+.chosen {
+    color: DeepPurple-400;
 }

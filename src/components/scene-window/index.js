@@ -16,9 +16,12 @@ export default {
         editGameObjectName(name, obj) {
             obj.name = name
         },
+        handleDragStart(e, obj) {
+            e.dataTransfer.setData('gameObject', obj.id)
+        },
         renderItem(obj) {
             const isChosen = this.gameObject && obj.id === this.gameObject.id
-            return <div class={[styles.item, { [styles.chosen]: isChosen }]} onClick={() => this.handleInput(obj)}>
+            return <div draggable onDragstart={e => this.handleDragStart(e, obj)} class={[styles.item, { [styles.chosen]: isChosen }]} onClick={() => this.handleInput(obj)}>
                 <SceneItem value={obj.name} onInput={val => this.editGameObjectName(val, obj)}/>
                 {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24} onClick={() => this.removeGameObject(obj)}/>}
             </div>

@@ -1,12 +1,14 @@
 let texture
 
-this.fields = [
+fields = [
     {
-        type: 'FILE_TYPE',
+        type: 'FILE',
         get: () => texture,
         set: val => {
-            texture = new THREE.TextureLoader().load(val)
-            gameObject.material = new THREE.MeshBasicMaterial({ map: texture })
+            console.log(val)
+            texture = new BABYLON.Texture(val, scene)
+            this.material = new BABYLON.StandardMaterial('material', scene)
+            this.material.diffuseTexture = texture
         },
         options: {
             label: 'texture'
@@ -14,5 +16,8 @@ this.fields = [
     }
 ]
 
-this.start = () => {
+start = () => {
+}
+
+function update() {
 }

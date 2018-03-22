@@ -12,31 +12,31 @@ const defaultScripts = [
     { name: 'transform', check: 'position' }
 ]
 
-function getScriptObject(gameObject, script) {
+function getScriptObject(scene, gameObject, script) {
     const { name, Behavior } = script
-    const { fields, init, update } = Behavior(BABYLON)
+    const { fields, init, update } = Behavior(BABYLON, scene)
     return { name, fields, init, update }
 }
 
-function initScript(gameObject) {
+function initScript(scene, gameObject) {
     const promises = []
     defaultScripts.forEach(({ name, check }) =>
         gameObject[check] && promises.push(readDefaultScript(name, gameObject)))
 
     return Promise.all(promises).then(scripts =>
         gameObject.scripts = scripts.map(script =>
-            getScriptObject(gameObject, script)))
+            getScriptObject(scene, gameObject, script)))
 }
 
-function initScripts(gameObjects) {
+function initScripts(scene, gameObjects) {
     gameObjects.forEach(gameObject =>
-        initScript(gameObject).then(() =>
-            initScripts(gameObject.getChildren())))
+        initScript(scene, gameObject).then(() =>
+            initScripts(scene, gameObject.getChildren())))
 }
 
-function addScript(gameObject, script) {
+function addScript(scene, gameObject, script) {
     gameObject.scripts = gameObject.scripts || []
-    gameObject.scripts.push(getScriptObject(gameObject, script))
+    gameObject.scripts.push(getScriptObject(scene, gameObject, script))
 }
 
 const SET_SCENE = 'SET_SCENE'
@@ -44,6 +44,8 @@ const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
 const ADD_SCRIPT = 'ADD_SCRIPT'
 const RESTORE_SCRIPTS = 'RESTORE_SCRIPTS'
+
+const logger = console
 
 const simpleState = {
     gameObject: null,
@@ -54,7 +56,8 @@ const simpleState = {
 const state = {
     scene: null,
     gameObjects: [],
-    scriptsMap: {}
+    scriptsMap: {},
+    filename: null
 }
 
 export default {
@@ -75,27 +78,26 @@ export default {
                     state.scriptsMap[gameObject.id].push(getDefaultScriptsPath(name))
                 })
             })
-            initScripts(gameObjects)
+            initScripts(state.scene, gameObjects)
             state.gameObjects = state.gameObjects.concat(gameObjects)
         },
         [SET_GAMEOBJECTS](state, gameObjects) {
-            initScripts(state.gameObjects)
+            initScripts(state.scene, state.gameObjects)
             state.gameObjects = gameObjects
         },
-        [ADD_SCRIPT]({ gameObject, scriptsMap }, script) {
+        [ADD_SCRIPT]({ gameObject, scriptsMap, scene }, script) {
             if (!scriptsMap[gameObject.id]) scriptsMap[gameObject.id] = []
             scriptsMap[gameObject.id].push(script.path)
-            addScript(gameObject, script)
+            addScript(scene, gameObject, script)
         },
-        [RESTORE_SCRIPTS]({ gameObjects, scriptsMap }) {
-            console.log(gameObjects.map(({id}) => id), scriptsMap)
+        [RESTORE_SCRIPTS]({ gameObjects, scriptsMap, scene }) {
             Object.keys(scriptsMap).forEach(id => {
                 const gameObject = gameObjects.find(obj => obj.id === id)
                 if (!gameObject) return
                 gameObject.scripts = gameObject.scripts || []
                 scriptsMap[id].forEach(path =>
                     readScriptFromFile(path, gameObject)
-                        .then(script => gameObject.scripts.push(getScriptObject(gameObject, script))))
+                        .then(script => gameObject.scripts.push(getScriptObject(scene, gameObject, script))))
             })
         }
     },
@@ -104,7 +106,7 @@ export default {
         setScene: ({ commit, dispatch }, scene) => {
             commit(SET_SCENE, scene)
             window.scene = scene
-            console.log(scene)
+            logger.log(scene)
             dispatch('setGameObject', scene)
             dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras))
         },
@@ -116,16 +118,18 @@ export default {
             obj.dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
-        saveScene: ({ state: { scene, scriptsMap } }, filename) => {
-            const serializedScene = BABYLON.SceneSerializer.Serialize(scene)
-            serializedScene.scriptsMap = scriptsMap
+        saveScene: ({ state }, filename) => {
+            const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
+            serializedScene.scriptsMap = state.scriptsMap
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
+            state.filename = filename
         },
-        openScene: ({ state: { scene, engine }, dispatch, commit }, filename) => {
-            BABYLON.SceneLoader.Load('', filename, engine, newScene =>
+        openScene: ({ state, dispatch, commit }, filename) => {
+            BABYLON.SceneLoader.Load('', filename, state.engine, newScene =>
                 dispatch('setScene', newScene).then(() => commit(RESTORE_SCRIPTS)))
             AssetManager.readLocalFile(filename, 'utf8')
                 .then(data => state.scriptsMap = JSON.parse(data).scriptsMap)
+            state.filename = filename
         }
     }
 }

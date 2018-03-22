@@ -13,7 +13,8 @@ export default {
         path: String
     },
     data: () => ({
-        data: []
+        data: [],
+        chosenObj: null
     }),
     methods: {
         getFolderFiles({ name, path }) {
@@ -27,34 +28,56 @@ export default {
                 .then(stats => stats.isDirectory())
                 .catch(err => logger.error(err))
         },
-        handleInput (obj) {
+        handleInput(obj) {
             console.log(obj.name)
+        },
+        setChosenItem(obj) {
+            this.chosenObj = obj
+        },
+        handleDragStart(e, obj) {
+            e.dataTransfer.setData('filename', joinPath(obj.path, obj.name))
+        },
+        renderItem(obj) {
+            const isChosen = obj === this.chosenObj
+            return <span class={[styles.item, {[styles.chosen]: isChosen}]}
+                         onClick={() => this.setChosenItem(obj)}
+                         draggable={true} onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
         }
     },
-    created() {
-        AssetManager.readLocalDir(this.path)
-            .then(files => {
-                this.data = files.map(filename => ({
-                    name: filename,
-                    path: this.path
-                }))
-            }).catch(err => console.log(err))
+    watch: {
+        path: {
+            handler(val) {
+                if (!val) return
+                AssetManager.readLocalDir(val)
+                    .then(files => {
+                        this.data = files.map(filename => ({
+                            name: filename,
+                            path: val
+                        }))
+                    }).catch(err => console.log(err))
+            },
+            immediate: true
+        }
     },
     render() {
         const {
             data,
+            path,
             getFolderFiles,
             haveChildren,
-            handleInput
+            handleInput,
+            renderItem
         } = this
 
         return <div class={styles.explorer}>
-            <TreeView data={data}
-                      renderItemFunction={obj => <span class={styles.item}>{obj.name}</span>}
-                      getIdFunction={d => d.name}
-                      getChildrenFunction={getFolderFiles}
-                      haveChildrenFunction={haveChildren}
-                      onInput={handleInput}/>
+            {path
+                ? <TreeView data={data}
+                            renderItemFunction={renderItem}
+                            getIdFunction={d => d.name}
+                            getChildrenFunction={getFolderFiles}
+                            haveChildrenFunction={haveChildren}
+                            onInput={handleInput}/>
+                : <p class={styles.hint}>You should save first to use the explorer</p>}
         </div>
     }
 }

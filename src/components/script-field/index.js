@@ -8,12 +8,13 @@ import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
 
-const STRING_TYPE = 'STRING_TYPE'
-const NUMBER_TYPE = 'NUMBER_TYPE'
-const BOOLEAN_TYPE = 'BOOLEAN_TYPE'
-const ENUM_TYPE = 'ENUM_TYPE'
-const FILE_TYPE = 'FILE_TYPE'
-const GROUP_TYPE = 'GROUP_TYPE'
+const STRING_TYPE = 'STRING'
+const NUMBER_TYPE = 'NUMBER'
+const BOOLEAN_TYPE = 'BOOLEAN'
+const ENUM_TYPE = 'ENUM'
+const FILE_TYPE = 'FILE'
+const GAMEOBJECT_TYPE = 'GAMEOBJECT'
+const GROUP_TYPE = 'GROUP'
 
 export type Field = {
     type: string,
@@ -76,9 +77,14 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker onInput={({ path, name }) => {
-                    field.set(path)
-                }}/>
+                <FilePicker type='file' onInput={({ path }) => field.set(path) }/>
+            </div>
+        },
+        renderGameObjectPicker(h: any, field): any {
+            const { options } = field
+            return <div class={styles.filePicker}>
+                <div class={styles.label}>{options.label}</div>
+                <FilePicker type='gameObject' onInput={ obj => field.set(obj) }/>
             </div>
         },
         parseOption(h: any, field = this.field): any {
@@ -95,6 +101,8 @@ export default {
                     return this.renderPicker(h, field)
                 case FILE_TYPE:
                     return this.renderFilePicker(h, field)
+                case GAMEOBJECT_TYPE:
+                    return this.renderGameObjectPicker(h, field)
                 case GROUP_TYPE:
                     return this.renderInputGroup(h, field)
                 default:

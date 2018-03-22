@@ -63,7 +63,7 @@ export const readScriptFromFile = (file, gameObject) =>
         Promise.resolve({
             name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
             path: typeof file === 'string' ? file : file.name,
-            Behavior: new Function('BABYLON', ...events, `${content}\n${returnValues}`).bind(gameObject)
+            Behavior: new Function('BABYLON', 'scene', ...events, `${content}\n${returnValues}`).bind(gameObject)
         }))
 
 export const random16Bytes = () => btoa(Math.random().toString(16).substr(7))
