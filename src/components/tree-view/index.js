@@ -23,15 +23,16 @@ export default {
         },
         selected: Object
     },
-    data() {
-        return {
-            treeData: this.getItemDataFromPropData(this.data) || [],
-            chosenObj: null
-        }
-    },
+    data: () => ({
+        treeData: [],
+        chosenObj: null
+    }),
     watch: {
-        data(value) {
-            this.treeData = this.getItemDataFromPropData(value)
+        data: {
+            handler(value) {
+                this.treeData = this.getItemDataFromPropData(value)
+            },
+            immediate: true
         },
         selected: {
             handler(value) {
@@ -41,6 +42,9 @@ export default {
         }
     },
     methods: {
+        setTreeData() {
+            this.treeData = this.getItemDataFromPropData(this.data)
+        },
         getItemDataFromPropData(data) {
             return data.map(obj => {
                 const d = {

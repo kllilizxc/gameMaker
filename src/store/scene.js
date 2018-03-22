@@ -60,6 +60,11 @@ const state = {
     filename: null
 }
 
+function removeInArray(array, compareFunc) {
+    const index = array.findIndex(a => compareFunc(a))
+    if (index !== -1) array.splice(index, 1)
+}
+
 export default {
     state: { ...simpleState, ...state },
     getters: stateToGetters({ ...simpleState, ...state }),
@@ -118,6 +123,11 @@ export default {
             obj.dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
+        setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
+            if (isParent(parent, child)) return
+            child.parent = parent
+            removeInArray(gameObjects, ({ id }) => id === child.id)
+        },
         saveScene: ({ state }, filename) => {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
             serializedScene.scriptsMap = state.scriptsMap
@@ -132,4 +142,9 @@ export default {
             state.filename = filename
         }
     }
+}
+
+function isParent(child, parent) {
+    if (!child.parent) return false
+    return (child.parent === parent) || isParent(child.parent, parent)
 }

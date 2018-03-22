@@ -41,7 +41,7 @@ export default {
             const isChosen = obj === this.chosenObj
             return <span class={[styles.item, {[styles.chosen]: isChosen}]}
                          onClick={() => this.setChosenItem(obj)}
-                         draggable={true} onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
+                         draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
         }
     },
     watch: {
