@@ -8,10 +8,8 @@ export default {
             type: Array,
             default: []
         },
-        getNameFunction: {
-            type: Function,
-            default: v => v
-        },
+        getNameFunction: Function,
+        getIdFunction: Function,
         haveChildrenFunction: {
             type: Function,
             default: () => Promise.resolve(true)
@@ -34,7 +32,6 @@ export default {
         },
         selected: {
             handler(value) {
-                console.log(value)
                 this.chosenObj = this.treeData.find(d => d.raw === value)
             },
             immediate: true
@@ -66,7 +63,7 @@ export default {
         },
         renderItem(obj) {
             const INDENT_LENGTH = 16
-            return <div key={this.getNameFunction(obj)}>
+            return <div key={this.getIdFunction(obj)}>
                 <div class={styles.treeItem}
                      onClick={() => this.toggleItem(obj)}>
                     <span class={{ [styles.chosen]: this.chosenObj === obj }}>{this.getNameFunction(obj)}</span>

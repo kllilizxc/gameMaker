@@ -1,12 +1,12 @@
 // @flow
 // @jsx h
 import card from '@/ui/card'
-import dockItem from '@/components/dock-item'
 import hideable from '@/ui/hideable'
+import iconButton from '@/ui/material-icon-button'
 
 export default {
     name: 'dock',
-    components: { card, dockItem, hideable },
+    components: { card, hideable, iconButton },
     props: {
         leftTools: Array,
         rightTools: Array

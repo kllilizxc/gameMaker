@@ -62,22 +62,47 @@ export default {
             this.camera.attachControl(canvas, false)
 
             const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene)
-            const ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene, false)
-            this.addGameObject([this.camera, light, ground])
+            this.createGround('ground1')
+            this.addGameObject([this.camera, light])
         },
-        newSphere(name = 'sphere1') {
-            const sphere = BABYLON.Mesh.CreateSphere(name, 16, 2, this.scene, false, BABYLON.Mesh.FRONTSIDE)
+        createSphere(name = 'sphere', diameter = 1, diameterX = 1) {
+            const sphere = BABYLON.MeshBuilder.CreateSphere(name, { diameter, diameterX }, this.scene)
             // Move the sphere upward 1/2 of its height
             sphere.position.y = 1
             this.addGameObject(sphere)
         },
+        createBox(name = 'box', height = 1, width = 1, depth = 1) {
+            const box = BABYLON.MeshBuilder.CreateBox(name, { height, width, depth }, this.scene)
+            box.position.y = 1
+            this.addGameObject(box)
+        },
+        createPlane(name = 'plane', width = 5, height = 5) {
+            this.addGameObject(BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))
+        },
+        createGround(name = 'ground', width = 10, height = 10, subdivsions = 4) {
+            this.addGameObject(BABYLON.MeshBuilder.CreateGround(name, { width, height, subdivsions }, this.scene))
+        },
+        createPointLight(name = 'pointLight', x = 1, y = 10, z = 1) {
+            this.addGameObject(new BABYLON.PointLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+        },
+        createDirectionalLight(name = 'directionalLight', x = 0, y = -1, z = 0) {
+            this.addGameObject(new BABYLON.DirectionalLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+        },
+        createSpotLight(name = 'spotLight', px = 0, py = 30, pz = -10, dx = 0, dy = -1, dz = 0, angle = Math.PI / 3, exponent = 2) {
+            this.addGameObject(new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene))
+        },
+        createHemisphericLight(name = 'hemisphericLight', x = 0, y = 1, z = 0) {
+            this.addGameObject(new BABYLON.HemisphericLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+        },
         animate() {
         },
         init() {
-            this.gameObject.scripts.forEach(({ init }) => init && init.bind(this.gameObject)())
+            this.gameObjects.forEach(gameObject =>
+                gameObject.scripts && gameObject.scripts.forEach(({ init }) => init && init.bind(gameObject)()))
         },
         update() {
-            this.gameObject.scripts.forEach(({ update }) => update && update.bind(this.gameObject)())
+            this.gameObjects.forEach(gameObject =>
+                gameObject.scripts && gameObject.scripts.forEach(({ update }) => update && update.bind(gameObject)()))
         },
         render() {
             const {

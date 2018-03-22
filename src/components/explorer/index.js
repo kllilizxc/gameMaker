@@ -17,7 +17,7 @@ export default {
     }),
     methods: {
         getFolderFiles({ name, path }) {
-            let parent = joinPath(path, name)
+            const parent = joinPath(path, name)
             return AssetManager.readLocalDir(parent)
                 .then(files => files.map(filename => ({ name: filename, path: parent })))
                 .catch(err => logger.error(err))
@@ -41,7 +41,7 @@ export default {
             }).catch(err => console.log(err))
     },
     render() {
-        let {
+        const {
             data,
             getFolderFiles,
             haveChildren,
@@ -51,6 +51,7 @@ export default {
         return <div class={styles.explorer}>
             <TreeView data={data}
                       getNameFunction={d => d.name}
+                      getIdFunction={d => d.name}
                       getChildrenFunction={getFolderFiles}
                       haveChildrenFunction={haveChildren}
                       onInput={handleInput}/>

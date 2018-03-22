@@ -1,5 +1,4 @@
 let { position, rotation, scaling } = this
-console.log(this)
 
 fields = [
     {

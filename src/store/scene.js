@@ -2,7 +2,6 @@ import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile } 
 import * as BABYLON from 'babylonjs'
 
 const readDefaultScript = (name, gameObject) => {
-    console.log(gameObject)
     return readScriptFromFile(`static/scripts/${name}.js`, gameObject)
 }
 
@@ -58,7 +57,6 @@ export default {
         },
         [ADD_GAMEOBJECT](state, gameObjects) {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
-            gameObjects = gameObjects.filter(object => !state.gameObjects.some(o => o.id === object.id))
             initScripts(gameObjects)
             state.gameObjects = state.gameObjects.concat(gameObjects)
         },

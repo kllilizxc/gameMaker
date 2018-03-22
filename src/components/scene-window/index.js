@@ -19,7 +19,7 @@ export default {
 
         return <div class={styles.sceneWindow}>
             {<TreeView data={gameObjects.filter(filterFunc)}
-                                                  getNameFunction={obj => obj.name}
+                                                  getNameFunction={obj => obj.name} getIdFunction={obj => obj.id}
                                                   getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
                                                   haveChildrenFunction={obj => Promise.resolve(obj.getChildren().length > 0)}
                                                   onInput={handleInput} selected={gameObject}/>}

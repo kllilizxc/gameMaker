@@ -26,16 +26,10 @@
 .left {
     border-right: 1px solid Grey-400;
     display: flex;
+    margin-right: auto;
 }
 
 .right {
     display: flex;
-}
-
-.leftTool {
-    margin-right: 16px;
-}
-
-.rightTool {
-    margin-left: 16px;
+    margin-left: auto;
 }
