@@ -55,13 +55,16 @@ export default {
         },
         gameObject(val) {
             if (!val) return
-            console.log(val)
             this.attachEditControl(val)
         }
     },
     methods: {
         ...mapActions(['addGameObject', 'setGameObject']),
         attachEditControl(mesh) {
+            if (!(mesh.position && mesh.rotation && mesh.scaling)) {
+                this.editControl && this.editControl.hide()
+                return
+            }
             if (!this.editControl) {
                 this.editControl = new EditControl(mesh, this.camera, this.canvas, 1, true)
                 this.editControl.enableTranslation()

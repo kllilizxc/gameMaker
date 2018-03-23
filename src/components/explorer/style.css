@@ -22,7 +22,7 @@
     color: Black-Text;
 }
 
-.chosen {
+.chosen, .chosen .name {
     color: DeepPurple-400;
 }
 
