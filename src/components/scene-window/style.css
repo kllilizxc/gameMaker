@@ -1,4 +1,4 @@
-@value DeepPurple-400, Black-Icons from '@/common/colors.css';
+@value DeepPurple-400, Black-Icons, Red-300 from '@/common/colors.css';
 
 .sceneWindow {
     padding: 0 8px;
@@ -12,7 +12,7 @@
 
 .deleteIcon {
     margin-left: auto;
-    color: Black-Icons;
+    color: Red-300;
 }
 
 .chosen {

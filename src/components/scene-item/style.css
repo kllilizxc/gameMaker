@@ -1,12 +1,18 @@
-@value Black-Text from '@/common/colors.css';
+@value Black-Text, Black-Icon from '@/common/colors.css';
 
 .item {
     user-select: none;
+    color: Black-Icon;
+    display: flex;
 }
 
 .item span {
     height: 48px;
     line-height: 48px;
     font-size: 18px;
-    color: Black-Text;
+}
+
+.icon {
+    line-height: 48px;
+    margin-right: 8px;
 }

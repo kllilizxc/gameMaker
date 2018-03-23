@@ -1,5 +1,7 @@
-fields = [
-    {
+fields = []
+
+if (this.position)
+    fields.push({
         type: 'GROUP',
         options: { label: 'position' },
         children: [
@@ -22,8 +24,10 @@ fields = [
                 options: { name: 'z', label: 'z' }
             }
         ]
-    },
-    {
+    })
+
+if (this.rotation)
+    fields.push({
         type: 'GROUP',
         options: { label: 'rotation' },
         children: [
@@ -46,8 +50,10 @@ fields = [
                 options: { name: 'z', label: 'z' }
             }
         ]
-    },
-    {
+    })
+
+if (this.scaling)
+    fields.push({
         type: 'GROUP',
         options: { label: 'scaling' },
         children: [
@@ -70,8 +76,7 @@ fields = [
                 options: { name: 'z', label: 'z' }
             }
         ]
-    }
-]
+    })
 
 function init() {
 }

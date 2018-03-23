@@ -55,7 +55,7 @@ export default {
                             [styles.dragOver]: this.dragOverObj === obj
                         }]}
                         onClick={() => this.handleInput(obj)}>
-                <SceneItem value={obj.name} onInput={val => this.editGameObjectName(val, obj)}/>
+                <SceneItem value={obj} onInput={val => this.editGameObjectName(val, obj)}/>
                 {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={32}
                                          onClick={() => this.removeGameObject(obj)}/>}
             </div>
