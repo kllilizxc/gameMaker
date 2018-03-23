@@ -69,3 +69,10 @@ export const readScriptFromFile = (file, gameObject) =>
 export const random16Bytes = () => btoa(Math.random().toString(16).substr(7))
 export const random64Bytes = () => random16Bytes() + random16Bytes() + random16Bytes() + random16Bytes()
 export const UUID = random64Bytes
+
+const lightClassNames = ['HemisphericLight']
+export const isLight = obj => lightClassNames.find(name => name === obj.getClassName())
+const meshClassNames = ['GroundMesh']
+export const isMesh = obj => meshClassNames.find(name => name === obj.getClassName())
+const cameraClassNames = ['FreeCamera']
+export const isCamera = obj => cameraClassNames.find(name => name === obj.getClassName())

@@ -2,6 +2,7 @@ import { mapGetters, mapActions } from 'vuex'
 import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
+import { isLight, isCamera } from '../../common/util'
 
 export default {
     name: 'draw-canvas',
@@ -61,7 +62,7 @@ export default {
     methods: {
         ...mapActions(['addGameObject', 'setGameObject']),
         attachEditControl(mesh) {
-            if (!(mesh.position && mesh.rotation && mesh.scaling)) {
+            if (!(mesh.position && mesh.rotation && mesh.scaling) || isLight(mesh) || isCamera(mesh)) {
                 this.editControl && this.editControl.hide()
                 return
             }

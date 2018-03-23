@@ -2,6 +2,10 @@
 
 .sceneWindow {
     padding: 0 8px;
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .item {
@@ -21,4 +25,9 @@
 
 .dragOver {
     font-weight: bold;
+}
+
+.dropArea {
+    flex: 1;
+    min-height: 200px;
 }

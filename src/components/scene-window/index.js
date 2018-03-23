@@ -3,6 +3,7 @@ import TreeView from '../tree-view'
 import { mapGetters } from 'vuex'
 import SceneItem from '../scene-item'
 import IconButton from '@/ui/material-icon-button'
+import { isCamera, isLight } from '../../common/util'
 
 export default {
     name: 'scene-window',
@@ -25,6 +26,7 @@ export default {
         handleDrop(e, obj) {
             e.preventDefault()
             e.stopPropagation()
+            if (obj && (isLight(obj) || isCamera(obj))) return false
             this.clearDragOverObj()
 
             const gameObjectId = e.dataTransfer.getData('gameObject')
@@ -38,6 +40,8 @@ export default {
         handleDragOver(e, obj) {
             e.preventDefault()
             e.stopPropagation()
+            if (!obj) return true
+            if (isLight(obj) || isCamera(obj)) return false
             this.dragOverObj = obj
         },
         clearDragOverObj() {
@@ -66,7 +70,8 @@ export default {
         const {
             gameObject,
             gameObjects,
-            renderItem
+            renderItem,
+            dropOnOutSide
         } = this
 
         return <div class={styles.sceneWindow}>
@@ -76,6 +81,7 @@ export default {
                        haveChildrenFunction={obj => Promise.resolve(obj.getChildren() && obj.getChildren().length > 0)}
                        renderItemFunction={renderItem}
                        selected={gameObject}/>}
+                       <div class={styles.dropArea} onDragover={e => this.handleDragOver(e, null)} onDrop={e => this.handleDrop(e, null)}/>
         </div>
     }
 }

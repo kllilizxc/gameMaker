@@ -1,4 +1,7 @@
-import { stateToActions, stateToGetters, stateToMutations, readScriptFromFile, UUID } from '../common/util'
+import {
+    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, UUID, isLight,
+    isCamera
+} from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
 
@@ -124,9 +127,10 @@ export default {
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
-            if (isParent(parent, child)) return
+            if (parent && (isLight(parent) || isCamera(parent) || isParent(parent, child))) return
             child.parent = parent
             removeInArray(gameObjects, ({ id }) => id === child.id)
+            if (!parent) gameObjects.push(child)
         },
         saveScene: ({ state }, filename) => {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
