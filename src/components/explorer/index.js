@@ -2,6 +2,7 @@ import styles from './style.css'
 import TreeView from '@/components/tree-view'
 import AssetManager from '@/common/asset-manager'
 import { logger } from '../../common/util'
+import Icon from '@/ui/icon'
 
 function joinPath(path, filename) {
     return path + '/' + filename
@@ -28,20 +29,21 @@ export default {
                 .then(stats => stats.isDirectory())
                 .catch(err => logger.error(err))
         },
-        handleInput(obj) {
-            console.log(obj.name)
-        },
         setChosenItem(obj) {
             this.chosenObj = obj
+            console.log(obj.name)
         },
         handleDragStart(e, obj) {
             e.dataTransfer.setData('filename', joinPath(obj.path, obj.name))
         },
-        renderItem(obj) {
+        renderItem(obj, haveChildren) {
             const isChosen = obj === this.chosenObj
-            return <span class={[styles.item, {[styles.chosen]: isChosen}]}
-                         onClick={() => this.setChosenItem(obj)}
-                         draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
+            return <div class={[styles.item, {[styles.chosen]: isChosen}]}>
+                <Icon className={styles.icon} icon={haveChildren ? 'folder' : 'insert_drive_file'} size={24}/>
+                <span class={styles.name}
+                      onClick={() => this.setChosenItem(obj)}
+                      draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
+            </div>
         }
     },
     watch: {
@@ -65,7 +67,6 @@ export default {
             path,
             getFolderFiles,
             haveChildren,
-            handleInput,
             renderItem
         } = this
 
@@ -75,8 +76,7 @@ export default {
                             renderItemFunction={renderItem}
                             getIdFunction={d => d.name}
                             getChildrenFunction={getFolderFiles}
-                            haveChildrenFunction={haveChildren}
-                            onInput={handleInput}/>
+                            haveChildrenFunction={haveChildren}/>
                 : <p class={styles.hint}>You should save first to use the explorer</p>}
         </div>
     }

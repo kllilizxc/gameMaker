@@ -7,7 +7,7 @@
 .item {
     display: flex;
     transition: height 0.3s ease;
-    height: 32px;
+    height: 48px;
 }
 
 .deleteIcon {
@@ -17,8 +17,6 @@
 
 .chosen {
     color: DeepPurple-400;
-    height: 48px;
-    line-height: 48px;
 }
 
 .dragOver {

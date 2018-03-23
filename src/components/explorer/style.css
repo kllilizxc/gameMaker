@@ -1,8 +1,11 @@
-@value DeepPurple-400 from '@/common/colors.css';
+@value DeepPurple-400, Black-Icons, Black-Text from '@/common/colors.css';
 
 .item {
-    height: 32px;
-    line-height: 32px;
+    height: 48px;
+    line-height: 48px;
+    font-size: 18px;
+    display: flex;
+    color: Black-Icons;
 }
 
 .hint {
@@ -15,6 +18,15 @@
     height: 100%;
 }
 
+.name {
+    color: Black-Text;
+}
+
 .chosen {
     color: DeepPurple-400;
+}
+
+.icon {
+    line-height: 48px;
+    margin-right: 8px;
 }

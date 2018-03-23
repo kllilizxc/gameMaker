@@ -8,12 +8,12 @@
     color: Black-Text;
 }
 
-.arrowIcon {
+.arrowIcon :global(.mu-icon) {
     transition: transform 0.3s ease;
 }
 
-.unFold {
-    transform: rotateZ(180deg);
+.unFold :global(.mu-icon) {
+    transform: rotateX(180deg);
 }
 
 .treeView {

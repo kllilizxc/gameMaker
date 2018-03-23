@@ -37,13 +37,7 @@ export default {
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
                 if (pickResult.hit) {
                     this.pickedMesh = pickResult.pickedMesh
-                    if (!this.editControl) {
-                        this.editControl = new EditControl(this.pickedMesh, this.camera, this.canvas, 1, true)
-                        this.editControl.enableTranslation()
-                    } else {
-                        this.editControl.show()
-                        this.editControl.switchTo(this.pickedMesh)
-                    }
+                    this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh)
                 } else {
                     this.pickedMesh = null
@@ -58,10 +52,24 @@ export default {
             const { engine, render, init } = this
             init()
             engine.runRenderLoop(render)
+        },
+        gameObject(val) {
+            if (!val) return
+            console.log(val)
+            this.attachEditControl(val)
         }
     },
     methods: {
         ...mapActions(['addGameObject', 'setGameObject']),
+        attachEditControl(mesh) {
+            if (!this.editControl) {
+                this.editControl = new EditControl(mesh, this.camera, this.canvas, 1, true)
+                this.editControl.enableTranslation()
+            } else {
+                this.editControl.show()
+                this.editControl.switchTo(mesh)
+            }
+        },
         initScene(scene) {
             const { canvas } = this
             this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
