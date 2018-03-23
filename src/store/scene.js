@@ -113,7 +113,7 @@ export default {
             window.scene = scene
             logger.log(scene)
             dispatch('setGameObject', null)
-            dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras))
+            dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras).filter(obj => !obj.parent))
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
