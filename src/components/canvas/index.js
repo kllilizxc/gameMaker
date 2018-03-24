@@ -36,10 +36,12 @@ export default {
             scene.onPointerDown = () => {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
+                this.pickedMesh && (this.pickedMesh.showBoundingBox = false)
                 if (pickResult.hit) {
                     this.pickedMesh = pickResult.pickedMesh
                     this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh)
+                    this.pickedMesh.showBoundingBox = true
                 } else {
                     this.pickedMesh = null
                     this.editControl && this.editControl.hide()
@@ -166,6 +168,7 @@ export default {
                 update()
                 animate()
             }
+            scene.getBoundingBoxRenderer().render()
             scene.render()
         }
     },
