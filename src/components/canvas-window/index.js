@@ -28,6 +28,7 @@ export default {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
         },
         saveScene() {
+            this.canvas.detachEditControl()
             AssetManager.saveFile(
                 'Now pick a file to save your scene',
                 [{ name: 'Scene', extensions: ['babylon'] }])

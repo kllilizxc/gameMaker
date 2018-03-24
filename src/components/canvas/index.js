@@ -74,6 +74,9 @@ export default {
                 this.editControl.switchTo(mesh)
             }
         },
+        detachEditControl() {
+            this.editControl && this.editControl.detach()
+        },
         initScene(scene) {
             const { canvas } = this
             this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)

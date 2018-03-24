@@ -12,7 +12,7 @@ const readDefaultScript = (name, gameObject) => {
 }
 
 const defaultScripts = [
-    { name: 'transform', check: 'position' }
+    { name: 'transform', checks: ['position', 'rotation', 'scaling'] }
 ]
 
 function getScriptObject(scene, gameObject, script) {
@@ -23,8 +23,8 @@ function getScriptObject(scene, gameObject, script) {
 
 function initScript(scene, gameObject) {
     const promises = []
-    defaultScripts.forEach(({ name, check }) =>
-        gameObject[check] && promises.push(readDefaultScript(name, gameObject)))
+    defaultScripts.forEach(({ name, checks }) =>
+        checkScript(checks) && promises.push(readDefaultScript(name, gameObject)))
 
     return Promise.all(promises).then(scripts =>
         gameObject.scripts = scripts.map(script =>
@@ -41,6 +41,14 @@ function addScript(scene, gameObject, script) {
     gameObject.scripts = gameObject.scripts || []
     gameObject.scripts.push(getScriptObject(scene, gameObject, script))
 }
+
+function registerScript({ scriptsMap, scripts }, id, { name, path }) {
+    scriptsMap[id] = scriptsMap[id] || []
+    if (!scripts[name]) scripts[name] = path
+    scriptsMap[id].push(name)
+}
+
+const checkScript = checks => checks.reduce((result, check) => result && check, true)
 
 const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
@@ -60,6 +68,7 @@ const state = {
     scene: null,
     gameObjects: [],
     scriptsMap: {},
+    scripts: {},
     filename: null
 }
 
@@ -80,10 +89,9 @@ export default {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
             gameObjects.forEach(gameObject => {
                 gameObject.id = UUID()
-                defaultScripts.forEach(({ name, check }) => {
-                    if (!gameObject[check]) return
-                    if (!state.scriptsMap[gameObject.id]) state.scriptsMap[gameObject.id] = []
-                    state.scriptsMap[gameObject.id].push(getDefaultScriptsPath(name))
+                defaultScripts.forEach(({ name, checks }) => {
+                    if (!checkScript(checks)) return
+                    registerScript(state, gameObject.id, { name, path: getDefaultScriptsPath(name) })
                 })
             })
             initScripts(state.scene, gameObjects)
@@ -93,17 +101,17 @@ export default {
             initScripts(state.scene, state.gameObjects)
             state.gameObjects = gameObjects
         },
-        [ADD_SCRIPT]({ gameObject, scriptsMap, scene }, script) {
-            if (!scriptsMap[gameObject.id]) scriptsMap[gameObject.id] = []
-            scriptsMap[gameObject.id].push(script.path)
+        [ADD_SCRIPT]({ gameObject, scriptsMap, scripts, scene }, script) {
+            console.log(script)
+            registerScript({ scriptsMap, scripts }, gameObject.id, script)
             addScript(scene, gameObject, script)
         },
-        [RESTORE_SCRIPTS]({ gameObjects, scriptsMap, scene }) {
+        [RESTORE_SCRIPTS]({ gameObjects, scriptsMap, scripts, scene }) {
             Object.keys(scriptsMap).forEach(id => {
                 const gameObject = gameObjects.find(obj => obj.id === id)
                 if (!gameObject) return
                 gameObject.scripts = gameObject.scripts || []
-                scriptsMap[id].forEach(path =>
+                scriptsMap[id].map(name => scripts[name]).filter(d => d).forEach(path =>
                     readScriptFromFile(path, gameObject)
                         .then(script => gameObject.scripts.push(getScriptObject(scene, gameObject, script))))
             })
@@ -135,6 +143,7 @@ export default {
         saveScene: ({ state }, filename) => {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
             serializedScene.scriptsMap = state.scriptsMap
+            serializedScene.scripts = state.scripts
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
         },
@@ -142,7 +151,10 @@ export default {
             BABYLON.SceneLoader.Load('', filename, state.engine, newScene =>
                 dispatch('setScene', newScene).then(() => commit(RESTORE_SCRIPTS)))
             AssetManager.readLocalFile(filename, 'utf8')
-                .then(data => state.scriptsMap = JSON.parse(data).scriptsMap)
+                .then(data => {
+                    state.scriptsMap = JSON.parse(data).scriptsMap
+                    state.scripts = JSON.parse(data).scripts
+                })
             state.filename = filename
         }
     }
