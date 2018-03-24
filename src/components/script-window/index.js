@@ -41,7 +41,8 @@ export default {
                 })
         },
         getScriptValues(script) {
-            return this.scriptsMap[this.gameObject.id].find(({ name }) => name === script.name).values
+            const scriptMap = this.scriptsMap[this.gameObject.id]
+            return scriptMap && scriptMap.find(({ name }) => name === script.name).values
         }
     },
     render() {

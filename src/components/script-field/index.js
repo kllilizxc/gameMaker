@@ -117,7 +117,7 @@ export default {
             }
         },
         getFieldValue(field) {
-            if (field.type !== GROUP_TYPE && !field.options.value) field.options.value = field.get()
+            if (field.type !== GROUP_TYPE) field.options.value = field.get()
         }
     },
     render(h: any): any {
