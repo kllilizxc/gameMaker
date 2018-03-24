@@ -7,12 +7,16 @@ export default {
         type: {
             type: String,
             default: 'file'
-        }
+        },
+        initTitle: String
     },
     data: () => ({
         dragOver: false,
         title: ''
     }),
+    watch: {
+        initTitle: { handler(val) { this.title = val }, immediate: true }
+    },
     methods: {
         handleFileDrop(file) {
             if (this.type !== 'file') return

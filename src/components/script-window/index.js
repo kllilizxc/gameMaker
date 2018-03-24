@@ -3,7 +3,6 @@ import Script from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
 import Icon from '@/ui/icon'
-import { readScriptFromFile } from '../../common/util'
 import { mapGetters } from 'vuex'
 import AssetManager from '@/common/asset-manager'
 
@@ -12,18 +11,14 @@ export default {
     props: {},
     data() {
         return {
-            isDragOver: false,
-            refresh: false
+            isDragOver: false
         }
     },
-    computed: mapGetters(['gameObject']),
+    computed: mapGetters(['gameObject', 'scriptsMap']),
     methods: {
         addScript(file) {
             this.$store.dispatch('addScript', file)
-                .then(() => this.forceRefresh())
-        },
-        forceRefresh() {
-            this.refresh = !this.refresh
+                .then(() => this.$forceUpdate())
         },
         dropHandler(file) {
             this.addScript(file)
@@ -44,6 +39,9 @@ export default {
                     for (const file of fileList)
                         this.addScript(file)
                 })
+        },
+        getScriptValues(script) {
+            return this.scriptsMap[this.gameObject.id].find(({ name }) => name === script.name).values
         }
     },
     render() {
@@ -54,11 +52,11 @@ export default {
             dragLeaveHandler,
             isDragOver,
             pickFile,
-            refresh
+            getScriptValues
         } = this
 
         return <div class={styles.scriptWindow}>
-            {gameObject && gameObject.scripts && gameObject.scripts.map(script => <Script script={script}/>)}
+            {gameObject && gameObject.scripts && gameObject.scripts.map(script => <Script script={script} values={getScriptValues(script)}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

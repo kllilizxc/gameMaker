@@ -2,7 +2,7 @@
 @value DeepPurple-200, Grey-200 from '@/common/colors.css';
 
 .fileDropper {
-    width: 80%;
+    width: 72%;
     margin-left: auto;
     padding-left: 8px;
     background: Grey-200;

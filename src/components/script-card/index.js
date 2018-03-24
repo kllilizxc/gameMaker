@@ -4,11 +4,11 @@ import Card from '@/ui/card'
 
 export default {
     functional: true,
-    render(h, { props: { script: { name, fields } } }) {
+    render(h, { props: { script: { name, fields }, values } }) {
         return <Card class={styles.scriptCard}>
             <div class={styles.title}>{name}</div>
             {fields && fields.map((field) => <div>
-                <ScriptField field={field}/>
+                <ScriptField field={field} onInput={val => values[field.name] = val}/>
             </div>)}
         </Card>
     }

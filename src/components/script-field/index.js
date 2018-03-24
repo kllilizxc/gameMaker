@@ -8,13 +8,13 @@ import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
 
-const STRING_TYPE = 'STRING'
-const NUMBER_TYPE = 'NUMBER'
-const BOOLEAN_TYPE = 'BOOLEAN'
-const ENUM_TYPE = 'ENUM'
-const FILE_TYPE = 'FILE'
-const GAMEOBJECT_TYPE = 'GAMEOBJECT'
-const GROUP_TYPE = 'GROUP'
+export const STRING_TYPE = 'STRING'
+export const NUMBER_TYPE = 'NUMBER'
+export const BOOLEAN_TYPE = 'BOOLEAN'
+export const ENUM_TYPE = 'ENUM'
+export const FILE_TYPE = 'FILE'
+export const GAMEOBJECT_TYPE = 'GAMEOBJECT'
+export const GROUP_TYPE = 'GROUP'
 
 export type Field = {
     type: string,
@@ -32,14 +32,16 @@ export default {
         }
     },
     methods: {
+        setFieldValue(field, value) {
+            field.set(value)
+            this.$emit('input', value)
+        },
         createScriptElement(h, component, props, field, children = []): any {
             const data = {
                 props,
                 on: {
                     input: value => {
-                        field.set(value)
-                        const newVal = field.get()
-                        this.$emit('input', newVal)
+                        this.setFieldValue(field, value)
                     }
                 }
             }
@@ -77,14 +79,18 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker type='file' onInput={({ path }) => field.set(path) }/>
+                <FilePicker type='file' initTitle={options.value && options.value.name || ''}
+                            onInput={file => this.setFieldValue(field, file)}/>
             </div>
         },
         renderGameObjectPicker(h: any, field): any {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker type='gameObject' onInput={ obj => field.set(obj) }/>
+                <FilePicker initTitle={options.value && options.value.name || ''} type='gameObject' onInput={obj => {
+                    field.set(obj)
+                    this.$emit('input', obj.id)
+                }}/>
             </div>
         },
         parseOption(h: any, field = this.field): any {
@@ -111,8 +117,7 @@ export default {
             }
         },
         getFieldValue(field) {
-            if (!field.options) field.options = {}
-            field.options.value = field.type !== GROUP_TYPE && field.get()
+            if (field.type !== GROUP_TYPE && !field.options.value) field.options.value = field.get()
         }
     },
     render(h: any): any {

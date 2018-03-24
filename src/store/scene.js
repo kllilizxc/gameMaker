@@ -4,6 +4,7 @@ import {
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
+import { GAMEOBJECT_TYPE, GROUP_TYPE } from "../components/script-field";
 
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
@@ -45,7 +46,7 @@ function addScript(scene, gameObject, script) {
 function registerScript({ scriptsMap, scripts }, id, { name, path }) {
     scriptsMap[id] = scriptsMap[id] || []
     if (!scripts[name]) scripts[name] = path
-    scriptsMap[id].push(name)
+    scriptsMap[id].push({ name, values: {} })
 }
 
 const checkScript = checks => checks.reduce((result, check) => result && check, true)
@@ -111,9 +112,22 @@ export default {
                 const gameObject = gameObjects.find(obj => obj.id === id)
                 if (!gameObject) return
                 gameObject.scripts = gameObject.scripts || []
-                scriptsMap[id].map(name => scripts[name]).filter(d => d).forEach(path =>
-                    readScriptFromFile(path, gameObject)
-                        .then(script => gameObject.scripts.push(getScriptObject(scene, gameObject, script))))
+                scriptsMap[id].map(({ name, values }) => {
+                    if (!scripts[name]) return
+                    readScriptFromFile(scripts[name], gameObject)
+                        .then(script => {
+                            const scriptObject = getScriptObject(scene, gameObject, script)
+                            scriptObject.fields.forEach(({ name, type, get, set, options }) => {
+                                if (type === GROUP_TYPE) return
+                                if (type === GAMEOBJECT_TYPE)
+                                    options.value = scene.getMeshByID(values[name])
+                                else
+                                    options.value = values[name] || get()
+                                set(options.value)
+                            })
+                            gameObject.scripts.push(scriptObject)
+                        })
+                })
             })
         }
     },
@@ -144,6 +158,7 @@ export default {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
+            logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
         },
