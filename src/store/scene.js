@@ -56,6 +56,7 @@ const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
 const ADD_SCRIPT = 'ADD_SCRIPT'
 const RESTORE_SCRIPTS = 'RESTORE_SCRIPTS'
+const SET_SCRIPTVALUE = 'SET_SCRIPTVALUE'
 
 const logger = console
 
@@ -129,6 +130,11 @@ export default {
                         })
                 })
             })
+        },
+        [SET_SCRIPTVALUE]({ gameObject, scriptsMap }, { scriptName, fieldName, value }) {
+            const scriptMap = scriptsMap[gameObject.id].find(({ name }) => name === scriptName)
+            scriptMap.values = scriptMap.values || {}
+            scriptMap.values[fieldName] = value
         }
     },
     actions: {
@@ -171,7 +177,8 @@ export default {
                     state.scripts = JSON.parse(data).scripts
                 })
             state.filename = filename
-        }
+        },
+        setScriptValue: ({ commit }, data) => commit(SET_SCRIPTVALUE, data)
     }
 }
 

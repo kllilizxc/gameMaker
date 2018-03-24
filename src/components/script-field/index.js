@@ -34,7 +34,7 @@ export default {
     methods: {
         setFieldValue(field, value) {
             field.set(value)
-            this.$emit('input', value)
+            this.$emit('input', { fieldName: field.name, value })
         },
         createScriptElement(h, component, props, field, children = []): any {
             const data = {
@@ -89,7 +89,7 @@ export default {
                 <div class={styles.label}>{options.label}</div>
                 <FilePicker initTitle={options.value && options.value.name || ''} type='gameObject' onInput={obj => {
                     field.set(obj)
-                    this.$emit('input', obj.id)
+                    this.$emit('input', { fieldName: field.name, value: obj.id })
                 }}/>
             </div>
         },
