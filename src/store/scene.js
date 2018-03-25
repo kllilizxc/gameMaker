@@ -71,6 +71,7 @@ const state = {
     gameObjects: [],
     scriptsMap: {},
     scripts: {},
+    rawGameObjects: {},
     filename: null
 }
 
@@ -164,6 +165,15 @@ export default {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
+            const getRawGameObjects = gameObjects => gameObjects.map(gameObject => {
+                return {
+                    id: gameObject.id,
+                    name: gameObject.name,
+                    className: gameObject.getClassName(),
+                    children: getRawGameObjects(gameObject.getChildren())
+                }
+            })
+            serializedScene.rawGameObjects = getRawGameObjects(state.gameObjects)
             logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
@@ -173,8 +183,10 @@ export default {
                 dispatch('setScene', newScene).then(() => commit(RESTORE_SCRIPTS)))
             AssetManager.readLocalFile(filename, 'utf8')
                 .then(data => {
-                    state.scriptsMap = JSON.parse(data).scriptsMap
-                    state.scripts = JSON.parse(data).scripts
+                    data = JSON.parse(data)
+                    state.scriptsMap = data.scriptsMap
+                    state.scripts = data.scripts
+                    state.rawGameObjects = data.rawGameObjects
                 })
             state.filename = filename
         },

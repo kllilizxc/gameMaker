@@ -19,5 +19,6 @@ fields = [
 ]
 
 function update() {
+    this.checkCollisions = true
     gameObject && (gameObject.rotation.x += speed)
 }

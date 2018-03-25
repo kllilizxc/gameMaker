@@ -32,6 +32,8 @@ export default {
             } else {
                 this.initScene(scene)
             }
+            scene.collisionsEnabled = true
+            scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
             this.editControl && this.editControl.detach()
             scene.onPointerDown = () => {
                 if (this.editControl && this.editControl.isPointerOver()) return
@@ -51,8 +53,9 @@ export default {
 
             engine.runRenderLoop(render)
         },
-        isPlaying() {
+        isPlaying(val) {
             const { engine, render, init } = this
+            if (!val) return
             init()
             engine.runRenderLoop(render)
         },
