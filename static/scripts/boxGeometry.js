@@ -1,41 +1,15 @@
-let {
-	width,
-	height,
-	depth
-} = gameObject.geometry.parameters
+let size = 1
+const vertexData = BABYLON.VertexData.CreateBox(1)
+vertexData.applyToMesh(this.getMesh(), true)
 
-this.fields = [{
-	type: 'NUMBER_TYPE',
-	get: () => width,
-	set: val => {
-		width = val
-		setGeometry()
-	},
-	options: {
-		label: 'width'
-	}
-}, {
-	type: 'NUMBER_TYPE',
-	get: () => height,
-	set: val => {
-		height = val
-		setGeometry()
-	},
-	options: {
-		label: 'height'
-	}
-}, {
-	type: 'NUMBER_TYPE',
-	get: () => depth,
-	set: val => {
-		depth = val
-		setGeometry()
-	},
-	options: {
-		label: 'depth'
-	}
-}]
+const { geometry } = this.getMesh()
 
-const setGeometry = () => {
-	gameObject.geometry = new THREE.BoxBufferGeometry(width, height, depth)
-}
+fields = [
+    {
+        name: 'size',
+        type: 'NUMBER',
+        get: () => geometry.size,
+        set: val => geometry.size = val,
+        options: { label: 'size' }
+    }
+]

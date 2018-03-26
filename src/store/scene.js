@@ -1,10 +1,11 @@
 import {
-    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, UUID, isLight,
+    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, isLight,
     isCamera
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
-import { GAMEOBJECT_TYPE, GROUP_TYPE } from "../components/script-field";
+import { GAMEOBJECT_TYPE, GROUP_TYPE } from '../components/script-field'
+import GameObject from '../classes/gameObject'
 
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
@@ -16,7 +17,7 @@ const defaultScripts = [
     { name: 'transform', checks: ['position', 'rotation', 'scaling'] }
 ]
 
-function getScriptObject(scene, gameObject, script) {
+function getScriptObject(scene, script) {
     const { name, Behavior } = script
     const { fields, init, update } = Behavior(BABYLON, scene)
     return { name, fields, init, update }
@@ -25,11 +26,11 @@ function getScriptObject(scene, gameObject, script) {
 function initScript(scene, gameObject) {
     const promises = []
     defaultScripts.forEach(({ name, checks }) =>
-        checkScript(checks) && promises.push(readDefaultScript(name, gameObject)))
+        checkScript(gameObject, checks) && promises.push(readDefaultScript(name, gameObject)))
 
     return Promise.all(promises).then(scripts =>
         gameObject.scripts = scripts.map(script =>
-            getScriptObject(scene, gameObject, script)))
+            getScriptObject(scene, script)))
 }
 
 function initScripts(scene, gameObjects) {
@@ -39,8 +40,7 @@ function initScripts(scene, gameObjects) {
 }
 
 function addScript(scene, gameObject, script) {
-    gameObject.scripts = gameObject.scripts || []
-    gameObject.scripts.push(getScriptObject(scene, gameObject, script))
+    gameObject.scripts.push(getScriptObject(scene, script))
 }
 
 function registerScript({ scriptsMap, scripts }, id, { name, path }) {
@@ -49,7 +49,7 @@ function registerScript({ scriptsMap, scripts }, id, { name, path }) {
     scriptsMap[id].push({ name, values: {} })
 }
 
-const checkScript = checks => checks.reduce((result, check) => result && check, true)
+const checkScript = (gameObject, checks) => checks.reduce((result, check) => result && gameObject.getMesh()[check], true)
 
 const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
@@ -91,9 +91,8 @@ export default {
         [ADD_GAMEOBJECT](state, gameObjects) {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
             gameObjects.forEach(gameObject => {
-                gameObject.id = UUID()
                 defaultScripts.forEach(({ name, checks }) => {
-                    if (!checkScript(checks)) return
+                    if (!checkScript(gameObject, checks)) return
                     registerScript(state, gameObject.id, { name, path: getDefaultScriptsPath(name) })
                 })
             })
@@ -113,16 +112,15 @@ export default {
             Object.keys(scriptsMap).forEach(id => {
                 const gameObject = gameObjects.find(obj => obj.id === id)
                 if (!gameObject) return
-                gameObject.scripts = gameObject.scripts || []
                 scriptsMap[id].map(({ name, values }) => {
                     if (!scripts[name]) return
                     readScriptFromFile(scripts[name], gameObject)
                         .then(script => {
-                            const scriptObject = getScriptObject(scene, gameObject, script)
+                            const scriptObject = getScriptObject(scene, script)
                             scriptObject.fields.forEach(({ name, type, get, set, options }) => {
                                 if (type === GROUP_TYPE) return
                                 if (type === GAMEOBJECT_TYPE)
-                                    options.value = scene.getMeshByID(values[name])
+                                    options.value = scene.getMeshByID(values[name]).gameObject
                                 else
                                     options.value = values[name] || get()
                                 set(options.value)
@@ -145,19 +143,19 @@ export default {
             window.scene = scene
             logger.log(scene)
             dispatch('setGameObject', null)
-            dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras).filter(obj => !obj.parent))
+            dispatch('setGameObjects', scene.meshes.concat(scene.lights).concat(scene.cameras).filter(obj => !obj.parent).map(obj => new GameObject(obj.name, obj)))
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
         addScript: ({ commit, state: { gameObject } }, file) =>
             readScriptFromFile(file, gameObject).then(script => commit(ADD_SCRIPT, script)),
         removeGameObject: ({ state: { gameObjects } }, obj) => {
-            obj.dispose()
+            obj.getMesh().dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
-            if (parent && (isLight(parent) || isCamera(parent) || isParent(parent, child))) return
-            child.parent = parent
+            if (parent && (isLight(parent.getMesh()) || isCamera(parent.getMesh()) || isParent(parent, child))) return
+            child.setParent(parent)
             removeInArray(gameObjects, ({ id }) => id === child.id)
             if (!parent) gameObjects.push(child)
         },
@@ -165,15 +163,15 @@ export default {
             const serializedScene = BABYLON.SceneSerializer.Serialize(state.scene)
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
-            const getRawGameObjects = gameObjects => gameObjects.map(gameObject => {
+            const getMeshes = gameObjects => gameObjects.map(({ mesh }) => {
                 return {
-                    id: gameObject.id,
-                    name: gameObject.name,
-                    className: gameObject.getClassName(),
-                    children: getRawGameObjects(gameObject.getChildren())
+                    id: mesh.id,
+                    name: mesh.name,
+                    className: mesh.getClassName(),
+                    children: getMeshes(mesh.getChildren())
                 }
             })
-            serializedScene.rawGameObjects = getRawGameObjects(state.gameObjects)
+            serializedScene.rawGameObjects = getMeshes(state.gameObjects)
             logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
@@ -195,6 +193,6 @@ export default {
 }
 
 function isParent(child, parent) {
-    if (!child.parent) return false
-    return (child.parent === parent) || isParent(child.parent, parent)
+    if (!child.getParent()) return false
+    return (child.getParent() === parent) || isParent(child.getParent(), parent)
 }

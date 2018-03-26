@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
 import { isLight, isCamera } from '../../common/util'
+import GameObject from '../../classes/gameObject'
 
 export default {
     name: 'draw-canvas',
@@ -42,7 +43,7 @@ export default {
                 if (pickResult.hit) {
                     this.pickedMesh = pickResult.pickedMesh
                     this.attachEditControl(this.pickedMesh)
-                    this.setGameObject(this.pickedMesh)
+                    this.setGameObject(this.pickedMesh.gameObject)
                     this.pickedMesh.showBoundingBox = true
                 } else {
                     this.pickedMesh = null
@@ -61,7 +62,7 @@ export default {
         },
         gameObject(val) {
             if (!val) return
-            this.attachEditControl(val)
+            this.attachEditControl(val.getMesh())
         }
     },
     methods: {
@@ -87,7 +88,7 @@ export default {
             this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
             this.camera.attachControl(canvas, false)
-            this.addGameObject(this.camera)
+            this.addGameObject(new GameObject('camera1', this.camera))
 
             this.createHemisphericLight('light1', 0, 1, 0)
             this.createGround('ground1')
@@ -117,34 +118,44 @@ export default {
             editControl.disableRotation()
             editControl.enableScaling()
         },
+        createEmptyMesh(name = 'mesh') {
+            const mesh = new BABYLON.Mesh(name, this.scene)
+            this.addGameObject(new GameObject(name, mesh))
+        },
         createSphere(name = 'sphere', diameter = 1, diameterX = 1) {
             const sphere = BABYLON.MeshBuilder.CreateSphere(name, { diameter, diameterX }, this.scene)
             // Move the sphere upward 1/2 of its height
             sphere.position.y = 1
-            this.addGameObject(sphere)
+            this.addGameObject(new GameObject(name, sphere))
         },
         createBox(name = 'box', height = 1, width = 1, depth = 1) {
             const box = BABYLON.MeshBuilder.CreateBox(name, { height, width, depth }, this.scene)
             box.position.y = 1
-            this.addGameObject(box)
+            this.addGameObject(new GameObject(name, box))
         },
         createPlane(name = 'plane', width = 5, height = 5) {
-            this.addGameObject(BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))
+            const plane = new GameObject(name, BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))
+            this.addGameObject(plane)
         },
         createGround(name = 'ground', width = 10, height = 10, subdivsions = 4) {
-            this.addGameObject(BABYLON.MeshBuilder.CreateGround(name, { width, height, subdivsions }, this.scene))
+            const ground = new GameObject(name, BABYLON.MeshBuilder.CreateGround(name, { width, height, subdivsions }, this.scene))
+            this.addGameObject(ground)
         },
         createPointLight(name = 'pointLight', x = 1, y = 10, z = 1) {
-            this.addGameObject(new BABYLON.PointLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+            const pointLight = new BABYLON.PointLight(name, new BABYLON.Vector3(x, y, z), this.scene)
+            this.addGameObject(new GameObject(name, pointLight))
         },
         createDirectionalLight(name = 'directionalLight', x = 0, y = -1, z = 0) {
-            this.addGameObject(new BABYLON.DirectionalLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+            const directionalLight = new BABYLON.DirectionalLight(name, new BABYLON.Vector3(x, y, z), this.scene)
+            this.addGameObject(new GameObject(name, directionalLight))
         },
         createSpotLight(name = 'spotLight', px = 0, py = 30, pz = -10, dx = 0, dy = -1, dz = 0, angle = Math.PI / 3, exponent = 2) {
-            this.addGameObject(new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene))
+            const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)
+            this.addGameObject(new GameObject(name, spotLight))
         },
         createHemisphericLight(name = 'hemisphericLight', x = 0, y = 1, z = 0) {
-            this.addGameObject(new BABYLON.HemisphericLight(name, new BABYLON.Vector3(x, y, z), this.scene))
+            const hemisphericLight = new BABYLON.HemisphericLight(name, new BABYLON.Vector3(x, y, z), this.scene)
+            this.addGameObject(new GameObject(name, hemisphericLight))
         },
         animate() {
         },

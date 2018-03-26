@@ -16,7 +16,7 @@ export default {
     },
     computed: {
         icon() {
-            switch (this.value.getClassName()) {
+            switch (this.value.getMesh().getClassName()) {
                 case 'GroundMesh': return 'widgets'
                 case 'HemisphericLight': return 'lightbulb_outline'
                 case 'FreeCamera': return 'photo_camera'

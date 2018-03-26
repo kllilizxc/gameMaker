@@ -73,7 +73,7 @@ export const UUID = random64Bytes
 
 const lightClassNames = ['HemisphericLight']
 export const isLight = obj => lightClassNames.find(name => name === obj.getClassName())
-const meshClassNames = ['GroundMesh']
+const meshClassNames = ['GroundMesh', 'Mesh']
 export const isMesh = obj => meshClassNames.find(name => name === obj.getClassName())
 const cameraClassNames = ['FreeCamera']
 export const isCamera = obj => cameraClassNames.find(name => name === obj.getClassName())

@@ -8,8 +8,8 @@ fields = [
         set: val => {
             if (!val) return
             texture = new BABYLON.Texture(val.path, scene)
-            this.material = new BABYLON.StandardMaterial('material', scene)
-            this.material.diffuseTexture = texture
+            this.getMesh().material = new BABYLON.StandardMaterial('material', scene)
+            this.getMesh().material.diffuseTexture = texture
         },
         options: {
             label: 'texture'

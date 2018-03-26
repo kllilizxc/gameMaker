@@ -1,7 +1,7 @@
 @value DeepPurple-400, Black-Icons, Red-300 from '@/common/colors.css';
 
 .sceneWindow {
-    padding: 0 8px;
+    padding: 0 8px 32px;
     height: 100%;
     overflow: auto;
     display: flex;
