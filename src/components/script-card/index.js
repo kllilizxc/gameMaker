@@ -7,9 +7,13 @@ export default {
     render(h, { props: { script: { name, fields } }, listeners }) {
         return <Card class={styles.scriptCard}>
             <div class={styles.title}>{name}</div>
-            {fields && fields.map((field) => <div>
-                <ScriptField field={field} onInput={val => listeners.input({ scriptName: name, ...val })}/>
-            </div>)}
+            {fields && Object.keys(fields).map(fieldName => {
+                const field = { name: fieldName, ...fields[fieldName] }
+                return <div>
+                    <ScriptField field={field}
+                                 onInput={val => listeners.input({ scriptName: name, ...val })}/>
+                </div>
+            })}
         </Card>
     }
 }

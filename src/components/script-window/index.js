@@ -14,7 +14,14 @@ export default {
             isDragOver: false
         }
     },
-    computed: mapGetters(['gameObject']),
+    computed: {
+        ...mapGetters(['gameObject']),
+        scripts() {
+            if (!this.gameObject) return []
+            const { scripts } = this.gameObject
+            return Object.keys(scripts).map(key => scripts[key])
+        }
+    },
     methods: {
         addScript(file) {
             this.$store.dispatch('addScript', file)
@@ -41,12 +48,15 @@ export default {
                 })
         },
         setScriptValue(data) {
-            this.$store.dispatch('setScriptValue', data)
+            if (data.groupName)
+                this.$store.dispatch('setGroupScriptValue', data)
+            else
+                this.$store.dispatch('setScriptValue', data)
         }
     },
     render() {
         const {
-            gameObject,
+            scripts,
             dropHandler,
             dragOverHandler,
             dragLeaveHandler,
@@ -56,7 +66,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {gameObject && gameObject.scripts && gameObject.scripts.map(script => <Script script={script} onInput={setScriptValue}/>)}
+            {scripts.map(script => <Script script={script} onInput={setScriptValue}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

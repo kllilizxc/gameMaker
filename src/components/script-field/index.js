@@ -34,7 +34,9 @@ export default {
     methods: {
         setFieldValue(field, value) {
             field.set(value)
-            this.$emit('input', { fieldName: field.name, value })
+            const data = { fieldName: field.name, value }
+            if (field.parent) data.groupName = field.parent
+            this.$emit('input', data)
         },
         createScriptElement(h, component, props, field, children = []): any {
             const data = {
@@ -71,7 +73,7 @@ export default {
             return <div class={styles.inputGroup}>
                 <div class={styles.label}>{options.label}</div>
                 <div class={styles.container}>
-                    {children.map(child => this.parseOption(h, child))}
+                    {Object.keys(children).map(name => this.parseOption(h, { name, parent: field.name, ...children[name] }))}
                 </div>
             </div>
         },
@@ -117,7 +119,9 @@ export default {
             }
         },
         getFieldValue(field) {
+            field.options = field.options || {}
             if (field.type !== GROUP_TYPE) field.options.value = field.get()
+            field.options.label = field.name
         }
     },
     render(h: any): any {

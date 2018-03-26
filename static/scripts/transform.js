@@ -1,94 +1,67 @@
-fields = []
+fields = {}
 
 if (this.getMesh().position)
-    fields.push({
+    fields.position = {
         type: 'GROUP',
-        options: { label: 'position' },
-        children: [
-            {
-                name: 'px',
+        children: {
+            x: {
                 type: 'NUMBER',
                 get: () => this.getMesh().position.x,
-                set: val => this.getMesh().position.x = val,
-                options: { name: 'x', label: 'x' }
+                set: val => this.getMesh().position.x = val
             },
-            {
-                name: 'py',
+            y: {
                 type: 'NUMBER',
                 get: () => this.getMesh().position.y,
-                set: val => this.getMesh().position.y = val,
-                options: { name: 'y', label: 'y' }
+                set: val => this.getMesh().position.y = val
             },
-            {
-                name: 'pz',
+            z: {
                 type: 'NUMBER',
                 get: () => this.getMesh().position.z,
-                set: val => this.getMesh().position.z = val,
-                options: { name: 'z', label: 'z' }
+                set: val => this.getMesh().position.z = val
             }
-        ]
-    })
+        }
+    }
 
 if (this.getMesh().rotation)
-    fields.push({
+    fields.rotation = {
         type: 'GROUP',
-        options: { label: 'rotation' },
-        children: [
-            {
-                name: 'rx',
+        children: {
+            x: {
                 type: 'NUMBER',
                 get: () => this.getMesh().rotation.x,
-                set: val => this.getMesh().rotation.x = val,
-                options: { name: 'x', label: 'x' }
+                set: val => this.getMesh().rotation.x = val
             },
-            {
-                name: 'ry',
+            y: {
                 type: 'NUMBER',
                 get: () => this.getMesh().rotation.y,
-                set: val => this.getMesh().rotation.y = val,
-                options: { name: 'y', label: 'y' }
+                set: val => this.getMesh().rotation.y = val
             },
-            {
-                name: 'rz',
+            z: {
                 type: 'NUMBER',
                 get: () => this.getMesh().rotation.z,
-                set: val => this.getMesh().rotation.z = val,
-                options: { name: 'z', label: 'z' }
+                set: val => this.getMesh().rotation.z = val
             }
-        ]
-    })
+        }
+    }
 
 if (this.getMesh().scaling)
-    fields.push({
+    fields.scaling = {
         type: 'GROUP',
-        options: { label: 'scaling' },
-        children: [
-            {
-                name: 'sx',
+        children: {
+            x: {
                 type: 'NUMBER',
                 get: () => this.getMesh().scaling.x,
-                set: val => this.getMesh().scaling.x = val,
-                options: { name: 'x', label: 'x' }
+                set: val => this.getMesh().scaling.x = val
             },
-            {
-                name: 'sy',
+            y: {
                 type: 'NUMBER',
                 get: () => this.getMesh().scaling.y,
-                set: val => this.getMesh().scaling.y = val,
-                options: { name: 'y', label: 'y' }
+                set: val => this.getMesh().scaling.y = val
             },
-            {
-                name: 'sz',
+            z: {
                 type: 'NUMBER',
                 get: () => this.getMesh().scaling.z,
-                set: val => this.getMesh().scaling.z = val,
-                options: { name: 'z', label: 'z' }
+                set: val => this.getMesh().scaling.z = val
             }
-        ]
-    })
-
-function init() {
-}
-
-function update () {
-}
+        }
+    }

@@ -4,6 +4,7 @@ import styles from './style.css'
 import EditControl from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
 import { isLight, isCamera } from '../../common/util'
 import GameObject from '../../classes/gameObject'
+import { readDefaultScript } from '../../store/scene'
 
 export default {
     name: 'draw-canvas',
@@ -27,12 +28,11 @@ export default {
             window.scene = scene
             const { engine, render, canvas } = this
 
-            if (scene.activeCamera) {
-                scene.activeCamera.attachControl(canvas)
-                this.camera = scene.activeCamera
-            } else {
-                this.initScene(scene)
-            }
+            this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
+            this.camera.setTarget(BABYLON.Vector3.Zero())
+            this.camera.attachControl(canvas, false)
+            scene.activeCamera = this.camera
+
             scene.collisionsEnabled = true
             scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
             this.editControl && this.editControl.detach()
@@ -66,7 +66,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['addGameObject', 'setGameObject']),
+        ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject']),
         attachEditControl(mesh) {
             if (!(mesh.position && mesh.rotation && mesh.scaling) || isLight(mesh) || isCamera(mesh)) {
                 this.editControl && this.editControl.hide()
@@ -83,13 +83,7 @@ export default {
         detachEditControl() {
             this.editControl && this.editControl.detach()
         },
-        initScene(scene) {
-            const { canvas } = this
-            this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
-            this.camera.setTarget(BABYLON.Vector3.Zero())
-            this.camera.attachControl(canvas, false)
-            this.addGameObject(new GameObject('camera1', this.camera))
-
+        initScene() {
             this.createHemisphericLight('light1', 0, 1, 0)
             this.createGround('ground1')
         },
@@ -119,8 +113,7 @@ export default {
             editControl.enableScaling()
         },
         createEmptyMesh(name = 'mesh') {
-            const mesh = new BABYLON.Mesh(name, this.scene)
-            this.addGameObject(new GameObject(name, mesh))
+            this.createGameObject({ name })
         },
         createSphere(name = 'sphere', diameter = 1, diameterX = 1) {
             const sphere = BABYLON.MeshBuilder.CreateSphere(name, { diameter, diameterX }, this.scene)
@@ -128,10 +121,8 @@ export default {
             sphere.position.y = 1
             this.addGameObject(new GameObject(name, sphere))
         },
-        createBox(name = 'box', height = 1, width = 1, depth = 1) {
-            const box = BABYLON.MeshBuilder.CreateBox(name, { height, width, depth }, this.scene)
-            box.position.y = 1
-            this.addGameObject(new GameObject(name, box))
+        createBox(name = 'box') {
+            this.createGameObject({ name, script: 'boxGeometry' })
         },
         createPlane(name = 'plane', width = 5, height = 5) {
             const plane = new GameObject(name, BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))
@@ -191,7 +182,7 @@ export default {
 
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('setScene', new BABYLON.Scene(this.engine))
+        this.$store.dispatch('newScene').then(this.initScene)
     },
     beforeDestory() {
     },

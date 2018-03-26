@@ -20,6 +20,7 @@ export default {
     },
     methods: {
         openScene() {
+            this.canvas.detachEditControl()
             this.canvas.dispose()
             AssetManager.pickFile('Please pick the scene json file')
                 .then(filename => this.$store.dispatch('openScene', filename))
@@ -28,7 +29,6 @@ export default {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
         },
         saveScene() {
-            this.canvas.detachEditControl()
             AssetManager.saveFile(
                 'Now pick a file to save your scene',
                 [{ name: 'Scene', extensions: ['babylon'] }])
