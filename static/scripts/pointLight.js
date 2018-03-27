@@ -1,4 +1,4 @@
-const pointLight = new BABYLON.PointLight(name, new BABYLON.Vector3(0, 0, 0), scene)
+const pointLight = new BABYLON.PointLight(this.getMesh().name, new BABYLON.Vector3(0, 0, 0), scene)
 pointLight.parent = this.getMesh()
 
 fields = {

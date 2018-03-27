@@ -19,7 +19,8 @@ const logger = console
 const simpleState = {
     gameObject: null,
     isPlaying: false,
-    engine: null
+    engine: null,
+    canvas: null
 }
 
 const state = {
@@ -73,7 +74,8 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
-        setScene: ({ commit, dispatch }, scene) => {
+        setScene: ({ state, commit, dispatch }, scene) => {
+            scene.canvas = state.canvas
             commit(SET_SCENE, scene)
             window.scene = scene
             logger.log(scene)

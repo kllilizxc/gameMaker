@@ -27,9 +27,9 @@ export default {
             window.scene = scene
             const { engine, render, canvas } = this
 
-            this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
+            this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
-            this.camera.attachControl(canvas, false)
+            this.camera.attachControl(canvas, true)
             scene.activeCamera = this.camera
 
             scene.collisionsEnabled = true
@@ -146,15 +146,22 @@ export default {
             const hemisphericLight = new BABYLON.HemisphericLight(name, new BABYLON.Vector3(x, y, z), this.scene)
             this.addGameObject(new GameObject(name, hemisphericLight))
         },
+        createUniversalCamera(name = 'universalCamera') {
+            this.createGameObject({ name, script: 'universalCamera' })
+        },
         animate() {
         },
         init() {
-            this.gameObjects.forEach(gameObject =>
-                gameObject.scripts && gameObject.scripts.forEach(({ init }) => init && init.bind(gameObject)()))
+            this.gameObjects.forEach(gameObject => {
+                const { scripts } = gameObject
+                scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ init }) => init && init.bind(gameObject)())
+            })
         },
         update() {
-            this.gameObjects.forEach(gameObject =>
-                gameObject.scripts && gameObject.scripts.forEach(({ update }) => update && update.bind(gameObject)()))
+            this.gameObjects.forEach(gameObject => {
+                const { scripts } = gameObject
+                scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ update }) => update && update.bind(gameObject)())
+            })
         },
         render() {
             const {
@@ -179,6 +186,7 @@ export default {
         const { canvas } = this
 
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
+        this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
         this.$store.dispatch('newScene').then(this.initScene)
     },

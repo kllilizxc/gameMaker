@@ -7,7 +7,7 @@ import IconButton from '@/ui/material-icon-button'
 import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 
-const gameObjects = ['EmptyMesh', 'Sphere', 'Box', 'Plane', 'Ground', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight']
+const gameObjects = ['EmptyMesh', 'UniversalCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight']
 
 export default {
     name: 'canvas-window',
