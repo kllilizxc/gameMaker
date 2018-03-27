@@ -98,12 +98,13 @@ export default {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
-            const getMeshes = gameObjects => gameObjects.map(({ id, mesh }) => {
+            const getMeshes = gameObjects => gameObjects.map(gameObject => {
+                const { mesh, id } = gameObject
                 return {
                     id,
                     name: mesh.name,
                     className: mesh.getClassName(),
-                    children: getMeshes(mesh.getChildren())
+                    children: getMeshes(gameObject.getChildren())
                 }
             })
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
@@ -122,8 +123,15 @@ export default {
                     state.scene = null
                     state.isPlaying = false
                     dispatch('newScene').then(() => {
-                        console.log(data)
-                        data.rawGameObjects.forEach(({ id, name }) => dispatch('createGameObject', { name, id }))
+                        const setMeshes = (gameObjects, parent) => gameObjects && gameObjects.forEach(rawGameObject => {
+                            console.log(gameObjects, parent)
+                            dispatch('createGameObject', rawGameObject).then(gameObject => {
+                                console.log(gameObject)
+                                dispatch('setGameObjectParent', { child: gameObject, parent })
+                                setMeshes(rawGameObject.children, gameObject)
+                            })
+                        })
+                        setMeshes(data.rawGameObjects)
                     })
                 })
             state.filename = filename
@@ -131,13 +139,14 @@ export default {
         setScriptValue: ({ commit }, data) => commit(SET_SCRIPTVALUE, data),
         setGroupScriptValue: ({ commit }, data) => commit(SET_GROUP_SCRIPT_VALUE, data),
         createGameObject({ state: { scene }, dispatch, commit }, { name, script, scripts, id }) {
-            const box = new GameObject(name, new BABYLON.Mesh(name, scene), id)
+            const gameObject = new GameObject(name, new BABYLON.Mesh(name, scene), id)
             if (script) scripts = [script]
-            scripts && Promise.all(scripts.map(name => box.addDefaultScript(name)))
+            scripts && Promise.all(scripts.map(name => gameObject.addDefaultScript(name)))
                 .then(() => {
-                    dispatch('addGameObject', box)
-                    dispatch('setGameObject', box)
+                    dispatch('addGameObject', gameObject)
+                    dispatch('setGameObject', gameObject)
                 })
+            return gameObject
         }
     }
 }
