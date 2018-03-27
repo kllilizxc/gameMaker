@@ -122,12 +122,11 @@ export default {
                     state.scene = null
                     state.isPlaying = false
                     dispatch('newScene').then(() => {
-                        const setMeshes = (gameObjects, parent) => gameObjects && gameObjects.forEach(rawGameObject => {
-                            dispatch('createGameObject', rawGameObject).then(gameObject => {
-                                dispatch('setGameObjectParent', { child: gameObject, parent })
-                                setMeshes(rawGameObject.children, gameObject)
-                            })
-                        })
+                        const setMeshes = (gameObjects, parent) => gameObjects && Promise.all(gameObjects.map(rawGameObject => {
+                            const gameObject = getNewGameObject(rawGameObject, state.scene)
+                            return setMeshes(rawGameObject.children, gameObject)
+                                .then(() => dispatch('setGameObjectParent', { child: gameObject, parent }))
+                        }))
                         setMeshes(data.rawGameObjects)
                     })
                 })
@@ -136,16 +135,21 @@ export default {
         setScriptValue: ({ commit }, data) => commit(SET_SCRIPTVALUE, data),
         setGroupScriptValue: ({ commit }, data) => commit(SET_GROUP_SCRIPT_VALUE, data),
         createGameObject({ state: { scene }, dispatch, commit }, { name, script, scripts, id }) {
-            const gameObject = new GameObject(name, new BABYLON.Mesh(name, scene), id)
+            const gameObject = getNewGameObject({ id, name }, scene)
             if (script) scripts = [script]
-            scripts && Promise.all(scripts.map(name => gameObject.addDefaultScript(name)))
-                .then(() => {
+            return (scripts
+                ? Promise.all(scripts.map(name => gameObject.addDefaultScript(name))).then(() => gameObject)
+                : Promise.resolve(gameObject))
+                .then(gameObject => {
                     dispatch('addGameObject', gameObject)
                     dispatch('setGameObject', gameObject)
                 })
-            return gameObject
         }
     }
+}
+
+function getNewGameObject({ id, name }, scene) {
+    return new GameObject(name, new BABYLON.Mesh(name, scene), id)
 }
 
 function isParent(child, parent) {
