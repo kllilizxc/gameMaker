@@ -83,7 +83,7 @@ export default class GameObject {
     }
 
     getChildren() {
-        return this.mesh.getChildren().map(child => child.gameObject)
+        return this.mesh.getChildren().map(child => child.gameObject).filter(o => o)
     }
 
     setParent(parent) {
