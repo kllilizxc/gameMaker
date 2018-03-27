@@ -4,7 +4,6 @@ import styles from './style.css'
 import EditControl from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
 import { isLight, isCamera } from '../../common/util'
 import GameObject from '../../classes/gameObject'
-import { readDefaultScript } from '../../store/scene'
 
 export default {
     name: 'draw-canvas',
@@ -132,9 +131,8 @@ export default {
             const ground = new GameObject(name, BABYLON.MeshBuilder.CreateGround(name, { width, height, subdivsions }, this.scene))
             this.addGameObject(ground)
         },
-        createPointLight(name = 'pointLight', x = 1, y = 10, z = 1) {
-            const pointLight = new BABYLON.PointLight(name, new BABYLON.Vector3(x, y, z), this.scene)
-            this.addGameObject(new GameObject(name, pointLight))
+        createPointLight(name = 'pointLight') {
+            this.createGameObject({ name, script: 'pointLight' })
         },
         createDirectionalLight(name = 'directionalLight', x = 0, y = -1, z = 0) {
             const directionalLight = new BABYLON.DirectionalLight(name, new BABYLON.Vector3(x, y, z), this.scene)

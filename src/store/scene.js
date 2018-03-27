@@ -70,7 +70,6 @@ export default {
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName)
             scriptsMap[gameObject.id][scriptName][fieldName] = value
         }
-
     },
     actions: {
         ...stateToActions(simpleState),
@@ -124,9 +123,7 @@ export default {
                     state.isPlaying = false
                     dispatch('newScene').then(() => {
                         const setMeshes = (gameObjects, parent) => gameObjects && gameObjects.forEach(rawGameObject => {
-                            console.log(gameObjects, parent)
                             dispatch('createGameObject', rawGameObject).then(gameObject => {
-                                console.log(gameObject)
                                 dispatch('setGameObjectParent', { child: gameObject, parent })
                                 setMeshes(rawGameObject.children, gameObject)
                             })
