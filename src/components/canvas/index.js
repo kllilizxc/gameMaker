@@ -122,7 +122,7 @@ export default {
             this.addGameObject(new GameObject(name, sphere))
         },
         createBox(name = 'box') {
-            this.createGameObject({ name, script: 'boxGeometry' })
+            this.createGameObject({ name, script: 'geometries/boxGeometry' })
         },
         createPlane(name = 'plane', width = 5, height = 5) {
             const plane = new GameObject(name, BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))

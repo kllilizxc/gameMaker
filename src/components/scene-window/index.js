@@ -4,6 +4,7 @@ import { mapGetters } from 'vuex'
 import SceneItem from '../scene-item'
 import IconButton from '@/ui/material-icon-button'
 import { isCamera, isLight } from '../../common/util'
+import GameObject from '../../classes/gameObject'
 
 export default {
     name: 'scene-window',
@@ -31,9 +32,9 @@ export default {
 
             const gameObjectId = e.dataTransfer.getData('gameObject')
             if (gameObjectId) {
-                const dropObject = this.scene.getMeshByID(gameObjectId)
-                if (!dropObject) return
-                this.$store.dispatch('setGameObjectParent', { child: dropObject, parent: obj })
+                const dropMesh = GameObject.findGameObjectById(gameObjectId)
+                if (!dropMesh) return
+                this.$store.dispatch('setGameObjectParent', { child: dropMesh, parent: obj })
                     .then(() => this.$refs.treeView.setTreeData())
             }
         },

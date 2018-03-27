@@ -21,7 +21,7 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
     if (type === GROUP_TYPE)
         return restoreFieldsValues(children, values[name])
     else if (type === GAMEOBJECT_TYPE)
-        options.value = sceneStore.scene.getMeshByID(values[name]).gameObject
+        options.value = GameObject.findGameObjectById(values[name])
     else
         options.value = (values && values[name]) || get()
     set(options.value)
@@ -32,6 +32,7 @@ export default class GameObject {
         this.id = id
         this.name = name
         this.mesh = mesh
+        this.mesh.id = id
         this.mesh.gameObject = this
         this.scripts = {}
         const scriptsMap = sceneStore.scriptsMap[this.id]
@@ -49,6 +50,10 @@ export default class GameObject {
         } else {
             this.addDefaultScripts()
         }
+    }
+
+    static findGameObjectById(id) {
+        return sceneStore.scene.getMeshByID(id) && sceneStore.scene.getMeshByID(id).gameObject
     }
 
     addDefaultScript(name) {
@@ -82,6 +87,6 @@ export default class GameObject {
     }
 
     setParent(parent) {
-        this.mesh.parent = parent.mesh
+        this.mesh.parent = parent && parent.mesh
     }
 }
