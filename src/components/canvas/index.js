@@ -54,10 +54,12 @@ export default {
             engine.runRenderLoop(render)
         },
         isPlaying(val) {
-            const { engine, render, init } = this
-            if (!val) return
-            init()
-            engine.runRenderLoop(render)
+            const { init } = this
+            if (val) {
+                init()
+            } else {
+                this.restoreScene()
+            }
         },
         gameObject(val) {
             if (!val) return
@@ -65,7 +67,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject']),
+        ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject', 'restoreScene']),
         attachEditControl(mesh) {
             if (!(mesh.position && mesh.rotation && mesh.scaling) || isLight(mesh) || isCamera(mesh)) {
                 this.editControl && this.editControl.hide()

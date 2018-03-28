@@ -15,7 +15,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['gameObject']),
+        ...mapGetters(['gameObject', 'isPlaying']),
         scripts() {
             if (!this.gameObject) return []
             const { scripts } = this.gameObject
@@ -48,6 +48,7 @@ export default {
                 })
         },
         setScriptValue(data) {
+            if (this.isPlaying) return
             if (data.groupName)
                 this.$store.dispatch('setGroupScriptValue', data)
             else

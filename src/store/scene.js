@@ -60,7 +60,7 @@ export default {
             state.gameObjects = gameObjects
         },
         [ADD_SCRIPT]({ gameObject }, file) {
-            readScriptFromFile(file, gameObject)
+            return readScriptFromFile(file, gameObject)
                 .then(script => gameObject.addScript(new Script(script, gameObject)))
         },
         [SET_GROUP_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, groupName, fieldName, value }) {
@@ -99,15 +99,6 @@ export default {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
-            const getMeshes = gameObjects => gameObjects.map(gameObject => {
-                const { mesh, id } = gameObject
-                return {
-                    id,
-                    name: mesh.name,
-                    className: mesh.getClassName(),
-                    children: getMeshes(gameObject.getChildren())
-                }
-            })
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
             logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
@@ -123,16 +114,19 @@ export default {
                     state.gameObject = null
                     state.scene = null
                     state.isPlaying = false
-                    dispatch('newScene').then(() => {
-                        const setMeshes = (gameObjects, parent) => gameObjects && Promise.all(gameObjects.map(rawGameObject => {
-                            const gameObject = getNewGameObject(rawGameObject, state.scene)
-                            return setMeshes(rawGameObject.children, gameObject)
-                                .then(() => dispatch('setGameObjectParent', { child: gameObject, parent }))
-                        }))
-                        setMeshes(data.rawGameObjects)
-                    })
+                    dispatch('loadScene', data.rawGameObjects)
                 })
             state.filename = filename
+        },
+        restoreScene: ({ dispatch, state: { gameObjects } }) =>
+            dispatch('loadScene', getMeshes(gameObjects)),
+        loadScene: ({ dispatch }, rawGameObjects) => {
+            const setMeshes = (gameObjects, parent) => gameObjects && Promise.all(gameObjects.map(rawGameObject => {
+                const gameObject = getNewGameObject(rawGameObject, state.scene)
+                return setMeshes(rawGameObject.children, gameObject)
+                    .then(() => dispatch('setGameObjectParent', { child: gameObject, parent }))
+            }))
+            dispatch('newScene').then(() => setMeshes(rawGameObjects))
         },
         setScriptValue: ({ commit }, data) => commit(SET_SCRIPTVALUE, data),
         setGroupScriptValue: ({ commit }, data) => commit(SET_GROUP_SCRIPT_VALUE, data),
@@ -158,3 +152,13 @@ function isParent(child, parent) {
     if (!child.getParent()) return false
     return (child.getParent() === parent) || isParent(child.getParent(), parent)
 }
+
+const getMeshes = gameObjects => gameObjects.map(gameObject => {
+    const { mesh, id } = gameObject
+    return {
+        id,
+        name: mesh.name,
+        className: mesh.getClassName(),
+        children: getMeshes(gameObject.getChildren())
+    }
+})
