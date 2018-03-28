@@ -135,11 +135,8 @@ export default {
         createEmptyMesh(name = 'mesh') {
             this.createGameObject({ name })
         },
-        createSphere(name = 'sphere', diameter = 1, diameterX = 1) {
-            const sphere = BABYLON.MeshBuilder.CreateSphere(name, { diameter, diameterX }, this.scene)
-            // Move the sphere upward 1/2 of its height
-            sphere.position.y = 1
-            this.addGameObject(new GameObject(name, sphere))
+        createSphere(name = 'sphere') {
+            this.createGameObject({ name, script: 'geometries/sphereGeometry' })
         },
         createBox(name = 'box') {
             this.createGameObject({ name, script: 'geometries/boxGeometry' })
