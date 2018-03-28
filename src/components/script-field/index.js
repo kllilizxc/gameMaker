@@ -1,6 +1,6 @@
 // @flow
 import styles from './style.css'
-import { logger } from '../../common/util'
+import { logger, camelToWords } from '../../common/util'
 import Switch from '@/ui/switch'
 import SelectField from '@/ui/select-field'
 import MenuItem from '@/ui/menu-item'
@@ -60,7 +60,7 @@ export default {
         },
         renderSwitch(h: any, field): any {
             const { options } = field
-            return this.createScriptElement(h, Switch, options, field)
+            return this.createScriptElement(h, Switch, { ...options, labelLeft: true }, field)
         },
         renderPicker(h: any, field): any {
             const { options } = field
@@ -121,7 +121,7 @@ export default {
         getFieldValue(field) {
             field.options = field.options || {}
             if (field.type !== GROUP_TYPE) field.options.value = field.get()
-            field.options.label = field.name
+            field.options.label = camelToWords(field.name)
         }
     },
     render(h: any): any {

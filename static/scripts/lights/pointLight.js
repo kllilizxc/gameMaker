@@ -1,5 +1,12 @@
-const pointLight = new BABYLON.PointLight(this.getMesh().name, new BABYLON.Vector3(0, 0, 0), scene)
+const pointLight = new BABYLON.PointLight(this.name, new BABYLON.Vector3(0, 0, 0), scene)
 pointLight.parent = this.getMesh()
+let shadowMapSize = 1024
+let shadowGenerator
+const setShadowMapSize = () => {
+    shadowGenerator = new BABYLON.ShadowGenerator(shadowMapSize, directionalLight)
+    scene.meshes.forEach(mesh => shadowGenerator.addShadowCaster(mesh, true))
+}
+setShadowMapSize()
 
 fields = {
     diffuse: {
@@ -26,5 +33,13 @@ fields = {
         type: 'NUMBER',
         get: () => pointLight.intensity,
         set: val => pointLight.intensity = val
+    },
+    shadowMapSize: {
+        type: 'NUMBER',
+        get: () => shadowMapSize,
+        set: val => {
+            shadowMapSize = val
+            setShadowMapSize()
+        }
     }
 }

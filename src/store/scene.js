@@ -154,10 +154,10 @@ function isParent(child, parent) {
 }
 
 const getMeshes = gameObjects => gameObjects.map(gameObject => {
-    const { mesh, id } = gameObject
+    const { mesh, id, name } = gameObject
     return {
         id,
-        name: mesh.name,
+        name,
         className: mesh.getClassName(),
         children: getMeshes(gameObject.getChildren())
     }

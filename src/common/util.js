@@ -77,3 +77,5 @@ const meshClassNames = ['GroundMesh', 'Mesh']
 export const isMesh = obj => meshClassNames.find(name => name === obj.getClassName())
 const cameraClassNames = ['FreeCamera']
 export const isCamera = obj => cameraClassNames.find(name => name === obj.getClassName())
+
+export const camelToWords = str => str.replace(/([A-Z])/g, ' $1').toLowerCase()

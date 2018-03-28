@@ -27,7 +27,7 @@ export default {
         handleGameObjectDrop(gameObject) {
             if (this.type !== 'gameObject') return
             this.$emit('input', gameObject)
-            this.title = gameObject.getMesh().name
+            this.title = gameObject.name
             this.dragOver = false
         }
     },

@@ -27,10 +27,31 @@ export default {
             window.scene = scene
             const { engine, render, canvas } = this
 
+            scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1.0)
+            scene.imageProcessingConfiguration.contrast = 1.6
+            scene.imageProcessingConfiguration.exposure = 0.6
+            scene.imageProcessingConfiguration.toneMappingEnabled = true
+
             this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
             this.camera.attachControl(canvas, true)
             scene.activeCamera = this.camera
+
+            scene.activeCamera.lowerRadiusLimit = 20
+            scene.activeCamera.upperRadiusLimit = 80
+            scene.activeCamera.alpha = 2.5
+            scene.activeCamera.beta = 1.5
+            scene.activeCamera.useAutoRotationBehavior = true
+
+            scene.createDefaultEnvironment({ groundShadowLevel: 0.1 })
+                .setMainColor(new BABYLON.Color3(0.42, 0.41, 0.33))
+
+            const options = new BABYLON.SceneOptimizerOptions(50, 2000)
+            options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 1))
+
+            // Optimizer
+            const optimizer = new BABYLON.SceneOptimizer(scene, options)
+            optimizer.start()
 
             scene.collisionsEnabled = true
             scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
@@ -41,6 +62,7 @@ export default {
                 this.pickedMesh && (this.pickedMesh.showBoundingBox = false)
                 if (pickResult.hit) {
                     this.pickedMesh = pickResult.pickedMesh
+                    if (!this.gameObjects.find(({ mesh }) => mesh === this.pickedMesh)) return
                     this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh.gameObject)
                     this.pickedMesh.showBoundingBox = true
@@ -85,8 +107,6 @@ export default {
             this.editControl && this.editControl.detach()
         },
         initScene() {
-            this.createHemisphericLight('light1', 0, 1, 0)
-            this.createGround('ground1')
         },
         dispose() {
             this.editControl = null
@@ -134,11 +154,10 @@ export default {
             this.addGameObject(ground)
         },
         createPointLight(name = 'pointLight') {
-            this.createGameObject({ name, script: 'pointLight' })
+            this.createGameObject({ name, script: 'lights/pointLight' })
         },
-        createDirectionalLight(name = 'directionalLight', x = 0, y = -1, z = 0) {
-            const directionalLight = new BABYLON.DirectionalLight(name, new BABYLON.Vector3(x, y, z), this.scene)
-            this.addGameObject(new GameObject(name, directionalLight))
+        createDirectionalLight(name = 'directionalLight') {
+            this.createGameObject({ name, script: 'lights/directionalLight' })
         },
         createSpotLight(name = 'spotLight', px = 0, py = 30, pz = -10, dx = 0, dy = -1, dz = 0, angle = Math.PI / 3, exponent = 2) {
             const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)

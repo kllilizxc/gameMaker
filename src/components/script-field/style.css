@@ -5,6 +5,10 @@
     margin: 4px 0;
 }
 
+.scriptField > * {
+    width: 100%;
+}
+
 .inputGroup .container {
     margin: 0 -4px;
 }

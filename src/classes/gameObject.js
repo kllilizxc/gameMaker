@@ -8,7 +8,8 @@ const sceneStore = store.state.scene
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
 const defaultScripts = [
-    { name: 'transform', checks: ['position', 'rotation', 'scaling'] }
+    { name: 'transform', checks: ['position', 'rotation', 'scaling'] },
+    { name: 'material', checks: ['material'] }
 ]
 
 const checkScript = (gameObject, checks) => checks.reduce((result, check) => result && gameObject.getMesh()[check], true)

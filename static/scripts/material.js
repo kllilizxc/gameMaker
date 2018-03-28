@@ -1,8 +1,8 @@
 let texture
+this.getMesh().receiveShadows = true
 
-fields = [
-    {
-        name: 'texture',
+fields = {
+    texture: {
         type: 'FILE',
         get: () => texture,
         set: val => {
@@ -10,12 +10,14 @@ fields = [
             texture = new BABYLON.Texture(val.path, scene)
             this.getMesh().material = new BABYLON.StandardMaterial('material', scene)
             this.getMesh().material.diffuseTexture = texture
-        },
-        options: {
-            label: 'texture'
         }
+    },
+    receiveShadows: {
+        type: 'BOOLEAN',
+        get: () => this.getMesh().receiveShadows,
+        set: val => this.getMesh().receiveShadows = val
     }
-]
+}
 
 start = () => {
 }
