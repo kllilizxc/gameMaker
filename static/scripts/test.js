@@ -1,24 +1,22 @@
-let speed = 0.001
+let scaling = 0
 let gameObject
 
-fields = [
-    {
-        name: 'speed',
-        type: 'NUMBER',
-        get: () => speed,
-        set: val => speed = val,
-        options: { label: 'speed', name: 'speed' }
-    },
-    {
-        name: 'obj',
+fields = {
+    gameObject: {
         type: 'GAMEOBJECT',
         get: () => gameObject,
-        set: val => gameObject = val,
-        options: { label: 'gameObject' }
+        set: val => gameObject = val
+    },
+    scaling: {
+        type: 'NUMBER',
+        get: () => scaling,
+        set: val => {
+            scaling = val
+            console.log(gameObject)
+            gameObject && gameObject.getScript('transform').action('setScaling', val)
+        }
     }
-]
+}
 
 function update() {
-    this.checkCollisions = true
-    gameObject && (gameObject.rotation.x += speed)
 }

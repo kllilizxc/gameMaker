@@ -57,7 +57,7 @@ export const stateToActions = state =>
 export const trimFilename = filename => filename.replace(/^.*[\\\/]/, '')
 export const trimFilenameExtension = filename => trimFilename(filename).replace(/\.[^/.]+$/, '')
 
-const events = ['fields', 'init', 'update']
+const events = ['fields', 'actions', 'init', 'update']
 const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
     AssetManager.readLocalFile(typeof file === 'string' ? file : file.path).then((content: string) =>

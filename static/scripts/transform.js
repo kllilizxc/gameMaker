@@ -65,3 +65,11 @@ if (this.getMesh().scaling)
             }
         }
     }
+
+actions = {
+    setScaling(size) {
+        fields.scaling.children.x.set(size)
+        fields.scaling.children.y.set(size)
+        fields.scaling.children.z.set(size)
+    }
+}

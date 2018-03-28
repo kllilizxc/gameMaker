@@ -14,7 +14,7 @@ export default {
             if (filename) this.$emit('fileDrop', { name: trimFilename(filename), path: filename })
 
             const gameObjectId = dataTransfer.getData('gameObject')
-            if (gameObjectId) this.$emit('gameObjectDrop', this.scene.getMeshByID(gameObjectId))
+            if (gameObjectId) this.$emit('gameObjectDrop', this.scene.getMeshByID(gameObjectId).gameObject)
 
             if (dataTransfer.items) {
                 for (let i = 0; i < dataTransfer.items.length; ++i) {
