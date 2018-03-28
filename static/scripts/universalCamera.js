@@ -6,4 +6,5 @@ camera.setTarget(BABYLON.Vector3.Zero())
 
 function init() {
     camera.attachControl(scene.canvas)
+    scene.activeCamera = camera
 }

@@ -168,6 +168,9 @@ export default {
         createUniversalCamera(name = 'universalCamera') {
             this.createGameObject({ name, script: 'universalCamera' })
         },
+        createArcRotateCamera(name = 'arcRotateCamera') {
+            this.createGameObject({ name, script: 'arcRotateCamera' })
+        },
         animate() {
         },
         init() {

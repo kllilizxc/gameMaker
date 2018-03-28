@@ -100,7 +100,7 @@ export default {
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
-            logger.log(serializedScene)
+            logger.log(serializedScene.scriptsMap)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
         },
@@ -114,6 +114,7 @@ export default {
                     state.gameObject = null
                     state.scene = null
                     state.isPlaying = false
+                    logger.log(data.scriptsMap)
                     dispatch('loadScene', data.rawGameObjects)
                 })
             state.filename = filename

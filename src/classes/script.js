@@ -12,7 +12,7 @@ function registerScript(id, { name, path }) {
     const { scriptsMap, scripts } = sceneStore
     scriptsMap[id] = scriptsMap[id] || {}
     if (!scripts[name]) scripts[name] = path
-    scriptsMap[id][name] = {}
+    scriptsMap[id][name] = scriptsMap[id][name] || {}
 }
 
 export default class Script {
