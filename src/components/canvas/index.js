@@ -43,7 +43,7 @@ export default {
             scene.activeCamera.beta = 1.5
             scene.activeCamera.useAutoRotationBehavior = true
 
-            scene.createDefaultEnvironment({ groundShadowLevel: 0.1 })
+            scene.createDefaultEnvironment({ groundShadowLevel: 0.2 })
                 .setMainColor(new BABYLON.Color3(0.42, 0.41, 0.33))
 
             const options = new BABYLON.SceneOptimizerOptions(50, 2000)
@@ -60,9 +60,8 @@ export default {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
                 this.pickedMesh && (this.pickedMesh.showBoundingBox = false)
-                if (pickResult.hit) {
+                if (pickResult.hit && this.gameObjects.find(({ mesh }) => mesh === pickResult.pickedMesh)) {
                     this.pickedMesh = pickResult.pickedMesh
-                    if (!this.gameObjects.find(({ mesh }) => mesh === this.pickedMesh)) return
                     this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh.gameObject)
                     this.pickedMesh.showBoundingBox = true
@@ -163,9 +162,8 @@ export default {
             const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)
             this.addGameObject(new GameObject(name, spotLight))
         },
-        createHemisphericLight(name = 'hemisphericLight', x = 0, y = 1, z = 0) {
-            const hemisphericLight = new BABYLON.HemisphericLight(name, new BABYLON.Vector3(x, y, z), this.scene)
-            this.addGameObject(new GameObject(name, hemisphericLight))
+        createHemisphericLight(name = 'hemisphericLight') {
+            this.createGameObject({ name, script: 'lights/hemisphericLight' })
         },
         createUniversalCamera(name = 'universalCamera') {
             this.createGameObject({ name, script: 'universalCamera' })
