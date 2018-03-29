@@ -27,24 +27,14 @@ export default {
             window.scene = scene
             const { engine, render, canvas } = this
 
-            scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1.0)
-            scene.imageProcessingConfiguration.contrast = 1.6
-            scene.imageProcessingConfiguration.exposure = 0.6
-            scene.imageProcessingConfiguration.toneMappingEnabled = true
+            scene.clearColor = new BABYLON.Color4(0.41, 0.42, 0.38, 1.0)
 
             this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
             this.camera.attachControl(canvas, true)
             scene.activeCamera = this.camera
 
-            scene.activeCamera.lowerRadiusLimit = 20
-            scene.activeCamera.upperRadiusLimit = 80
-            scene.activeCamera.alpha = 2.5
-            scene.activeCamera.beta = 1.5
-            scene.activeCamera.useAutoRotationBehavior = true
-
-            scene.createDefaultEnvironment({ groundShadowLevel: 0.2 })
-                .setMainColor(new BABYLON.Color3(0.42, 0.41, 0.33))
+            this.initScene()
 
             const options = new BABYLON.SceneOptimizerOptions(50, 2000)
             options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 1))
@@ -133,21 +123,19 @@ export default {
             editControl.enableScaling()
         },
         createEmptyMesh(name = 'mesh') {
-            this.createGameObject({ name })
+            return this.createGameObject({ name })
         },
         createSphere(name = 'sphere') {
-            this.createGameObject({ name, script: 'geometries/sphereGeometry' })
+            return this.createGameObject({ name, script: 'geometries/sphereGeometry' })
         },
         createBox(name = 'box') {
-            this.createGameObject({ name, script: 'geometries/boxGeometry' })
+            return this.createGameObject({ name, script: 'geometries/boxGeometry' })
         },
-        createPlane(name = 'plane', width = 5, height = 5) {
-            const plane = new GameObject(name, BABYLON.MeshBuilder.CreatePlane(name, { width, height }, this.scene))
-            this.addGameObject(plane)
+        createPlane(name = 'plane') {
+            return this.createGameObject({ name, script: 'geometries/planeGeometry' })
         },
-        createGround(name = 'ground', width = 10, height = 10, subdivsions = 4) {
-            const ground = new GameObject(name, BABYLON.MeshBuilder.CreateGround(name, { width, height, subdivsions }, this.scene))
-            this.addGameObject(ground)
+        createGround(name = 'ground') {
+            return this.createGameObject({ name, script: 'geometries/groundGeometry' })
         },
         createPointLight(name = 'pointLight') {
             this.createGameObject({ name, script: 'lights/pointLight' })
@@ -159,14 +147,17 @@ export default {
             const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)
             this.addGameObject(new GameObject(name, spotLight))
         },
+        createSkyBox(name = 'skyBox') {
+            return this.createGameObject({ name, script: 'geometries/boxGeometry' })
+        },
         createHemisphericLight(name = 'hemisphericLight') {
-            this.createGameObject({ name, script: 'lights/hemisphericLight' })
+            return this.createGameObject({ name, script: 'lights/hemisphericLight' })
         },
         createUniversalCamera(name = 'universalCamera') {
-            this.createGameObject({ name, script: 'universalCamera' })
+            return this.createGameObject({ name, script: 'universalCamera' })
         },
         createArcRotateCamera(name = 'arcRotateCamera') {
-            this.createGameObject({ name, script: 'arcRotateCamera' })
+            return this.createGameObject({ name, script: 'arcRotateCamera' })
         },
         animate() {
         },

@@ -81,8 +81,8 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker type='file' initTitle={options.value && options.value.name || ''}
-                            onInput={file => this.setFieldValue(field, file)}/>
+                <FilePicker type='file' initTitle={options.value || ''}
+                            onInput={file => this.setFieldValue(field, file.path)}/>
             </div>
         },
         renderGameObjectPicker(h: any, field): any {

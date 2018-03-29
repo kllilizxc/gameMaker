@@ -11,7 +11,7 @@ export default {
             {fields && Object.keys(fields).map(fieldName => {
                 const field = { name: fieldName, ...fields[fieldName] }
                 return <div>
-                    <ScriptField field={field}
+                    <ScriptField field={field} key={`${name}:${fieldName}`}
                                  onInput={val => listeners.input({ scriptName: name, ...val })}/>
                 </div>
             })}

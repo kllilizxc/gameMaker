@@ -67,7 +67,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts.map(script => <Script script={script} onInput={setScriptValue}/>)}
+            {scripts.map(script => <Script key={`${this.gameObject.name}:${script.name}`} script={script} onInput={setScriptValue}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

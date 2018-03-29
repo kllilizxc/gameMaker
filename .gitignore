@@ -17,5 +17,3 @@ build/*
 !build/icons
 thumbs.db
 !.gitkeep
-
-*.babylon

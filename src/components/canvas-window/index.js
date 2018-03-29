@@ -7,7 +7,7 @@ import IconButton from '@/ui/material-icon-button'
 import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 
-const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight']
+const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight']
 
 export default {
     name: 'canvas-window',
@@ -31,7 +31,7 @@ export default {
         saveScene() {
             AssetManager.saveFile(
                 'Now pick a file to save your scene',
-                [{ name: 'Scene', extensions: ['babylon'] }])
+                [{ name: 'Scene', extensions: ['scene'] }])
                 .then(filename => this.$store.dispatch('saveScene', filename))
         },
         setEditMode() {

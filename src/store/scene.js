@@ -55,6 +55,7 @@ export default {
         [ADD_GAMEOBJECT](state, gameObjects) {
             if (!Array.isArray(gameObjects)) gameObjects = [gameObjects]
             state.gameObjects = state.gameObjects.concat(gameObjects)
+            return gameObjects
         },
         [SET_GAMEOBJECTS](state, gameObjects) {
             state.gameObjects = gameObjects
@@ -140,6 +141,7 @@ export default {
                 .then(gameObject => {
                     dispatch('addGameObject', gameObject)
                     dispatch('setGameObject', gameObject)
+                    return gameObject
                 })
         }
     }

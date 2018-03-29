@@ -3,7 +3,7 @@ pointLight.parent = this.getMesh()
 let shadowMapSize = 1024
 let shadowGenerator
 const setShadowMapSize = () => {
-    shadowGenerator = new BABYLON.ShadowGenerator(shadowMapSize, directionalLight)
+    shadowGenerator = new BABYLON.ShadowGenerator(shadowMapSize, pointLight)
     scene.meshes.forEach(mesh => shadowGenerator.addShadowCaster(mesh, true))
 }
 setShadowMapSize()
