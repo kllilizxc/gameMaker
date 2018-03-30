@@ -169,12 +169,11 @@ export default {
                         const path = state.filesMap[filename]
                         AssetManager.copyFile(path, `${dir}/static/${filename}`)
                     }))
-                    AssetManager.mkdir(dir + '/scripts').then(() => {
-                        Object.keys(state.scripts).forEach(name => {
-                            const path = state.scripts[name]
-                            AssetManager.copyFile(path, `${dir}/scripts/${name}.js`)
-                        })
-                    })
+                    const scriptsMap = {}
+                    Promise.all(Object.keys(state.scripts).map(name => {
+                        const path = state.scripts[name]
+                        return AssetManager.readLocalFile(path, 'utf8').then(content => scriptsMap[name] = content)
+                    })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
                     dispatch('saveScene',getFilePathFromDir(dir, 'index.scene'))
                 })
         }

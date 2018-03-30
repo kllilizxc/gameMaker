@@ -2,6 +2,7 @@ const arcRotateCamera = new BABYLON.ArcRotateCamera('arcRotateCamera', -(Math.PI
 arcRotateCamera.parent = this.getMesh()
 
 function init() {
+    console.log(scene.canvas)
     arcRotateCamera.attachControl(scene.canvas)
     scene.activeCamera = arcRotateCamera
 }

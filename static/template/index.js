@@ -1,8 +1,10 @@
 const canvas = document.getElementById('renderCanvas')
 const engine = new BABYLON.Engine(canvas, true)
 const scene = new BABYLON.Scene(engine)
+scene.canvas = canvas
 window.scene = scene
 let scriptsMap
+let scripts
 const gameObjects = []
 
 // const readLocalFile = filename => fetch(filename).then(response => response.text())
@@ -17,6 +19,11 @@ const readLocalFile = filename => new Promise((resolve, reject) => {
         }
     }
     rawFile.send()
+})
+
+readLocalFile('scripts.json').then(data => {
+    scripts = JSON.parse(data)
+    window.scripts = scripts
 })
 
 readLocalFile('index.scene').then(data => {
@@ -101,18 +108,6 @@ const restoreFieldsValues = (scene, fields, values) => Object.keys(fields).forEa
     set(options.value)
 })
 
-const trimFilename = filename => filename.replace(/^.*[\\\/]/, '')
-const trimFilenameExtension = filename => trimFilename(filename).replace(/\.[^/.]+$/, '')
-
-const events = ['fields', 'actions', 'init', 'update']
-const returnValues = `return {${events.join(',')}}`
-const readScriptFromFile = (file, gameObject) => readLocalFile(typeof file === 'string' ? file : file.path)
-        .then(content => ({
-            name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
-            path: typeof file === 'string' ? file : file.path,
-            Behavior: new Function('BABYLON', 'scene', ...events, `${content}\n${returnValues}`).bind(gameObject)
-        }))
-
 const random16Bytes = () => btoa(Math.random().toString(16).substr(7))
 const random64Bytes = () => random16Bytes() + random16Bytes() + random16Bytes() + random16Bytes()
 const UUID = random64Bytes
@@ -137,6 +132,8 @@ class Script {
     }
 }
 
+const events = ['fields', 'actions', 'init', 'update']
+const returnValues = `return {${events.join(',')}}`
 class GameObject {
     constructor(name, mesh, id = UUID()) {
         this.id = id
@@ -148,14 +145,14 @@ class GameObject {
         const scriptMap = scriptsMap[this.id]
         if (scriptMap) {
             Object.keys(scriptMap).map(name => {
-                const scriptPath = `scripts/${name}.js`
                 const values = scriptMap[name]
-                readScriptFromFile(scriptPath, this).then(script => {
-                    const scriptObject = new Script(script, this)
-                    const { fields } = scriptObject
-                    fields && restoreFieldsValues(scene, fields, values)
-                    this.addScript(scriptObject)
-                })
+                const scriptObject = new Script({
+                    name,
+                    Behavior: new Function('BABYLON', 'scene', ...events, `${scripts[name]}\n${returnValues}`).bind(this)
+                }, this)
+                const { fields } = scriptObject
+                fields && restoreFieldsValues(scene, fields, values)
+                this.addScript(scriptObject)
             })
         }
     }
