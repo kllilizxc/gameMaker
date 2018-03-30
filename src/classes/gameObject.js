@@ -1,7 +1,7 @@
 import { UUID, readScriptFromFile } from '../common/util'
 import Script from './script'
 import store from '../store'
-import { GAMEOBJECT_TYPE, GROUP_TYPE } from '../components/script-field'
+import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
 
 const sceneStore = store.state.scene
 
@@ -16,7 +16,9 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
         return restoreFieldsValues(children, values[name])
     else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
-    else {
+    else if (type === FILE_TYPE) {
+        options.value = values && sceneStore.filesMap[values[name]]
+    } else {
         options.value = values && values[name]
         if (options.value === undefined) options.value = get()
     }
@@ -51,8 +53,9 @@ export default class GameObject {
     }
 
     addDefaultScript(name) {
-        return readScriptFromFile(getDefaultScriptsPath(name), this)
-            .then(script => this.addScript(new Script(script, this)))
+        const path = getDefaultScriptsPath(name)
+        return readScriptFromFile(path, this)
+            .then(script => this.addScript(new Script({ ...script, path }, this)))
     }
 
     getMesh() {

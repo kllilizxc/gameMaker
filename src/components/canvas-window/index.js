@@ -42,10 +42,13 @@ export default {
                 case 1: return canvas.enableRotation()
                 case 2: return canvas.enableScaling()
             }
+        },
+        build() {
+            this.$store.dispatch('build')
         }
     },
     render(h) {
-        const { editMode, isPlaying, openScene, togglePlay, saveScene, setEditMode } = this
+        const { editMode, isPlaying, openScene, build, togglePlay, saveScene, setEditMode } = this
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
@@ -54,6 +57,7 @@ export default {
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='save' onClick={saveScene}/>
+                <IconButton slot='left' icon='build' onClick={build}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
                     {gameObjects.map(gameObject => <MenuItem title={gameObject} onClick={() => this.canvas[`create${gameObject}`]()}/>)}
                 </IconMenu>

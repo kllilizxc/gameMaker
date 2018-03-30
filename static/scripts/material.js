@@ -7,9 +7,9 @@ fields = {
         get: () => texture,
         set: val => {
             if (!val) return
-            texture = new BABYLON.Texture(val.path, scene)
+            texture = val
             this.getMesh().material = new BABYLON.StandardMaterial('material', scene)
-            this.getMesh().material.diffuseTexture = texture
+            this.getMesh().material.diffuseTexture = new BABYLON.Texture(texture, scene)
         }
     },
     receiveShadows: {

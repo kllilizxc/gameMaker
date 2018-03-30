@@ -18,6 +18,7 @@
         "babylonjs": "^3.2.0-beta.1",
         "babylonjs-editcontrol": "^3.1.0",
         "muse-ui": "^2.1.0",
+        "ncp": "^2.0.0",
         "vue": "^2.5.13",
         "vue-router": "^2.8.1",
         "vuex": "^2.5.0"

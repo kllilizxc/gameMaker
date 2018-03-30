@@ -163,7 +163,7 @@ export default {
             return this.createGameObject({ name, scripts: ['transform', 'cameras/arcRotateCamera'] })
         },
         createBoxArea(name = 'boxArea') {
-            return this.createGameObject({ name, scripts: [ 'transform', 'boxArea' ] })
+            return this.createGameObject({ name, scripts: ['transform', 'boxArea'] })
         },
         animate() {
         },
@@ -204,7 +204,8 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('openScene', 'static/scenes/default.scene')
+        this.$store.dispatch('newScene')
+        // this.$store.dispatch('openScene', 'static/scenes/default.scene')
     },
     beforeDestory() {
     },

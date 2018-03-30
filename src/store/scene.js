@@ -1,11 +1,12 @@
 import {
     stateToActions, stateToGetters, stateToMutations, readScriptFromFile, isLight,
-    isCamera
+    isCamera, trimFilename
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
 import GameObject from '../classes/gameObject'
 import Script from '../classes/script'
+import { FILE_TYPE } from '@/components/script-field'
 
 const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
@@ -28,6 +29,7 @@ const state = {
     gameObjects: [],
     scriptsMap: {},
     scripts: {},
+    filesMap: {},
     rawGameObjects: {},
     filename: null
 }
@@ -67,7 +69,12 @@ export default {
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, groupName)
             scriptsMap[gameObject.id][scriptName][groupName][fieldName] = value
         },
-        [SET_SCRIPTVALUE]({ gameObject, scriptsMap }, { scriptName, fieldName, value }) {
+        [SET_SCRIPTVALUE]({ gameObject, scriptsMap, filesMap }, { scriptName, fieldName, value, type }) {
+            if (type === FILE_TYPE) {
+                const filename = trimFilename(value)
+                filesMap[filename] = value
+                value = filename
+            }
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName)
             scriptsMap[gameObject.id][scriptName][fieldName] = value
         }
@@ -84,7 +91,10 @@ export default {
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
         addScript: ({ commit, state }, file) => readScriptFromFile(file, state.gameObject)
-            .then(script => commit(ADD_SCRIPT, script)),
+            .then(script => {
+                console.log(script)
+                commit(ADD_SCRIPT, script)
+            }),
         removeGameObject: ({ state: { gameObjects } }, obj) => {
             obj.getMesh().dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
@@ -100,8 +110,9 @@ export default {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
+            serializedScene.filesMap = state.filesMap
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
-            logger.log(serializedScene.scriptsMap)
+            logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
         },
@@ -111,11 +122,12 @@ export default {
                     data = JSON.parse(data)
                     state.scriptsMap = data.scriptsMap
                     state.scripts = data.scripts
+                    state.filesMap = data.filesMap
                     state.gameObjects = []
                     state.gameObject = null
                     state.scene = null
                     state.isPlaying = false
-                    logger.log(data.scriptsMap)
+                    logger.log(data)
                     dispatch('loadScene', data.rawGameObjects)
                 })
             state.filename = filename
@@ -142,6 +154,28 @@ export default {
                     dispatch('addGameObject', gameObject)
                     dispatch('setGameObject', gameObject)
                     return gameObject
+                })
+        },
+        build({ state, dispatch }) {
+            const getFilePathFromDir = (dir, filename) => `${dir}/${filename}`
+            const getPathFromStaticFolder = filename => getFilePathFromDir('static', filename)
+            const getPathFromTemplateFolder = filename => getFilePathFromDir('static/template', filename)
+            AssetManager.pickFolder('Now pick a file to save your scene')
+                .then(dir => {
+                    AssetManager.copyFile(getPathFromTemplateFolder('index.html'), getFilePathFromDir(dir, 'index.html'))
+                    AssetManager.copyFile(getPathFromTemplateFolder('index.js'), getFilePathFromDir(dir, 'index.js'))
+                    AssetManager.copyFile(getPathFromTemplateFolder('babylon.js'), getFilePathFromDir(dir, 'babylon.js'))
+                    AssetManager.mkdir(dir + '/static').then(() => Object.keys(state.filesMap).forEach(filename => {
+                        const path = state.filesMap[filename]
+                        AssetManager.copyFile(path, `${dir}/static/${filename}`)
+                    }))
+                    AssetManager.mkdir(dir + '/scripts').then(() => {
+                        Object.keys(state.scripts).forEach(name => {
+                            const path = state.scripts[name]
+                            AssetManager.copyFile(path, `${dir}/scripts/${name}.js`)
+                        })
+                    })
+                    dispatch('saveScene',getFilePathFromDir(dir, 'index.scene'))
                 })
         }
     }

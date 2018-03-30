@@ -34,7 +34,7 @@ export default {
     methods: {
         setFieldValue(field, value) {
             field.set(value)
-            const data = { fieldName: field.name, value }
+            const data = { fieldName: field.name, value, type: field.type }
             if (field.parent) data.groupName = field.parent
             this.$emit('input', data)
         },
