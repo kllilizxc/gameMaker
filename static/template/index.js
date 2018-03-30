@@ -21,13 +21,14 @@ const readLocalFile = filename => new Promise((resolve, reject) => {
     rawFile.send()
 })
 
-readLocalFile('scripts.json').then(data => {
-    scripts = JSON.parse(data)
+Promise.all([
+    readLocalFile('scripts.json'),
+    readLocalFile('index.scene')
+]).then(data => {
+    scripts = JSON.parse(data[0])
     window.scripts = scripts
-})
 
-readLocalFile('index.scene').then(data => {
-    data = JSON.parse(data)
+    data = JSON.parse(data[1])
     scriptsMap = data.scriptsMap
     const setMeshes = (rawGameObjects, parent) => rawGameObjects && Promise.all(rawGameObjects.map(rawGameObject => {
         const gameObject = getNewGameObject(rawGameObject)
