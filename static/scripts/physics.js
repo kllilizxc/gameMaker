@@ -35,7 +35,7 @@ fields = {
 }
 
 function init() {
-    this.checkCollisions = checkCollisions
-    this.physicsImpostor =
-        new BABYLON.PhysicsImpostor(this.getMesh(), BABYLON.PhysicsImpostor[type], { mass, friction, restitution }, scene)
+}
+
+function update() {
 }

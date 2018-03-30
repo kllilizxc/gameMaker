@@ -20,6 +20,7 @@ export default class Script {
         const scriptObject = getScriptObject(script)
         Object.keys(scriptObject).forEach(key => this[key] = scriptObject[key])
         registerScript(gameObject.id, script)
+        this.actions && Object.keys(this.actions).forEach(name => this[name] = this.actions[name])
     }
     action(name, ...args) {
         if (!this.actions) return

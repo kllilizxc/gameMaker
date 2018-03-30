@@ -60,9 +60,8 @@ export default {
         [SET_GAMEOBJECTS](state, gameObjects) {
             state.gameObjects = gameObjects
         },
-        [ADD_SCRIPT]({ gameObject }, file) {
-            return readScriptFromFile(file, gameObject)
-                .then(script => gameObject.addScript(new Script(script, gameObject)))
+        [ADD_SCRIPT]({ gameObject }, script) {
+            gameObject.addScript(new Script(script, gameObject))
         },
         [SET_GROUP_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, groupName, fieldName, value }) {
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, groupName)
@@ -84,7 +83,8 @@ export default {
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
-        addScript: ({ commit }, file) => commit(ADD_SCRIPT, file),
+        addScript: ({ commit, state }, file) => readScriptFromFile(file, state.gameObject)
+            .then(script => commit(ADD_SCRIPT, script)),
         removeGameObject: ({ state: { gameObjects } }, obj) => {
             obj.getMesh().dispose()
             gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)

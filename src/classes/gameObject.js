@@ -7,13 +7,6 @@ const sceneStore = store.state.scene
 
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
-const defaultScripts = [
-    { name: 'transform', checks: ['position', 'rotation', 'scaling'] },
-    { name: 'material', checks: ['material'] }
-]
-
-const checkScript = (gameObject, checks) => checks.reduce((result, check) => result && gameObject.getMesh()[check], true)
-
 const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name => {
     const field = fields[name]
     if (!field) return
@@ -23,8 +16,10 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
         return restoreFieldsValues(children, values[name])
     else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
-    else
-        options.value = (values && values[name]) || get()
+    else {
+        options.value = values && values[name]
+        if (options.value === undefined) options.value = get()
+    }
     set(options.value)
 })
 
@@ -48,8 +43,6 @@ export default class GameObject {
                     this.addScript(scriptObject)
                 })
             })
-        } else {
-            this.addDefaultScripts()
         }
     }
 
@@ -62,13 +55,15 @@ export default class GameObject {
             .then(script => this.addScript(new Script(script, this)))
     }
 
-    addDefaultScripts() {
-        return Promise.all(defaultScripts.map(({ name, checks }) =>
-            checkScript(this, checks) && this.addDefaultScript(name)))
-    }
-
     getMesh() {
         return this.mesh
+    }
+
+    setMesh(mesh) {
+        const { parent } = this.mesh
+        if (parent) mesh.parent = parent
+        this.mesh.dispose()
+        this.mesh = mesh
     }
 
     getScript(name) {
@@ -77,6 +72,7 @@ export default class GameObject {
 
     addScript(scriptObject) {
         this.scripts[scriptObject.name] = scriptObject
+        this[scriptObject.name] = scriptObject
     }
 
     getParent() {

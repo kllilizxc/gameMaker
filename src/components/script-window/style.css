@@ -3,6 +3,7 @@
 .scriptWindow {
     width: 100%;
     overflow: hidden;
+    padding-bottom: 32px;
 }
 
 .dropZone {

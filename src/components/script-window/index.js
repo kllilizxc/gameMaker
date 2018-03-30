@@ -11,21 +11,23 @@ export default {
     props: {},
     data() {
         return {
-            isDragOver: false
+            isDragOver: false,
+            refreshScripts: false
         }
     },
     computed: {
         ...mapGetters(['gameObject', 'isPlaying']),
         scripts() {
-            if (!this.gameObject) return []
-            const { scripts } = this.gameObject
+            const { gameObject, refreshScripts } = this
+            if (!gameObject) return []
+            const { scripts } = gameObject
             return Object.keys(scripts).map(key => scripts[key])
         }
     },
     methods: {
         addScript(file) {
             this.$store.dispatch('addScript', file)
-                .then(() => this.$forceUpdate())
+                .then(() => this.refreshScripts = !this.refreshScripts)
         },
         dropHandler(file) {
             this.addScript(file)

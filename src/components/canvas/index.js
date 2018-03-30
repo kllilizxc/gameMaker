@@ -1,7 +1,8 @@
 import { mapGetters, mapActions } from 'vuex'
 import * as BABYLON from 'babylonjs'
 import styles from './style.css'
-import EditControl from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
+import EditControl
+    from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
 import { isLight, isCamera } from '../../common/util'
 import GameObject from '../../classes/gameObject'
 
@@ -66,6 +67,7 @@ export default {
         },
         isPlaying(val) {
             const { init } = this
+            this.detachEditControl()
             if (val) {
                 init()
             } else {
@@ -94,11 +96,12 @@ export default {
         },
         detachEditControl() {
             this.editControl && this.editControl.detach()
+            this.editControl = null
         },
         initScene() {
         },
         dispose() {
-            this.editControl = null
+            this.detachEditControl()
             this.scene.dispose()
         },
         enableTranslation() {
@@ -123,41 +126,44 @@ export default {
             editControl.enableScaling()
         },
         createEmptyMesh(name = 'mesh') {
-            return this.createGameObject({ name })
+            return this.createGameObject({ name, scripts: ['transform'] })
         },
         createSphere(name = 'sphere') {
-            return this.createGameObject({ name, script: 'geometries/sphereGeometry' })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/sphereGeometry'] })
         },
         createBox(name = 'box') {
-            return this.createGameObject({ name, script: 'geometries/boxGeometry' })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry'] })
         },
         createPlane(name = 'plane') {
-            return this.createGameObject({ name, script: 'geometries/planeGeometry' })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/planeGeometry'] })
         },
         createGround(name = 'ground') {
-            return this.createGameObject({ name, script: 'geometries/groundGeometry' })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/groundGeometry'] })
         },
         createPointLight(name = 'pointLight') {
-            this.createGameObject({ name, script: 'lights/pointLight' })
+            this.createGameObject({ name, scripts: ['transform', 'lights/pointLight'] })
         },
         createDirectionalLight(name = 'directionalLight') {
-            this.createGameObject({ name, script: 'lights/directionalLight' })
+            this.createGameObject({ name, scripts: ['transform', 'lights/directionalLight'] })
         },
         createSpotLight(name = 'spotLight', px = 0, py = 30, pz = -10, dx = 0, dy = -1, dz = 0, angle = Math.PI / 3, exponent = 2) {
             const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)
             this.addGameObject(new GameObject(name, spotLight))
         },
         createSkyBox(name = 'skyBox') {
-            return this.createGameObject({ name, script: 'geometries/boxGeometry' })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry'] })
         },
         createHemisphericLight(name = 'hemisphericLight') {
-            return this.createGameObject({ name, script: 'lights/hemisphericLight' })
+            return this.createGameObject({ name, scripts: ['transform', 'lights/hemisphericLight'] })
         },
         createUniversalCamera(name = 'universalCamera') {
-            return this.createGameObject({ name, script: 'universalCamera' })
+            return this.createGameObject({ name, scripts: ['transform', 'cameras/universalCamera'] })
         },
         createArcRotateCamera(name = 'arcRotateCamera') {
-            return this.createGameObject({ name, script: 'arcRotateCamera' })
+            return this.createGameObject({ name, scripts: ['transform', 'cameras/arcRotateCamera'] })
+        },
+        createBoxArea(name = 'boxArea') {
+            return this.createGameObject({ name, scripts: [ 'transform', 'boxArea' ] })
         },
         animate() {
         },
@@ -198,7 +204,7 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('newScene').then(this.initScene)
+        this.$store.dispatch('openScene', 'static/scenes/default.scene')
     },
     beforeDestory() {
     },
