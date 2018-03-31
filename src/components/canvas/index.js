@@ -146,9 +146,8 @@ export default {
         createDirectionalLight(name = 'directionalLight') {
             this.createGameObject({ name, scripts: ['transform', 'lights/directionalLight'] })
         },
-        createSpotLight(name = 'spotLight', px = 0, py = 30, pz = -10, dx = 0, dy = -1, dz = 0, angle = Math.PI / 3, exponent = 2) {
-            const spotLight = new BABYLON.SpotLight(name, new BABYLON.Vector3(px, py, pz), new BABYLON.Vector3(dx, dy, dz), angle, exponent, this.scene)
-            this.addGameObject(new GameObject(name, spotLight))
+        createSpotLight(name = 'spotLight') {
+            return this.createGameObject({ name, scripts: ['transform', 'lights/spotLight'] })
         },
         createSkyBox(name = 'skyBox') {
             return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox'] })

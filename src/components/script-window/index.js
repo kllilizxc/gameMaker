@@ -20,13 +20,16 @@ export default {
         ...mapGetters(['gameObject', 'isPlaying'])
     },
     watch: {
-        gameObject(val) {
-            if (!val) {
-                this.scripts = []
-                return
-            }
-            this.getScripts(val)
-            val.registerScriptsReadyHandler(() => this.getScripts(val))
+        gameObject: {
+            handler(val) {
+                if (!val) {
+                    this.scripts = []
+                    return
+                }
+                this.getScripts(val)
+                val.registerScriptsReadyHandler(() => this.getScripts(val))
+            },
+            immediate: true
         }
     },
     methods: {
