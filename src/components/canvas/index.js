@@ -50,12 +50,10 @@ export default {
             scene.onPointerDown = () => {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
-                this.pickedMesh && (this.pickedMesh.showBoundingBox = false)
                 if (pickResult.hit && this.gameObjects.find(({ mesh }) => mesh === pickResult.pickedMesh)) {
                     this.pickedMesh = pickResult.pickedMesh
                     this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh.gameObject)
-                    this.pickedMesh.showBoundingBox = true
                 } else {
                     this.pickedMesh = null
                     this.editControl && this.editControl.hide()
@@ -74,9 +72,17 @@ export default {
                 this.restoreScene()
             }
         },
-        gameObject(val) {
+        gameObject(val, oldVal) {
+            if (oldVal) {
+                oldVal.mesh.showBoundingBox = false
+                oldVal.mesh.material && (oldVal.mesh.material.wireframe = false)
+            }
             if (!val) this.detachEditControl()
-            else this.attachEditControl(val.getMesh())
+            else {
+                this.attachEditControl(val.getMesh())
+                val.mesh.showBoundingBox = true
+                val.mesh.material && (val.mesh.material.wireframe = true)
+            }
         }
     },
     methods: {

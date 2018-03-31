@@ -31,6 +31,7 @@ export default class GameObject {
         this.name = name
         this.mesh = mesh
         this.mesh.id = id
+        this.mesh.receiveShadows = true
         this.mesh.gameObject = this
         this.scripts = {}
         this.scriptsReadyHandlers = []
