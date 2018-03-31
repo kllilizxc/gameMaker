@@ -1,5 +1,5 @@
 import styles from './style.css'
-import IconButton from '@/ui/material-icon-button'
+import DropDown from '@/ui/drop-down'
 
 export default {
     name: 'tree-view',
@@ -49,7 +49,6 @@ export default {
             return data.map(obj => {
                 const d = {
                     children: [],
-                    isFolded: true,
                     haveChildren: false,
                     raw: obj
                 }
@@ -59,26 +58,21 @@ export default {
                 return d
             })
         },
-        toggleItem(obj) {
+        toggleItem(obj, fold) {
             this.chosenObj = obj
-            if (obj.haveChildren) { // if have children
-                obj.isFolded = !obj.isFolded
+            if (!fold && obj.haveChildren) { // if have children
                 this.getChildrenFunction(obj.raw).then(data => obj.children = this.getItemDataFromPropData(data))
             }
         },
         renderItem(obj) {
             const INDENT_LENGTH = 16
             return <div key={this.getIdFunction(obj.raw)}>
-                <div class={styles.treeItem}>
-                    {this.renderItemFunction(obj.raw, obj.haveChildren)}
-                    {obj.haveChildren &&
-                    <IconButton class={[styles.arrowIcon, { [styles.unFold]: !obj.isFolded }]}
-                          icon={'arrow_drop_down'} onClick={() => this.toggleItem(obj)} size={32}/>}
-                </div>
-                {obj.children.length > 0 && !obj.isFolded &&
-                <div class={styles.children} style={{ marginLeft: `${INDENT_LENGTH}px` }}>
-                    {this.renderItemList(obj.children)}
-                </div>}
+                <DropDown initFold={true} class={styles.treeItem} canFold={obj.haveChildren} onInput={fold => this.toggleItem(obj, fold)}>
+                    <div slot='title'>{this.renderItemFunction(obj.raw, obj.haveChildren)}</div>
+                    <div class={styles.children} slot='content' style={{ marginLeft: `${INDENT_LENGTH}px` }}>
+                        {this.renderItemList(obj.children)}
+                    </div>
+                </DropDown>
             </div>
         },
         renderItemList(array) {

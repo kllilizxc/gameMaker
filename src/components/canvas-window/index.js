@@ -19,6 +19,11 @@ export default {
         canvas() { return this.$refs.canvas }
     },
     methods: {
+        newScene() {
+            this.canvas.detachEditControl()
+            this.canvas.dispose()
+            this.$store.dispatch('newScene')
+        },
         openScene() {
             this.canvas.detachEditControl()
             this.canvas.dispose()
@@ -48,7 +53,7 @@ export default {
         }
     },
     render(h) {
-        const { editMode, isPlaying, openScene, build, togglePlay, saveScene, setEditMode } = this
+        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, setEditMode } = this
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
@@ -56,6 +61,7 @@ export default {
             <Canvas ref='canvas'/>
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
+                <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
                 <IconButton slot='left' icon='save' onClick={saveScene}/>
                 <IconButton slot='left' icon='build' onClick={build}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>

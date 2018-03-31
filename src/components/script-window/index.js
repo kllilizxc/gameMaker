@@ -12,22 +12,31 @@ export default {
     data() {
         return {
             isDragOver: false,
-            refreshScripts: false
+            refreshScripts: false,
+            scripts: []
         }
     },
     computed: {
-        ...mapGetters(['gameObject', 'isPlaying']),
-        scripts() {
-            const { gameObject, refreshScripts } = this
-            if (!gameObject) return []
-            const { scripts } = gameObject
-            return Object.keys(scripts).map(key => scripts[key])
+        ...mapGetters(['gameObject', 'isPlaying'])
+    },
+    watch: {
+        gameObject(val) {
+            if (!val) return
+            this.getScripts(val)
+            val.registerScriptsReadyHandler(() => this.getScripts(val))
         }
     },
     methods: {
+        getScripts(gameObject) {
+            const { scripts } = gameObject
+            this.scripts = Object.keys(scripts).map(key => scripts[key])
+        },
         addScript(file) {
             this.$store.dispatch('addScript', file)
-                .then(() => this.refreshScripts = !this.refreshScripts)
+                .then(this.forceRefresh)
+        },
+        forceRefresh() {
+            this.refreshScripts = !this.refreshScripts
         },
         dropHandler(file) {
             this.addScript(file)
@@ -55,6 +64,9 @@ export default {
                 this.$store.dispatch('setGroupScriptValue', data)
             else
                 this.$store.dispatch('setScriptValue', data)
+        },
+        deleteScript(name) {
+            this.$store.dispatch('removeScript', name)
         }
     },
     render() {
@@ -65,11 +77,15 @@ export default {
             dragLeaveHandler,
             isDragOver,
             pickFile,
+            deleteScript,
             setScriptValue
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts.map(script => <Script key={`${this.gameObject.name}:${script.name}`} script={script} onInput={setScriptValue}/>)}
+            {scripts.map(script => <Script key={`${this.gameObject.name}:${script.name}`}
+                                           script={script}
+                                           onDelete={deleteScript}
+                                           onInput={setScriptValue}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

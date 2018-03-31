@@ -28,7 +28,7 @@ export default {
             window.scene = scene
             const { engine, render, canvas } = this
 
-            scene.clearColor = new BABYLON.Color4(0.41, 0.42, 0.38, 1.0)
+            scene.clearColor = new BABYLON.Color4(0.41, 0.44, 0.42, 0.6)
 
             this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
             this.camera.setTarget(BABYLON.Vector3.Zero())
@@ -151,7 +151,7 @@ export default {
             this.addGameObject(new GameObject(name, spotLight))
         },
         createSkyBox(name = 'skyBox') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry'] })
+            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox'] })
         },
         createHemisphericLight(name = 'hemisphericLight') {
             return this.createGameObject({ name, scripts: ['transform', 'lights/hemisphericLight'] })
@@ -204,8 +204,7 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('newScene')
-        // this.$store.dispatch('openScene', 'static/scenes/default.scene')
+        this.$store.dispatch('openScene', 'static/scenes/default.scene')
     },
     beforeDestory() {
     },

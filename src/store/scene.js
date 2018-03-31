@@ -1,6 +1,6 @@
 import {
     stateToActions, stateToGetters, stateToMutations, readScriptFromFile, isLight,
-    isCamera, trimFilename
+    isCamera, trimFilename, removeInArray
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
@@ -12,7 +12,7 @@ const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
 const SET_GAMEOBJECTS = 'SET_GAMEOBJECTS'
 const ADD_SCRIPT = 'ADD_SCRIPT'
-const SET_SCRIPTVALUE = 'SET_SCRIPTVALUE'
+const SET_SCRIPT_VALUE = 'SET_SCRIPT_VALUE'
 const SET_GROUP_SCRIPT_VALUE = 'SET_GROUP_SCRIPT_VALUE'
 
 const logger = console
@@ -32,11 +32,6 @@ const state = {
     filesMap: {},
     rawGameObjects: {},
     filename: null
-}
-
-function removeInArray(array, compareFunc) {
-    const index = array.findIndex(a => compareFunc(a))
-    if (index !== -1) array.splice(index, 1)
 }
 
 function setObjectIfUndefined(obj, ...keys) {
@@ -69,7 +64,7 @@ export default {
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, groupName)
             scriptsMap[gameObject.id][scriptName][groupName][fieldName] = value
         },
-        [SET_SCRIPTVALUE]({ gameObject, scriptsMap, filesMap }, { scriptName, fieldName, value, type }) {
+        [SET_SCRIPT_VALUE]({ gameObject, scriptsMap, filesMap }, { scriptName, fieldName, value, type }) {
             if (type === FILE_TYPE) {
                 const filename = trimFilename(value)
                 filesMap[filename] = value
@@ -95,9 +90,11 @@ export default {
                 console.log(script)
                 commit(ADD_SCRIPT, script)
             }),
-        removeGameObject: ({ state: { gameObjects } }, obj) => {
+        removeGameObject: ({ state, state: { gameObjects, scriptsMap } }, obj) => {
             obj.getMesh().dispose()
-            gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
+            delete scriptsMap[obj.id]
+            state.gameObject = null
+            return gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
         },
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
             if (parent && (isLight(parent.getMesh()) || isCamera(parent.getMesh()) || isParent(parent, child))) return
@@ -105,7 +102,14 @@ export default {
             removeInArray(gameObjects, ({ id }) => id === child.id)
             if (!parent) gameObjects.push(child)
         },
-        newScene: ({ state: { engine }, dispatch }) => dispatch('setScene', new BABYLON.Scene(engine)),
+        newScene: ({ state, dispatch }) => {
+            state.scripts = {}
+            state.scriptsMap = {}
+            state.filesMap = {}
+            state.gameObjects = []
+            state.filename = ''
+            return dispatch('setScene', new BABYLON.Scene(state.engine))
+        },
         saveScene: ({ state }, filename) => {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
@@ -134,15 +138,26 @@ export default {
         },
         restoreScene: ({ dispatch, state: { gameObjects } }) =>
             dispatch('loadScene', getMeshes(gameObjects)),
-        loadScene: ({ dispatch }, rawGameObjects) => {
-            const setMeshes = (gameObjects, parent) => gameObjects && Promise.all(gameObjects.map(rawGameObject => {
-                const gameObject = getNewGameObject(rawGameObject, state.scene)
-                return setMeshes(rawGameObject.children, gameObject)
-                    .then(() => dispatch('setGameObjectParent', { child: gameObject, parent }))
-            }))
-            dispatch('newScene').then(() => setMeshes(rawGameObjects))
+        loadScene: ({ dispatch }, rawGameObjects) =>
+            dispatch('setScene', new BABYLON.Scene(state.engine)).then(() =>
+                rawGameObjects.forEach(rawGameObject => dispatch('loadGameObject', { rawGameObject }))),
+        removeScript({ state, state: { gameObjects, gameObject, scriptsMap }, dispatch }, name) {
+            delete scriptsMap[gameObject.id][name]
+            gameObject.getMesh().dispose()
+            removeInArray(gameObjects, obj => obj === gameObject)
+            return dispatch('restoreGameObject', gameObject)
+                .then(gameObject => state.gameObject = gameObject)
         },
-        setScriptValue: ({ commit }, data) => commit(SET_SCRIPTVALUE, data),
+        restoreGameObject: ({ dispatch }, gameObject) =>
+            dispatch('loadGameObject', { rawGameObject: getMesh(gameObject) }),
+        loadGameObject: ({ state, dispatch }, { rawGameObject, parent }) => {
+            const gameObject = getNewGameObject(rawGameObject, state.scene)
+            return Promise.all(rawGameObject.children.map(child =>
+                dispatch('loadGameObject', { rawGameObject: child, parent: gameObject })))
+                .then(() => dispatch('setGameObjectParent', { child: gameObject, parent }))
+                .then(() => gameObject)
+        },
+        setScriptValue: ({ commit }, data) => commit(SET_SCRIPT_VALUE, data),
         setGroupScriptValue: ({ commit }, data) => commit(SET_GROUP_SCRIPT_VALUE, data),
         createGameObject({ state: { scene }, dispatch, commit }, { name, script, scripts, id }) {
             const gameObject = getNewGameObject({ id, name }, scene)
@@ -188,7 +203,7 @@ function isParent(child, parent) {
     return (child.getParent() === parent) || isParent(child.getParent(), parent)
 }
 
-const getMeshes = gameObjects => gameObjects.map(gameObject => {
+const getMesh = gameObject => {
     const { mesh, id, name } = gameObject
     return {
         id,
@@ -196,4 +211,6 @@ const getMeshes = gameObjects => gameObjects.map(gameObject => {
         className: mesh.getClassName(),
         children: getMeshes(gameObject.getChildren())
     }
-})
+}
+
+const getMeshes = gameObjects => gameObjects.map(getMesh)

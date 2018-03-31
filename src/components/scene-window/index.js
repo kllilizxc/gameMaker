@@ -61,7 +61,7 @@ export default {
                         }]}
                         onClick={() => this.handleInput(obj)}>
                 <SceneItem value={obj} onInput={val => this.editGameObjectName(val, obj)}/>
-                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={32}
+                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
                                          onClick={() => this.removeGameObject(obj)}/>}
             </div>
         }

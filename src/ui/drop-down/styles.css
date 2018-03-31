@@ -1,0 +1,16 @@
+.title {
+    display: flex;
+}
+
+.arrowIcon :global(.mu-icon) {
+    transition: transform 0.3s ease;
+}
+
+.title {
+    height: 48px;
+    line-height: 48px;
+}
+
+.unFold :global(.mu-icon) {
+    transform: rotateX(180deg);
+}

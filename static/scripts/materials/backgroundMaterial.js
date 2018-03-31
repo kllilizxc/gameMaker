@@ -1,14 +1,24 @@
 const backgroundMaterial = new BABYLON.BackgroundMaterial('backgroundMaterial', scene)
 this.getMesh().material = backgroundMaterial
 this.getMesh().receiveShadows = true
-backgroundMaterial.sideOrientation = BABYLON.Mesh.DOUBLESIDE
 backgroundMaterial.primaryLevel = 1
 backgroundMaterial.secondaryLevel = 0
 backgroundMaterial.tertiaryLevel = 0
+backgroundMaterial.backFaceCulling = false
+let orientationSide = 'FRONTSIDE'
 
 let diffuseTexture, reflectionTexture, mirrorTexture
 
 fields = {
+    orientationSide: {
+        type: 'ENUM',
+        get: () => orientationSide,
+        set: val => {
+            orientationSide = val
+            backgroundMaterial.orientationSide = BABYLON.Mesh[orientationSide]
+        },
+        options: { options: ['FRONTSIDE', 'BACKSIDE'] }
+    },
     diffuseTexture: {
         type: 'FILE',
         get: () => diffuseTexture,
@@ -74,5 +84,11 @@ fields = {
                 set: val => backgroundMaterial.primaryColor.b = val
             }
         }
+    }
+}
+
+actions = {
+    setOrientationSide(val) {
+        backgroundMaterial.sideOrientation = val
     }
 }

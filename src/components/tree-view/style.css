@@ -1,19 +1,10 @@
 @value Black-Text from '@/common/colors.css';
 
 .treeItem {
-    display: flex;
     margin-left: 8px;
     cursor: pointer;
     overflow: hidden;
     color: Black-Text;
-}
-
-.arrowIcon :global(.mu-icon) {
-    transition: transform 0.3s ease;
-}
-
-.unFold :global(.mu-icon) {
-    transform: rotateX(180deg);
 }
 
 .treeView {

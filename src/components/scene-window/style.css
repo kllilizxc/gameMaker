@@ -2,7 +2,6 @@
 
 .sceneWindow {
     padding: 0 8px;
-    height: 100%;
     overflow: auto;
     display: flex;
     flex-direction: column;

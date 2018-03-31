@@ -79,3 +79,8 @@ const cameraClassNames = ['FreeCamera']
 export const isCamera = obj => cameraClassNames.find(name => name === obj.getClassName())
 
 export const camelToWords = str => str.replace(/([A-Z])/g, ' $1').toLowerCase()
+
+export function removeInArray(array, compareFunc) {
+    const index = array.findIndex(a => compareFunc(a))
+    if (index !== -1) array.splice(index, 1)
+}

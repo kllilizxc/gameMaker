@@ -2,6 +2,7 @@ import { UUID, readScriptFromFile } from '../common/util'
 import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
+import { removeInArray } from '../common/util'
 
 const sceneStore = store.state.scene
 
@@ -33,12 +34,13 @@ export default class GameObject {
         this.mesh.id = id
         this.mesh.gameObject = this
         this.scripts = {}
+        this.scriptsReadyHandlers = []
         const scriptsMap = sceneStore.scriptsMap[this.id]
         if (scriptsMap) {
             Object.keys(scriptsMap).map(name => {
                 const scriptPath = sceneStore.scripts[name]
                 const values = scriptsMap[name]
-                readScriptFromFile(scriptPath, this).then(script => {
+                return readScriptFromFile(scriptPath, this).then(script => {
                     const scriptObject = new Script(script, this)
                     const { fields } = scriptObject
                     fields && restoreFieldsValues(fields, values)
@@ -56,6 +58,19 @@ export default class GameObject {
         const path = getDefaultScriptsPath(name)
         return readScriptFromFile(path, this)
             .then(script => this.addScript(new Script({ ...script, path }, this)))
+    }
+
+    onScriptsReady() {
+        this.scriptsReadyHandlers.forEach(handler => handler())
+    }
+
+    registerScriptsReadyHandler(handler) {
+        if (!this.scriptsReadyHandlers.find(h => h === handler))
+            this.scriptsReadyHandlers.push(handler)
+    }
+
+    removeScriptsReadyHanlder(handler) {
+        removeInArray(this.scriptsReadyHandlers, h => h === handler)
     }
 
     getMesh() {
@@ -76,6 +91,7 @@ export default class GameObject {
     addScript(scriptObject) {
         this.scripts[scriptObject.name] = scriptObject
         this[scriptObject.name] = scriptObject
+        this.onScriptsReady()
     }
 
     getParent() {
