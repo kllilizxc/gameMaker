@@ -21,7 +21,10 @@ export default {
     },
     watch: {
         gameObject(val) {
-            if (!val) return
+            if (!val) {
+                this.scripts = []
+                return
+            }
             this.getScripts(val)
             val.registerScriptsReadyHandler(() => this.getScripts(val))
         }

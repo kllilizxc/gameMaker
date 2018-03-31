@@ -48,7 +48,7 @@ Promise.all([
 
 function initScene() {
     scene.clearColor = new BABYLON.Color4(0.41, 0.42, 0.38, 1.0)
-
+bn b nbn
     scene.activeCamera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
     scene.activeCamera.setTarget(BABYLON.Vector3.Zero())
     scene.activeCamera.attachControl(canvas, true)

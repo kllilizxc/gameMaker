@@ -16,7 +16,7 @@ export default {
             this.$store.dispatch('setGameObject', obj)
         },
         removeGameObject(obj) {
-            this.$store.dispatch('removeGameObject', obj)
+            obj.dispose()
         },
         editGameObjectName(name, obj) {
             obj.name = name
@@ -58,9 +58,8 @@ export default {
                         class={[styles.item, {
                             [styles.chosen]: isChosen,
                             [styles.dragOver]: this.dragOverObj === obj
-                        }]}
-                        onClick={() => this.handleInput(obj)}>
-                <SceneItem value={obj} onInput={val => this.editGameObjectName(val, obj)}/>
+                        }]}>
+                <SceneItem onClick={() => this.handleInput(obj)} value={obj} onInput={val => this.editGameObjectName(val, obj)}/>
                 {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
                                          onClick={() => this.removeGameObject(obj)}/>}
             </div>

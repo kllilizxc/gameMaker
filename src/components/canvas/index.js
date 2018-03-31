@@ -75,8 +75,8 @@ export default {
             }
         },
         gameObject(val) {
-            if (!val) return
-            this.attachEditControl(val.getMesh())
+            if (!val) this.detachEditControl()
+            else this.attachEditControl(val.getMesh())
         }
     },
     methods: {

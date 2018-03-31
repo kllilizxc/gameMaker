@@ -31,11 +31,14 @@ export default {
         },
         toggleEditMode() {
             this.editMode = !this.editMode
+        },
+        handleClick() {
+            this.$emit('click')
         }
     },
     render() {
-        const { editMode, _value, icon, toggleEditMode, handleInput } = this
-        return <div class={styles.item} onDblclick={toggleEditMode}>
+        const { editMode, _value, icon, toggleEditMode, handleInput, handleClick } = this
+        return <div class={styles.item} onDblclick={toggleEditMode} onClick={handleClick}>
             <Icon className={styles.icon} icon={icon} size={24}/>
             {editMode ? <TextField value={_value} type='text' onInput={handleInput}/> : <span>{_value}</span>}
         </div>

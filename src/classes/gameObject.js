@@ -1,8 +1,7 @@
-import { UUID, readScriptFromFile } from '../common/util'
+import { UUID, readScriptFromFile, removeInArray } from '../common/util'
 import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
-import { removeInArray } from '../common/util'
 
 const sceneStore = store.state.scene
 
@@ -104,5 +103,12 @@ export default class GameObject {
 
     setParent(parent) {
         this.mesh.parent = parent && parent.mesh
+    }
+
+    dispose() {
+        this.mesh.dispose()
+        delete sceneStore.scriptsMap[this.id]
+        removeInArray(sceneStore.gameObjects, obj => obj === this)
+        sceneStore.gameObject = null
     }
 }

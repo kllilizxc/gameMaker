@@ -86,16 +86,7 @@ export default {
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
         addScript: ({ commit, state }, file) => readScriptFromFile(file, state.gameObject)
-            .then(script => {
-                console.log(script)
-                commit(ADD_SCRIPT, script)
-            }),
-        removeGameObject: ({ state, state: { gameObjects, scriptsMap } }, obj) => {
-            obj.getMesh().dispose()
-            delete scriptsMap[obj.id]
-            state.gameObject = null
-            return gameObjects.splice(gameObjects.findIndex(gameObject => gameObject === obj), 1)
-        },
+            .then(script => commit(ADD_SCRIPT, script)),
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
             if (parent && (isLight(parent.getMesh()) || isCamera(parent.getMesh()) || isParent(parent, child))) return
             child.setParent(parent)
@@ -141,11 +132,10 @@ export default {
         loadScene: ({ dispatch }, rawGameObjects) =>
             dispatch('setScene', new BABYLON.Scene(state.engine)).then(() =>
                 rawGameObjects.forEach(rawGameObject => dispatch('loadGameObject', { rawGameObject }))),
-        removeScript({ state, state: { gameObjects, gameObject, scriptsMap }, dispatch }, name) {
-            delete scriptsMap[gameObject.id][name]
-            gameObject.getMesh().dispose()
-            removeInArray(gameObjects, obj => obj === gameObject)
-            return dispatch('restoreGameObject', gameObject)
+        removeScript({ state, dispatch }, name) {
+            state.gameObject.dispose()
+            delete state.scriptsMap[state.gameObject.id][name]
+            return dispatch('restoreGameObject', state.gameObject)
                 .then(gameObject => state.gameObject = gameObject)
         },
         restoreGameObject: ({ dispatch }, gameObject) =>
