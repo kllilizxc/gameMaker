@@ -158,7 +158,6 @@ export default {
         },
         build({ state, dispatch }) {
             const getFilePathFromDir = (dir, filename) => `${dir}/${filename}`
-            const getPathFromStaticFolder = filename => getFilePathFromDir('static', filename)
             const getPathFromTemplateFolder = filename => getFilePathFromDir('static/template', filename)
             AssetManager.pickFolder('Now pick a file to save your scene')
                 .then(dir => {
@@ -174,7 +173,7 @@ export default {
                         const path = state.scripts[name]
                         return AssetManager.readLocalFile(path, 'utf8').then(content => scriptsMap[name] = content)
                     })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
-                    dispatch('saveScene',getFilePathFromDir(dir, 'index.scene'))
+                    dispatch('saveScene', getFilePathFromDir(dir, 'index.scene'))
                 })
         }
     }

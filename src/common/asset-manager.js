@@ -3,7 +3,6 @@
 import { remote } from 'electron'
 
 const fs = remote.require('fs')
-const ncp = remote.require('ncp')
 const { dialog } = remote
 
 function getFunctionFromFs(func) {
@@ -27,8 +26,6 @@ export default class AssetManager {
     static writeFile = getFunctionFromFs('writeFile')
 
     static copyFile = (src, des) => fs.createReadStream(src).pipe(fs.createWriteStream(des))
-
-    static copyDir = (src, des) => ncp(src, des, err => new Promise((resolve, reject) => err ? reject(err) : resolve()))
 
     static mkdir = dir => {
         if (!fs.existsSync(dir)) return getFunctionFromFs('mkdir')(dir)
