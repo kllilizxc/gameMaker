@@ -3,8 +3,8 @@
 
 .fileDropper {
     width: 72%;
-    margin-left: auto;
     padding-left: 8px;
+    margin: 4px 0 4px auto;
     background: Grey-200;
     cursor: pointer;
     border-radius: 4px;

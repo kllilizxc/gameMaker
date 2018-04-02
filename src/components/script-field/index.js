@@ -60,7 +60,7 @@ export default {
         },
         renderSwitch(h: any, field): any {
             const { options } = field
-            return this.createScriptElement(h, Switch, { ...options, labelLeft: true }, field)
+            return this.createScriptElement(h, Switch, { ...options, labelLeft: true, labelClass: styles.label }, field)
         },
         renderPicker(h: any, field): any {
             const { options } = field
@@ -71,7 +71,7 @@ export default {
             const { options, children } = field
 
             return <div class={styles.inputGroup}>
-                <div class={styles.label}>{options.label}</div>
+                <div class={styles.groupLabel}>{options.label}</div>
                 <div class={styles.container}>
                     {Object.keys(children).map(name => this.parseOption(h, { name, parent: field.name, ...children[name] }))}
                 </div>

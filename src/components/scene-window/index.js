@@ -3,7 +3,6 @@ import TreeView from '../tree-view'
 import { mapGetters } from 'vuex'
 import SceneItem from '../scene-item'
 import IconButton from '@/ui/material-icon-button'
-import { isCamera, isLight } from '../../common/util'
 import GameObject from '../../classes/gameObject'
 
 export default {
@@ -27,7 +26,6 @@ export default {
         handleDrop(e, obj) {
             e.preventDefault()
             e.stopPropagation()
-            if (obj && (isLight(obj.getMesh()) || isCamera(obj.getMesh()))) return false
             this.clearDragOverObj()
 
             const gameObjectId = e.dataTransfer.getData('gameObject')
@@ -42,7 +40,6 @@ export default {
             e.preventDefault()
             e.stopPropagation()
             if (!obj) return true
-            if (isLight(obj.getMesh()) || isCamera(obj.getMesh())) return false
             this.dragOverObj = obj
         },
         clearDragOverObj() {

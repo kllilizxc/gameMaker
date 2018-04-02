@@ -15,6 +15,7 @@
     position: fixed;
     top: 32px;
     right: 0;
+    pointer-events: none;
 }
 
 .fixedUI {
@@ -27,7 +28,7 @@
     pointer-events: none;
 }
 
-.fixedUI * {
+.fixedUI *:not(.windowLabelList) {
     pointer-events: auto;
 }
 

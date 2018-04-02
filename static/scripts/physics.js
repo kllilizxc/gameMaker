@@ -34,7 +34,17 @@ fields = {
     }
 }
 
+actions = {
+    applyForce: force => {
+        if (!this.physicsImpostor) return
+        this.physicsImpostor.applyForce(force, this.getMesh().getAbsolutePosition())
+    }
+}
+
 function init() {
+    this.checkCollisions = checkCollisions
+    this.physicsImpostor =
+        new BABYLON.PhysicsImpostor(this.getMesh(), BABYLON.PhysicsImpostor[type], { mass, friction, restitution }, scene)
 }
 
 function update() {

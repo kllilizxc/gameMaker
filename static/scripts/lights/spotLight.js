@@ -1,5 +1,5 @@
 const spotLight = new BABYLON.SpotLight(this.name, new BABYLON.Vector3(0, 30, -10), new BABYLON.Vector3(0, -1, 0), Math.PI / 3, 2, scene)
-spotLight.parent = this.getMesh()
+this.setMesh(spotLight)
 
 fields = {
     diffuse: {

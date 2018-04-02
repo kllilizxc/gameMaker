@@ -3,8 +3,6 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl
     from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
-import { isLight, isCamera } from '../../common/util'
-import GameObject from '../../classes/gameObject'
 
 export default {
     name: 'draw-canvas',
@@ -30,10 +28,14 @@ export default {
 
             scene.clearColor = new BABYLON.Color4(0.41, 0.44, 0.42, 0.6)
 
-            this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
-            this.camera.setTarget(BABYLON.Vector3.Zero())
-            this.camera.attachControl(canvas, true)
-            scene.activeCamera = this.camera
+            if (!scene.activeCamera) {
+                this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
+                this.camera.setTarget(BABYLON.Vector3.Zero())
+                this.camera.attachControl(canvas, true)
+                scene.activeCamera = this.camera
+            } else {
+                this.camera = scene.activeCamera
+            }
 
             this.initScene()
 
@@ -64,31 +66,35 @@ export default {
             engine.runRenderLoop(render)
         },
         isPlaying(val) {
-            const { init } = this
+            const { init, scene } = this
             this.detachEditControl()
             if (val) {
                 init()
+                scene.registerBeforeRender(this.update)
+                scene.registerAfterRender(this.lateUpdate)
             } else {
                 this.restoreScene()
+                scene.unregisterBeforeRender(this.update)
+                scene.unregisterAfterRender(this.lateUpdate)
             }
         },
         gameObject(val, oldVal) {
             if (oldVal) {
                 oldVal.mesh.showBoundingBox = false
-                oldVal.mesh.material && (oldVal.mesh.material.wireframe = false)
+                oldVal.callEvent('onBlur')
             }
             if (!val) this.detachEditControl()
             else {
                 this.attachEditControl(val.getMesh())
                 val.mesh.showBoundingBox = true
-                val.mesh.material && (val.mesh.material.wireframe = true)
+                val.callEvent('onFocus')
             }
         }
     },
     methods: {
         ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject', 'restoreScene']),
         attachEditControl(mesh) {
-            if (!(mesh.position && mesh.rotation && mesh.scaling) || isLight(mesh) || isCamera(mesh)) {
+            if (!(mesh.position && mesh.rotation && mesh.scaling)) {
                 this.editControl && this.editControl.hide()
                 return
             }
@@ -147,25 +153,31 @@ export default {
             return this.createGameObject({ name, scripts: ['transform', 'geometries/groundGeometry'] })
         },
         createPointLight(name = 'pointLight') {
-            this.createGameObject({ name, scripts: ['transform', 'lights/pointLight'] })
+            this.createGameObject({ name, scripts: ['lights/pointLight', 'transform'] })
         },
         createDirectionalLight(name = 'directionalLight') {
-            this.createGameObject({ name, scripts: ['transform', 'lights/directionalLight'] })
+            this.createGameObject({ name, scripts: ['lights/directionalLight', 'transform', 'lights/shadowGenerator'] })
         },
         createSpotLight(name = 'spotLight') {
-            return this.createGameObject({ name, scripts: ['transform', 'lights/spotLight'] })
+            return this.createGameObject({ name, scripts: ['lights/spotLight', 'transform'] })
         },
         createSkyBox(name = 'skyBox') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox'] })
+            return this.createGameObject({
+                name,
+                scripts: ['transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox']
+            })
         },
         createHemisphericLight(name = 'hemisphericLight') {
-            return this.createGameObject({ name, scripts: ['transform', 'lights/hemisphericLight'] })
+            return this.createGameObject({ name, scripts: ['lights/hemisphericLight', 'transform'] })
         },
         createUniversalCamera(name = 'universalCamera') {
-            return this.createGameObject({ name, scripts: ['transform', 'cameras/universalCamera'] })
+            return this.createGameObject({ name, scripts: ['cameras/universalCamera', 'transform'] })
         },
         createArcRotateCamera(name = 'arcRotateCamera') {
-            return this.createGameObject({ name, scripts: ['transform', 'cameras/arcRotateCamera'] })
+            return this.createGameObject({ name, scripts: ['cameras/arcRotateCamera', 'transform'] })
+        },
+        createFollowCamera(name = 'followCamera') {
+            return this.createGameObject({ name, scripts: ['cameras/followCamera', 'transform'] })
         },
         createBoxArea(name = 'boxArea') {
             return this.createGameObject({ name, scripts: ['transform', 'boxArea'] })
@@ -173,16 +185,13 @@ export default {
         animate() {
         },
         init() {
-            this.gameObjects.forEach(gameObject => {
-                const { scripts } = gameObject
-                scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ init }) => init && init.bind(gameObject)())
-            })
+            this.gameObjects.forEach(gameObject => gameObject.callEvent('init'))
         },
         update() {
-            this.gameObjects.forEach(gameObject => {
-                const { scripts } = gameObject
-                scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ update }) => update && update.bind(gameObject)())
-            })
+            this.gameObjects.forEach(gameObject => gameObject.callEvent('update'))
+        },
+        lateUpdate() {
+            this.gameObjects.forEach(gameObject => gameObject.callEvent('lateUpdate'))
         },
         render() {
             const {
@@ -195,10 +204,6 @@ export default {
                 camera.detachControl(canvas)
             else
                 camera.attachControl(canvas)
-            if (isPlaying) {
-                update()
-                animate()
-            }
             scene.getBoundingBoxRenderer().render()
             scene.render()
         }
@@ -209,7 +214,7 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('openScene', 'static/scenes/default.scene')
+        this.$store.dispatch('openScene', localStorage['GM:filename'] || 'static/scenes/default.scene')
     },
     beforeDestory() {
     },

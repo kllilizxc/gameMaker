@@ -1,20 +1,6 @@
 const directionalLight = new BABYLON.DirectionalLight(this.name, new BABYLON.Vector3(2, -3, -1), scene)
-directionalLight.parent = this.getMesh()
-let shadowMapSize = 512
-let shadowGenerator
-const setShadowMapSize = () => {
-    let blurExponential = null, blurKernel = null
-    if (shadowGenerator) {
-        blurExponential = shadowGenerator.blurExponential
-        blurKernel = shadowGenerator.blurKernel
-        shadowGenerator.dispose()
-    }
-    shadowGenerator = new BABYLON.ShadowGenerator(shadowMapSize, directionalLight)
-    if (blurExponential !== null) shadowGenerator.blurExponential = blurExponential
-    if (blurKernel !== null) shadowGenerator.blurKernel = blurKernel
-    scene.meshes.forEach(mesh => shadowGenerator.addShadowCaster(mesh, true))
-}
-setShadowMapSize()
+this.setMesh(directionalLight)
+this.getLight = () => directionalLight
 
 fields = {
     diffuse: {
@@ -61,24 +47,5 @@ fields = {
         type: 'NUMBER',
         get: () => directionalLight.intensity,
         set: val => directionalLight.intensity = val
-    },
-    shadowMapSize: {
-        type: 'NUMBER',
-        get: () => shadowMapSize,
-        set: val => {
-            if (val % 16 !== 0) return
-            shadowMapSize = val
-            setShadowMapSize()
-        }
-    },
-    blurExponential: {
-        type: 'BOOLEAN',
-        get: () => shadowGenerator.useBlurExponentialShadowMap,
-        set: val => shadowGenerator.useBlurExponentialShadowMap = val
-    },
-    blurKernel: {
-        type: 'NUMBER',
-        get: () => shadowGenerator.blurKernel,
-        set: val => shadowGenerator.blurKernel = val
     }
 }

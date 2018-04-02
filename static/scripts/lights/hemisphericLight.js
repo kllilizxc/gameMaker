@@ -1,4 +1,5 @@
 const hemisphericLight = new BABYLON.HemisphericLight(this.name, BABYLON.Vector3.Up(), scene)
+this.setMesh(hemisphericLight)
 hemisphericLight.parent = this.getMesh()
 
 fields = {

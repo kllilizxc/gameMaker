@@ -32,6 +32,7 @@ export default class GameObject {
         this.mesh = mesh
         this.mesh.id = id
         this.mesh.receiveShadows = true
+        this.mesh.checkCollisions = true
         this.mesh.gameObject = this
         this.scripts = {}
         this.scriptsReadyHandlers = []
@@ -48,6 +49,16 @@ export default class GameObject {
                 })
             })
         }
+    }
+
+    clone(name) {
+        const id = UUID()
+        sceneStore.scriptsMap[id] = JSON.parse(JSON.stringify(sceneStore.scriptsMap[this.id]))
+        this.mesh.gameObject = null
+        const clonedMesh = this.mesh.clone()
+        this.mesh.gameObject = this
+        clonedMesh.gameObject = new GameObject(name, clonedMesh, id)
+        return clonedMesh.gameObject
     }
 
     static findGameObjectById(id) {
@@ -91,6 +102,8 @@ export default class GameObject {
     addScript(scriptObject) {
         this.scripts[scriptObject.name] = scriptObject
         this[scriptObject.name] = scriptObject
+        if (scriptObject.actions)
+            Object.keys(scriptObject.actions).forEach(name => this[name] = scriptObject.actions[name])
         this.onScriptsReady()
     }
 
@@ -111,5 +124,15 @@ export default class GameObject {
         delete sceneStore.scriptsMap[this.id]
         removeInArray(sceneStore.gameObjects, obj => obj === this)
         sceneStore.gameObject = null
+    }
+
+    callEvent(eventName) {
+        const { scripts } = this
+        scripts && Object.keys(scripts).map(key => scripts[key])
+            .forEach(script => script[eventName] && script[eventName].bind(this)())
+
+        const children = this.getChildren()
+        if (children)
+            children.forEach(child => this.callEvent.call(child, eventName))
     }
 }

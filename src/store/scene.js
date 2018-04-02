@@ -88,7 +88,7 @@ export default {
         addScript: ({ commit, state }, file) => readScriptFromFile(file, state.gameObject)
             .then(script => commit(ADD_SCRIPT, script)),
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
-            if (parent && (isLight(parent.getMesh()) || isCamera(parent.getMesh()) || isParent(parent, child))) return
+            if (parent && isParent(parent, child)) return
             child.setParent(parent)
             removeInArray(gameObjects, ({ id }) => id === child.id)
             if (!parent) gameObjects.push(child)
@@ -126,6 +126,7 @@ export default {
                     dispatch('loadScene', data.rawGameObjects)
                 })
             state.filename = filename
+            localStorage['GM:filename'] = filename
         },
         restoreScene: ({ dispatch, state: { gameObjects } }) =>
             dispatch('loadScene', getMeshes(gameObjects)),
@@ -133,9 +134,13 @@ export default {
             dispatch('setScene', new BABYLON.Scene(state.engine)).then(() =>
                 rawGameObjects.forEach(rawGameObject => dispatch('loadGameObject', { rawGameObject }))),
         removeScript({ state, dispatch }, name) {
-            state.gameObject.dispose()
-            delete state.scriptsMap[state.gameObject.id][name]
-            return dispatch('restoreGameObject', state.gameObject)
+            if (state.scriptsMap[state.gameObject.id])
+                delete state.scriptsMap[state.gameObject.id][name]
+            const { gameObject } = state
+            gameObject.getMesh().dispose()
+            removeInArray(state.gameObjects, obj => obj === this)
+            state.gameObject = null
+            return dispatch('restoreGameObject', gameObject)
                 .then(gameObject => state.gameObject = gameObject)
         },
         restoreGameObject: ({ dispatch }, gameObject) =>
@@ -160,6 +165,11 @@ export default {
                     dispatch('setGameObject', gameObject)
                     return gameObject
                 })
+        },
+        duplicateGameObject: ({ dispatch, state: { gameObject } }) => {
+            const cloned = gameObject.clone(gameObject.name + '2')
+            if (!cloned.getMesh().parent) dispatch('addGameObject', cloned)
+            return dispatch('setGameObject', cloned)
         },
         build({ state, dispatch }) {
             const getFilePathFromDir = (dir, filename) => `${dir}/${filename}`

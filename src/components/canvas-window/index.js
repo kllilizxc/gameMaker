@@ -7,7 +7,7 @@ import IconButton from '@/ui/material-icon-button'
 import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 
-const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
+const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'FollowCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
 
 export default {
     name: 'canvas-window',
@@ -15,7 +15,7 @@ export default {
         editMode: 0
     }),
     computed: {
-        ...mapGetters(['isPlaying', 'scene']),
+        ...mapGetters(['isPlaying', 'scene', 'filename']),
         canvas() { return this.$refs.canvas }
     },
     methods: {
@@ -34,6 +34,9 @@ export default {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
         },
         saveScene() {
+            this.$store.dispatch('saveScene', this.filename)
+        },
+        saveSceneAs() {
             AssetManager.saveFile(
                 'Now pick a file to save your scene',
                 [{ name: 'Scene', extensions: ['scene'] }])
@@ -53,7 +56,7 @@ export default {
         }
     },
     render(h) {
-        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, setEditMode } = this
+        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, saveSceneAs, setEditMode } = this
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
@@ -62,7 +65,10 @@ export default {
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
-                <IconButton slot='left' icon='save' onClick={saveScene}/>
+                <IconMenu slot='left' icon='save' anchorOrigin={origin} targetOrigin={origin}>
+                    <MenuItem title='save' onClick={saveScene}/>
+                    <MenuItem title='save as' onClick={saveSceneAs}/>
+                </IconMenu>
                 <IconButton slot='left' icon='build' onClick={build}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
                     {gameObjects.map(gameObject => <MenuItem title={gameObject} onClick={() => this.canvas[`create${gameObject}`]()}/>)}

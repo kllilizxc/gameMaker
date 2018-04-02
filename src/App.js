@@ -15,11 +15,11 @@ export default {
     methods: {
     },
     computed: {
-        ...mapGetters(['scene']),
+        ...mapGetters(['scene', 'gameObject']),
         windowLabels() {
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
-                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow/> },
+                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow ref='sceneWindow'/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
                 { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
@@ -31,6 +31,18 @@ export default {
     },
     created() {
         window.$vm0 = this  // for debug
+        document.onkeydown = e => {
+            if (e.ctrlKey && e.code === 'KeyD') {
+                // ctrl + d
+                console.log(this.$refs)
+                this.$store.dispatch('duplicateGameObject')
+                    .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
+            } else if (e.code === 'KeyF') {
+                const { scene, gameObject } = this
+                if (scene && scene.activeCamera && scene.activeCamera.setTarget)
+                    scene.activeCamera.setTarget(gameObject.getMesh().getAbsolutePosition())
+            }
+        }
     },
     render() {
         const { windowLabels, defaultWindow } = this

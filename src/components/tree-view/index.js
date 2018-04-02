@@ -21,6 +21,10 @@ export default {
             type: Function,
             default: () => Promise.resolve([])
         },
+        initFold: {
+            type: Boolean,
+            default: true
+        },
         selected: Object
     },
     data: () => ({
@@ -67,7 +71,7 @@ export default {
         renderItem(obj) {
             const INDENT_LENGTH = 16
             return <div key={this.getIdFunction(obj.raw)}>
-                <DropDown initFold={true} class={styles.treeItem} canFold={obj.haveChildren} onInput={fold => this.toggleItem(obj, fold)}>
+                <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren} onInput={fold => this.toggleItem(obj, fold)}>
                     <div slot='title'>{this.renderItemFunction(obj.raw, obj.haveChildren)}</div>
                     <div class={styles.children} slot='content' style={{ marginLeft: `${INDENT_LENGTH}px` }}>
                         {this.renderItemList(obj.children)}

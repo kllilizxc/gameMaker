@@ -88,7 +88,7 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts.map(script => <Script key={`${this.gameObject.name}:${script.name}`}
+            {scripts.map(script => <Script key={`${this.gameObject.id}:${script.name}`}
                                            script={script}
                                            onDelete={deleteScript}
                                            onInput={setScriptValue}/>)}

@@ -48,36 +48,35 @@ Promise.all([
 
 function initScene() {
     scene.clearColor = new BABYLON.Color4(0.41, 0.44, 0.42, 0.6)
-bn b nbn
-    scene.activeCamera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
-    scene.activeCamera.setTarget(BABYLON.Vector3.Zero())
-    scene.activeCamera.attachControl(canvas, true)
+    if (!scene.activeCamera) {
+        this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
+        this.camera.setTarget(BABYLON.Vector3.Zero())
+        this.camera.attachControl(canvas, true)
+        scene.activeCamera = this.camera
+    } else {
+        this.camera = scene.activeCamera
+    }
     scene.collisionsEnabled = true
     scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
 
     init()
+    scene.registerBeforeRender(update)
+    scene.registerAfterRender(lateUpdate)
     engine.runRenderLoop(function () { // Register a render loop to repeatedly render the scene
-        update()
-        animate()
         scene.render()
     })
 }
 
-function animate() {
-}
-
 function init() {
-    gameObjects.forEach(gameObject => {
-        const { scripts } = gameObject
-        scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ init }) => init && init.bind(gameObject)())
-    })
+    gameObjects.forEach(gameObject => gameObject.callEvent('init'))
 }
 
 function update() {
-    gameObjects.forEach(gameObject => {
-        const { scripts } = gameObject
-        scripts && Object.keys(scripts).map(key => scripts[key]).forEach(({ update }) => update && update.bind(gameObject)())
-    })
+    gameObjects.forEach(gameObject => gameObject.callEvent('update'))
+}
+
+function lateUpdate() {
+    gameObjects.forEach(gameObject => gameObject.callEvent('lateUpdate'))
 }
 
 function getNewGameObject({ id, name }) {
@@ -98,8 +97,10 @@ const restoreFieldsValues = (scene, fields, values) => Object.keys(fields).forEa
     const { type, get, set, options, children } = field
     if (type === GROUP_TYPE)
         return restoreFieldsValues(scene, children, values[name])
-    else if (type === GAMEOBJECT_TYPE)
+    else if (type === GAMEOBJECT_TYPE) {
+        console.log(name, GameObject.findGameObjectById(scene, values[name]))
         options.value = GameObject.findGameObjectById(scene, values[name])
+    }
     else if (type === FILE_TYPE) {
         options.value = values && `static/${values[name]}`
     } else {
@@ -133,7 +134,7 @@ class Script {
     }
 }
 
-const events = ['fields', 'actions', 'init', 'update']
+const events = ['fields', 'actions', 'init', 'update', 'onFocus', 'onBlur', 'lateUpdate']
 const returnValues = `return {${events.join(',')}}`
 class GameObject {
     constructor(name, mesh, id = UUID()) {
@@ -141,6 +142,8 @@ class GameObject {
         this.name = name
         this.mesh = mesh
         this.mesh.id = id
+        this.mesh.receiveShadows = true
+        this.mesh.checkCollisions = true
         this.mesh.gameObject = this
         this.scripts = {}
         const scriptMap = scriptsMap[this.id]
@@ -152,6 +155,7 @@ class GameObject {
                     Behavior: new Function('BABYLON', 'scene', ...events, `${scripts[name]}\n${returnValues}`).bind(this)
                 }, this)
                 const { fields } = scriptObject
+                console.log(this.name, name)
                 fields && restoreFieldsValues(scene, fields, values)
                 this.addScript(scriptObject)
             })
@@ -159,6 +163,7 @@ class GameObject {
     }
 
     static findGameObjectById(id) {
+        console.log(scene.getMeshByID(id))
         return scene.getMeshByID(id) && scene.getMeshByID(id).gameObject
     }
 
@@ -192,5 +197,15 @@ class GameObject {
 
     setParent(parent) {
         this.mesh.parent = parent && parent.mesh
+    }
+
+    callEvent(eventName) {
+        const { scripts } = this
+        scripts && Object.keys(scripts).map(key => scripts[key])
+            .forEach(script => script[eventName] && script[eventName].bind(this)())
+
+        const children = this.getChildren()
+        if (children)
+            children.forEach(child => this.callEvent.call(child, eventName))
     }
 }

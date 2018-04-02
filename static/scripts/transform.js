@@ -28,18 +28,18 @@ if (this.getMesh().rotation)
         children: {
             x: {
                 type: 'NUMBER',
-                get: () => this.getMesh().rotation.x,
-                set: val => this.getMesh().rotation.x = val
+                get: () =>  BABYLON.Tools.ToDegrees(this.getMesh().rotation.x),
+                set: val => this.getMesh().rotation.x =  BABYLON.Tools.ToRadians(val)
             },
             y: {
                 type: 'NUMBER',
-                get: () => this.getMesh().rotation.y,
-                set: val => this.getMesh().rotation.y = val
+                get: () => BABYLON.Tools.ToDegrees(this.getMesh().rotation.y),
+                set: val => this.getMesh().rotation.y = BABYLON.Tools.ToRadians(val)
             },
             z: {
                 type: 'NUMBER',
-                get: () => this.getMesh().rotation.z,
-                set: val => this.getMesh().rotation.z = val
+                get: () => BABYLON.Tools.ToDegrees(this.getMesh().rotation.z),
+                set: val => this.getMesh().rotation.z = BABYLON.Tools.ToRadians(val)
             }
         }
     }

@@ -82,10 +82,9 @@ export default {
                     onTouchstart={handleMouseEnter}
                     onMouseleave={handleMouseLeave}
                     onClick={clickFunction}
-                    onTouchend={handleMouseLeave}>
-            <div ref="toHide" style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
-                {this.$slots.default}
-            </div>
+                    onTouchend={handleMouseLeave}
+                    ref="toHide" style={{ transition: isLocked ? 'none' : 'all 0.3s ease' }}>
+            {this.$slots.default}
         </div>
     }
 }

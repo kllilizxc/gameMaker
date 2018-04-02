@@ -1,4 +1,4 @@
-@value Black-Text from '@/common/colors.css';
+@value Black-Text, Black-SecondaryText, Black-Dividers from '@/common/colors.css';
 
 .scriptField {
     overflow: hidden;
@@ -9,16 +9,31 @@
     width: 100%;
 }
 
+.inputGroup {
+}
+
 .inputGroup .container {
     margin: 0 -4px;
 }
 
 .inputGroup .container > * {
     margin: 0 4px;
+    flex: 1;
+}
+
+.inputGroup .label {
+    color: Black-SecondaryText;
+    font-size: 13px;
 }
 
 .label {
-    margin-right: auto;
+    margin-right: 8px;
+    font-size: 14px;
+    color: Black-Text;
+    line-height: 24px;
+}
+
+.groupLabel {
     color: Black-Text;
 }
 
