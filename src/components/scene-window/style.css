@@ -1,5 +1,3 @@
-@value DeepPurple-400, Black-Icons, Red-300 from '@/common/colors.css';
-
 .sceneWindow {
     padding: 0 8px;
     overflow: auto;
@@ -11,19 +9,6 @@
     display: flex;
     transition: height 0.3s ease;
     height: 48px;
-}
-
-.deleteIcon {
-    margin-left: auto;
-    color: Red-300;
-}
-
-.chosen {
-    color: DeepPurple-400;
-}
-
-.dragOver {
-    font-weight: bold;
 }
 
 .dropArea {

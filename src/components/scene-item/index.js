@@ -1,18 +1,21 @@
 import TextField from '@/ui/text-field'
 import styles from './style.css'
 import Icon from '@/ui/icon'
+import IconButton from '@/ui/material-icon-button'
 
 export default {
     name: 'scene-item',
     props: {
-        value: Object
+        value: Object,
+        isChosen: Boolean
     },
     data: () => ({
         editMode: false,
-        _value: ''
+        innerValue: '',
+        isDragOver: false
     }),
     watch: {
-        value: { handler(val) { this._value = val.name }, immediate: true }
+        value: { handler(val) { this.innerValue = val }, immediate: true }
     },
     computed: {
         icon() {
@@ -26,21 +29,63 @@ export default {
     },
     methods: {
         handleInput(val) {
-            this._value = val
-            this.$emit('input', this._value)
+            this.innerValue.name = val
         },
         toggleEditMode() {
             this.editMode = !this.editMode
         },
         handleClick() {
-            this.$emit('click')
+            this.$emit('click', this.innerValue)
+        },
+        handleDelete() {
+            this.$emit('delete', this.innerValue)
+        },
+        handleDragOver(e) {
+            e.preventDefault()
+            e.stopPropagation()
+            this.isDragOver = true
+            this.$emit('dragOver', this.innerValue)
+            return true
+        },
+        handleDragLeave(e) {
+            this.isDragOver = false
+        },
+        handleDrop(e) {
+            e.preventDefault()
+            e.stopPropagation()
+            this.isDragOver = false
+            this.$emit('drop', { e, obj: this.innerValue })
+        },
+        handleDragStart(e) {
+            if (this.editMode) {
+                e.preventDefault()
+                e.stopPropagation()
+                return
+            }
+            e.dataTransfer.setData('gameObject', this.innerValue.id)
         }
     },
     render() {
-        const { editMode, _value, icon, toggleEditMode, handleInput, handleClick } = this
-        return <div class={styles.item} onDblclick={toggleEditMode} onClick={handleClick}>
+        const {
+            editMode, innerValue, icon, isChosen, isDragOver,
+            toggleEditMode, handleInput, handleClick, handleDelete,
+            handleDragOver, handleDragLeave, handleDrop, handleDragStart
+        } = this
+        return <div class={styles.item}
+                    onDblclick={toggleEditMode}
+                    onClick={handleClick}
+                    draggable
+                    onDragover={handleDragOver}
+                    onDragleave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onDragstart={handleDragStart}
+                    class={[styles.item, {
+                        [styles.chosen]: isChosen,
+                        [styles.dragOver]: isDragOver
+                    }]}>
             <Icon className={styles.icon} icon={icon} size={24}/>
-            {editMode ? <TextField value={_value} type='text' onInput={handleInput}/> : <span>{_value}</span>}
+            {editMode ? <TextField value={innerValue.name} type='text' onInput={handleInput}/> : <span>{innerValue.name}</span>}
+            {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24} onClick={handleDelete}/>}
         </div>
     }
 }
