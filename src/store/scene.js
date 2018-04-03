@@ -158,7 +158,7 @@ export default {
             const gameObject = getNewGameObject({ id, name }, scene)
             if (script) scripts = [script]
             return (scripts
-                ? Promise.all(scripts.map(name => gameObject.addDefaultScript(name))).then(() => gameObject)
+                ? scripts.reduce((promise, cur) => promise.then(() => gameObject.addDefaultScript(cur)), Promise.resolve(true)).then(() => gameObject)
                 : Promise.resolve(gameObject))
                 .then(gameObject => {
                     dispatch('addGameObject', gameObject)

@@ -1,4 +1,4 @@
-let shadowMapSize = 1024
+let shadowMapSize = 8192
 let shadowGenerator
 const setShadowMapSize = () => {
     shadowGenerator = new BABYLON.ShadowGenerator(shadowMapSize, this.getMesh())
