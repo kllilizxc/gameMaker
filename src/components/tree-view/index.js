@@ -57,7 +57,9 @@ export default {
                     raw: obj
                 }
 
-                this.haveChildrenFunction(obj).then(value => d.haveChildren = value)
+                this.haveChildrenFunction(obj)
+                    .then(value => d.haveChildren = value)
+                    .then(() => this.toggleItem(d, this.initFold))
 
                 return d
             })
@@ -65,7 +67,8 @@ export default {
         toggleItem(obj, fold) {
             this.chosenObj = obj
             if (!fold && obj.haveChildren) { // if have children
-                this.getChildrenFunction(obj.raw).then(data => obj.children = this.getItemDataFromPropData(data))
+                this.getChildrenFunction(obj.raw).then(data =>
+                    obj.children = this.getItemDataFromPropData(data))
             }
         },
         renderItem(obj) {

@@ -63,12 +63,16 @@ export default {
                 return
             }
             e.dataTransfer.setData('gameObject', this.innerValue.id)
+        },
+        handleKeydown(e) {
+            if (e.code === 'Enter')
+                this.toggleEditMode()
         }
     },
     render() {
         const {
             editMode, innerValue, icon, isChosen, isDragOver,
-            toggleEditMode, handleInput, handleClick, handleDelete,
+            toggleEditMode, handleInput, handleClick, handleDelete, handleKeydown,
             handleDragOver, handleDragLeave, handleDrop, handleDragStart
         } = this
         return <div class={styles.item}
@@ -79,6 +83,7 @@ export default {
                     onDragleave={handleDragLeave}
                     onDrop={handleDrop}
                     onDragstart={handleDragStart}
+                    onKeydown={handleKeydown}
                     class={[styles.item, {
                         [styles.chosen]: isChosen,
                         [styles.dragOver]: isDragOver

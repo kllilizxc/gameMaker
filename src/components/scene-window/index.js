@@ -44,6 +44,7 @@ export default {
         return <div class={styles.sceneWindow}>
             <TreeView data={gameObjects} ref='treeView'
                       getIdFunction={obj => obj.id}
+                      initFold={false}
                       getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
                       haveChildrenFunction={obj => Promise.resolve(obj.getChildren() && obj.getChildren().length > 0)}
                       renderItemFunction={renderItem}

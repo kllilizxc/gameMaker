@@ -77,6 +77,13 @@ export default class GameObject {
             .then(script => this.addScript(new Script({ ...script, path }, this)))
     }
 
+    addDefaultScripts(scriptNames) {
+        return Promise.all(scriptNames.map(name => {
+            const path = getDefaultScriptsPath(name)
+            return readScriptFromFile(path, this).then(script => ({ ...script, path }))
+        })).then(scripts => scripts.forEach(script => this.addScript(new Script(script, this))))
+    }
+
     onScriptsReady() {
         this.scriptsReadyHandlers.forEach(handler => handler())
     }
