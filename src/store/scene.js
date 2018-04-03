@@ -1,6 +1,5 @@
 import {
-    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, isLight,
-    isCamera, trimFilename, removeInArray
+    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, trimFilename, removeInArray
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
@@ -61,8 +60,8 @@ export default {
             gameObject.addScript(new Script(script, gameObject))
         },
         [SET_GROUP_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, groupName, fieldName, value }) {
-            setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, groupName)
-            scriptsMap[gameObject.id][scriptName][groupName][fieldName] = value
+            setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, 'values', groupName)
+            scriptsMap[gameObject.id][scriptName].values[groupName][fieldName] = value
         },
         [SET_SCRIPT_VALUE]({ gameObject, scriptsMap, filesMap }, { scriptName, fieldName, value, type }) {
             if (type === FILE_TYPE) {
@@ -70,8 +69,8 @@ export default {
                 filesMap[filename] = value
                 value = filename
             }
-            setObjectIfUndefined(scriptsMap, gameObject.id, scriptName)
-            scriptsMap[gameObject.id][scriptName][fieldName] = value
+            setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, 'values')
+            scriptsMap[gameObject.id][scriptName].values[fieldName] = value
         }
     },
     actions: {
@@ -132,7 +131,8 @@ export default {
             dispatch('loadScene', getMeshes(gameObjects)),
         loadScene: ({ dispatch }, rawGameObjects) =>
             dispatch('setScene', new BABYLON.Scene(state.engine)).then(() =>
-                rawGameObjects.forEach(rawGameObject => dispatch('loadGameObject', { rawGameObject }))),
+                rawGameObjects.sort((a, b) => a.sort - b.sort)
+                    .forEach(rawGameObject => dispatch('loadGameObject', { rawGameObject }))),
         removeScript({ state, dispatch }, name) {
             if (state.scriptsMap[state.gameObject.id])
                 delete state.scriptsMap[state.gameObject.id][name]
@@ -194,8 +194,8 @@ export default {
     }
 }
 
-function getNewGameObject({ id, name }, scene) {
-    return new GameObject(name, new BABYLON.Mesh(name, scene), id)
+function getNewGameObject({ id, name, sort }, scene) {
+    return new GameObject(name, new BABYLON.Mesh(name, scene), sort, id)
 }
 
 function isParent(child, parent) {
@@ -204,10 +204,9 @@ function isParent(child, parent) {
 }
 
 const getMesh = gameObject => {
-    const { mesh, id, name } = gameObject
+    const { mesh, id, name, sort } = gameObject
     return {
-        id,
-        name,
+        id, name, sort,
         className: mesh.getClassName(),
         children: getMeshes(gameObject.getChildren())
     }

@@ -34,6 +34,7 @@ export default {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
         },
         saveScene() {
+            if (!this.filename) return this.saveSceneAs()
             this.$store.dispatch('saveScene', this.filename)
         },
         saveSceneAs() {

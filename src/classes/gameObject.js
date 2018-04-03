@@ -26,7 +26,7 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
 })
 
 export default class GameObject {
-    constructor(name, mesh, id = UUID()) {
+    constructor(name, mesh, sort, id = UUID()) {
         this.id = id
         this.name = name
         this.mesh = mesh
@@ -37,17 +37,22 @@ export default class GameObject {
         this.scripts = {}
         this.scriptsReadyHandlers = []
         const scriptsMap = sceneStore.scriptsMap[this.id]
+        this.sort = sort !== undefined
+            ? sort
+            : sceneStore.gameObjects.reduce((max, cur) => Math.max(max, cur.sort), -1) + 1
         if (scriptsMap) {
-            Object.keys(scriptsMap).map(name => {
-                const scriptPath = sceneStore.scripts[name]
-                const values = scriptsMap[name]
-                return readScriptFromFile(scriptPath, this).then(script => {
-                    const scriptObject = new Script(script, this)
-                    const { fields } = scriptObject
-                    fields && restoreFieldsValues(fields, values)
-                    this.addScript(scriptObject)
+            Object.keys(scriptsMap)
+                .sort((a, b) => scriptsMap[a].sort - scriptsMap[b].sort)
+                .map(name => {
+                    const scriptPath = sceneStore.scripts[name]
+                    const values = scriptsMap[name].values
+                    return readScriptFromFile(scriptPath, this).then(script => {
+                        const scriptObject = new Script(script, this, scriptsMap[name].sort)
+                        const { fields } = scriptObject
+                        fields && restoreFieldsValues(fields, values)
+                        this.addScript(scriptObject)
+                    })
                 })
-            })
         }
     }
 
