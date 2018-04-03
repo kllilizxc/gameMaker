@@ -8,6 +8,7 @@ const sceneStore = store.state.scene
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
 const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name => {
+    if (values[name] === undefined) return
     const field = fields[name]
     if (!field) return
     field.options = field.options || {}
