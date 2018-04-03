@@ -165,7 +165,8 @@ export default {
                 })
         },
         duplicateGameObject: ({ dispatch, state: { gameObject } }) => {
-            const cloned = gameObject.clone(gameObject.name + '2')
+            const match = gameObject.name.match(/(.*?)(\d+)?$/)
+            const cloned = gameObject.clone(match[1] + (+(match[2] || 0) + 1))
             if (!cloned.getMesh().parent) dispatch('addGameObject', cloned)
             return dispatch('setGameObject', cloned)
         },

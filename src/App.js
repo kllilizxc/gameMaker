@@ -34,7 +34,6 @@ export default {
         document.onkeydown = e => {
             if (e.ctrlKey && e.code === 'KeyD') {
                 // ctrl + d
-                console.log(this.$refs)
                 this.$store.dispatch('duplicateGameObject')
                     .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
             } else if (e.code === 'KeyF') {

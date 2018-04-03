@@ -20,9 +20,16 @@ export default {
     computed: {
         icon() {
             switch (this.value.getMesh().getClassName()) {
-                case 'GroundMesh': return 'widgets'
-                case 'HemisphericLight': return 'lightbulb_outline'
-                case 'FreeCamera': return 'photo_camera'
+                case 'DirectionalLight':
+                case 'SpotLight':
+                case 'PointLight':
+                case 'HemisphericLight':
+                    return 'lightbulb_outline'
+                case 'UniversalCamera':
+                case 'ArcRotateCamera':
+                case 'FollowCamera':
+                case 'FreeCamera':
+                    return 'photo_camera'
                 default: return 'widgets'
             }
         }

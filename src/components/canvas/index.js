@@ -79,6 +79,7 @@ export default {
             }
         },
         gameObject(val, oldVal) {
+            console.log(val, oldVal)
             if (oldVal) {
                 oldVal.mesh.showBoundingBox = false
                 oldVal.callEvent('onBlur')
@@ -195,8 +196,7 @@ export default {
         },
         render() {
             const {
-                scene, isPlaying, engine, editControl, camera, canvas,
-                update, animate
+                scene, engine, editControl, camera, canvas
             } = this
 
             engine.resize() // TODO move out of render loop

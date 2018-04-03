@@ -63,7 +63,7 @@ export default class GameObject {
         this.mesh.gameObject = null
         const clonedMesh = this.mesh.clone()
         this.mesh.gameObject = this
-        clonedMesh.gameObject = new GameObject(name, clonedMesh, id)
+        clonedMesh.gameObject = new GameObject(name, clonedMesh, null, id)
         return clonedMesh.gameObject
     }
 
