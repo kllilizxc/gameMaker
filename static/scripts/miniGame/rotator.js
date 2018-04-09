@@ -11,7 +11,6 @@ fields = {
 function init() {
     time = Date.now()
     deltaTime = 0
-    console.log(player)
 }
 
 function update() {

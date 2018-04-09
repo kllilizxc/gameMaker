@@ -10,19 +10,13 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'app',
-    data: () => ({
-    }),
-    methods: {
-    },
     computed: {
         ...mapGetters(['scene', 'gameObject']),
         windowLabels() {
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow ref='sceneWindow'/> },
-                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
-                { icon: 'delete', title: 'delete', color: '#80CBC4' },
-                { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
+                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> }
             ]
         },
         defaultWindow() {

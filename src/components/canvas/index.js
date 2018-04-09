@@ -52,7 +52,9 @@ export default {
             scene.onPointerDown = () => {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
-                if (pickResult.hit && this.gameObjects.find(({ mesh }) => mesh === pickResult.pickedMesh)) {
+                let pickedGameObject = pickResult.hit && pickResult.pickedMesh && this.scene.getMeshByID(pickResult.pickedMesh.id)
+                pickedGameObject = pickedGameObject.gameObject
+                if (pickedGameObject) {
                     this.pickedMesh = pickResult.pickedMesh
                     this.attachEditControl(this.pickedMesh)
                     this.setGameObject(this.pickedMesh.gameObject)
@@ -79,7 +81,6 @@ export default {
             }
         },
         gameObject(val, oldVal) {
-            console.log(val, oldVal)
             if (oldVal) {
                 oldVal.mesh.showBoundingBox = false
                 oldVal.callEvent('onBlur')
