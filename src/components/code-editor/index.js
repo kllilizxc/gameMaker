@@ -1,34 +1,20 @@
 import styles from './style.css'
-
-import * as monaco from 'monaco-editor'
-
-self.MonacoEnvironment = {
-    getWorkerUrl: function (moduleId, label) {
-        if (label === 'json') {
-            return './json.worker.bundle.js'
-        }
-        if (label === 'css') {
-            return './css.worker.bundle.js'
-        }
-        if (label === 'html') {
-            return './html.worker.bundle.js'
-        }
-        if (label === 'typescript' || label === 'javascript') {
-            return './ts.worker.bundle.js'
-        }
-        return './editor.worker.bundle.js'
-    }
-}
+import ace from 'brace'
+import 'brace/mode/javascript'
+import 'brace/keybinding/vim'
 
 export default {
     name: 'code-editor',
+    data: () => ({
+        editor: null
+    }),
     mounted() {
-        monaco.editor.create(this.$refs.container, {
-            value: '',
-            language: 'javascript'
-        })
+        this.editor = ace.edit('editorCotainer')
+        this.editor.getSession().setMode('ace/mode/javascript')
+        this.editor.setKeyboardHandler('ace/keyboard/vim')
     },
     render() {
-        return <div style="width:800px;height:600px;border:1px solid #ccc" ref='container'/>
+        this.editor && this.editor.resize()
+        return <div class={styles.codeEditor} style={{ fontSize: '14px' }} id='editorCotainer' ref='container'/>
     }
 }
