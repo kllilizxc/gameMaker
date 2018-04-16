@@ -111,7 +111,7 @@ export default {
             state.filename = filename
         },
         openScene: ({ state, dispatch, commit }, filename) => {
-            AssetManager.readLocalFile(filename, 'utf8')
+            AssetManager.readLocalFile(filename)
                 .then(data => {
                     data = JSON.parse(data)
                     state.scriptsMap = data.scriptsMap
@@ -172,20 +172,12 @@ export default {
         },
         build({ state, dispatch }) {
             const getFilePathFromDir = (dir, filename) => `${dir}/${filename}`
-            const getPathFromTemplateFolder = filename => getFilePathFromDir('static/template', filename)
-            AssetManager.pickFolder('Now pick a file to save your scene')
+            AssetManager.pickFile('', { directory: true })
                 .then(dir => {
-                    AssetManager.copyFile(getPathFromTemplateFolder('index.html'), getFilePathFromDir(dir, 'index.html'))
-                    AssetManager.copyFile(getPathFromTemplateFolder('index.js'), getFilePathFromDir(dir, 'index.js'))
-                    AssetManager.copyFile(getPathFromTemplateFolder('babylon.js'), getFilePathFromDir(dir, 'babylon.js'))
-                    AssetManager.mkdir(dir + '/static').then(() => Object.keys(state.filesMap).forEach(filename => {
-                        const path = state.filesMap[filename]
-                        AssetManager.copyFile(path, `${dir}/static/${filename}`)
-                    }))
                     const scriptsMap = {}
                     Promise.all(Object.keys(state.scripts).map(name => {
                         const path = state.scripts[name]
-                        return AssetManager.readLocalFile(path, 'utf8').then(content => scriptsMap[name] = content)
+                        return AssetManager.readLocalFile(path).then(content => scriptsMap[name] = content)
                     })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
                     dispatch('saveScene', getFilePathFromDir(dir, 'index.scene'))
                 })

@@ -18,16 +18,8 @@ export default {
         chosenObj: null
     }),
     methods: {
-        getFolderFiles({ name, path }) {
-            const parent = joinPath(path, name)
-            return AssetManager.readLocalDir(parent)
-                .then(files => files.map(filename => ({ name: filename, path: parent })))
-                .catch(err => logger.error(err))
-        },
         haveChildren({ name, path }) {
-            return AssetManager.readLocalStat(joinPath(path, name))
-                .then(stats => stats.isDirectory())
-                .catch(err => logger.error(err))
+            return false
         },
         setChosenItem(obj) {
             this.chosenObj = obj
@@ -50,13 +42,6 @@ export default {
         path: {
             handler(val) {
                 if (!val) return
-                AssetManager.readLocalDir(val)
-                    .then(files => {
-                        this.data = files.map(filename => ({
-                            name: filename,
-                            path: val
-                        }))
-                    }).catch(err => console.log(err))
             },
             immediate: true
         }
@@ -65,7 +50,6 @@ export default {
         const {
             data,
             path,
-            getFolderFiles,
             haveChildren,
             renderItem
         } = this
@@ -75,7 +59,7 @@ export default {
                 ? <TreeView data={data}
                             renderItemFunction={renderItem}
                             getIdFunction={d => d.name}
-                            getChildrenFunction={getFolderFiles}
+                            getChildrenFunction={() => false}
                             haveChildrenFunction={haveChildren}/>
                 : <p class={styles.hint}>You should save first to use the explorer</p>}
         </div>

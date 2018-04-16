@@ -4,6 +4,7 @@ import ScriptWindow from '@/components/script-window'
 import SceneWindow from '@/components/scene-window'
 import ExplorerWindow from '@/components/explorer-window'
 import CanvasWindow from '@/components/canvas-window'
+import CodeEditor from '@/components/code-editor'
 import COLORS from '@/common/colors.css'
 
 import { mapGetters } from 'vuex'
@@ -16,7 +17,8 @@ export default {
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow ref='sceneWindow'/> },
-                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> }
+                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
+                { icon: 'code', title: 'Code Editor', color: COLORS['Grey-300'], content: <CodeEditor/> }
             ]
         },
         defaultWindow() {

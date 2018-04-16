@@ -215,7 +215,7 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('openScene', localStorage['GM:filename'] || 'static/scenes/default.scene')
+        this.$store.dispatch('newScene')
     },
     beforeDestory() {
     },

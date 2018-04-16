@@ -7,39 +7,39 @@ function resolve(dir) {
 
 module.exports = {
     entry: {
-        app: './src/main.js'
+        app: './src/main.js',
+        'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
+        'json.worker': 'monaco-editor/esm/vs/language/json/json.worker',
+        'css.worker': 'monaco-editor/esm/vs/language/css/css.worker',
+        'html.worker': 'monaco-editor/esm/vs/language/html/html.worker',
+        'ts.worker': 'monaco-editor/esm/vs/language/typescript/ts.worker'
     },
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: '[name].js'
     },
     resolve: {
-        extensions: ['.vue', '.js', '.svg', '.css', '.less', '.json'],
+        extensions: ['.vue', '.js', '.svg', '.css', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js',
             '@': resolve('src'),
             Components: path.resolve(__dirname, 'src/components/'),
             Ui: path.resolve(__dirname, 'src/ui/'),
-            Common: path.resolve(__dirname, 'src/ui/'),
+            Common: path.resolve(__dirname, 'src/common/'),
             Scripts: path.resolve(__dirname, 'static/scripts')
         },
         symlinks: false
     },
-    target: 'electron',
+    target: 'web',
     plugins: [
-        new webpack.ProvidePlugin({})
+        // Ignore require() calls in vs/language/typescript/lib/typescriptServices.js
+        new webpack.IgnorePlugin(
+            /^((fs)|(path)|(os)|(crypto)|(source-map-support))$/,
+            /vs\\language\\typescript\\lib/
+        )
     ],
     module: {
         rules: [
-            // {
-            //     test: /\.(js|vue)$/,
-            //     loader: 'eslint-loader',
-            //     enforce: 'pre',
-            //     include: [resolve('src'), resolve('test')],
-            //     options: {
-            //         formatter: require('eslint-friendly-formatter')
-            //     }
-            // },
             {
                 test: /\.vue$/,
                 loader: 'vue-loader',
@@ -54,10 +54,6 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 include: [resolve('src'), resolve('test')]
-            },
-            {
-                test: /\.ts(x?)$/,
-                loader: 'babel-loader!ts-loader'
             },
             {
                 test: /\.css$/,
@@ -90,30 +86,6 @@ module.exports = {
             {
                 test: /\.svg$/,
                 loader: 'svg-sprite-loader'
-            },
-            {
-                test: /\.(png|jpe?g|gif)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'static/img/[name].[hash:7].[ext]'
-                }
-            },
-            {
-                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'static/media/[name].[hash:7].[ext]'
-                }
-            },
-            {
-                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'static/fonts/[name].[hash:7].[ext]'
-                }
             }
         ]
     }

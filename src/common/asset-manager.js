@@ -1,62 +1,45 @@
 // @flow
 
-import { remote } from 'electron'
-
-const fs = remote.require('fs')
-const { dialog } = remote
-
-function getFunctionFromFs(func) {
-    return (...args) => new Promise((resolve, reject) => fs[func](...args, (err, data) => err ? reject(err) : resolve(data)))
-}
-
 export default class AssetManager {
     static readFile = file => fetch(file).then(response => Promise.resolve(response.text()))
 
     static readFileSync = async file => await this.readFile(file)
 
-    static readLocalDir = path => new Promise((resolve, reject) => fs.readdir(path, (err, files) => {
-        if (err)
-            reject(err)
-        else
-            resolve(files)
-    }))
+    static readLocalFile = file => new Promise(resolve => {
+        const rawFile = new XMLHttpRequest()
+        rawFile.open('GET', file, false)
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4) {
+                if (rawFile.status === 200 || rawFile.status === 0) {
+                    resolve(rawFile.responseText)
+                }
+            }
+        }
+        rawFile.send(null)
+    })
 
-    static readLocalFile = getFunctionFromFs('readFile')
-
-    static writeFile = getFunctionFromFs('writeFile')
-
-    static copyFile = (src, des) => fs.createReadStream(src).pipe(fs.createWriteStream(des))
-
-    static mkdir = dir => {
-        if (!fs.existsSync(dir)) return getFunctionFromFs('mkdir')(dir)
-        return Promise.resolve(true)
+    static writeFile = (filename, data) => {
+        const file = new Blob([data])
+        const a = document.createElement('a')
+        const url = URL.createObjectURL(file)
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a)
+        a.click()
+        setTimeout(function() {
+            document.body.removeChild(a)
+            window.URL.revokeObjectURL(url)
+        }, 0)
     }
 
-    static readLocalStat = path => new Promise((resolve, reject) => fs.stat(path, (err, stats) => {
-        if (err)
-            reject(err)
-        else
-            resolve(stats)
-    }))
-
-    static pickFile = (title, options = [], filters = {}, defaultPath = '/') => new Promise((resolve, reject) =>
-        dialog.showOpenDialog({ title, defaultPath, filters, properties: ['openFile', ...options] }, filePaths => {
-            if (!filePaths || filePaths.length === 0) reject()
-            else resolve(filePaths[0])
-        }))
-
-    static pickFiles = (title, options = [], filters = {}, defaultPath = '/') => new Promise((resolve, reject) =>
-        dialog.showOpenDialog({ title, defaultPath, filters, properties: ['openFile', 'multiSelections', ...options] }, filePaths => {
-            if (!filePaths || filePaths.length === 0) reject()
-            else resolve(filePaths)
-        }))
-
-    static pickFolder = (title, options = [], filters = {}, defaultPath = '/') => new Promise((resolve, reject) =>
-        dialog.showOpenDialog({ title, defaultPath, filters, properties: ['openDirectory', ...options] }, filePaths => {
-            if (!filePaths || filePaths.length === 0) reject()
-            else resolve(filePaths[0])
-        }))
-
-    static saveFile = (title, filters) => new Promise(resolve => dialog.showSaveDialog({ title, filters }, resolve))
+    static pickFile = (filters = '', { multiple, directory }) => new Promise(resolve => {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = filters
+        input.multiple = multiple
+        input.directory = directory
+        input.addEventListener('change', () => resolve(input.files))
+        input.click()
+    })
 }
 

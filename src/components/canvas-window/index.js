@@ -27,8 +27,8 @@ export default {
         openScene() {
             this.canvas.detachEditControl()
             this.canvas.dispose()
-            AssetManager.pickFile('Please pick the scene json file')
-                .then(filename => this.$store.dispatch('openScene', filename))
+            AssetManager.pickFile('.scene')
+                .then(([file]) => this.$store.dispatch('openScene', file.name))
         },
         togglePlay() {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
@@ -38,9 +38,7 @@ export default {
             this.$store.dispatch('saveScene', this.filename)
         },
         saveSceneAs() {
-            AssetManager.saveFile(
-                'Now pick a file to save your scene',
-                [{ name: 'Scene', extensions: ['scene'] }])
+            AssetManager.pickFile('.scene')
                 .then(filename => this.$store.dispatch('saveScene', filename))
         },
         setEditMode() {

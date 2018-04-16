@@ -55,10 +55,7 @@ export default {
             this.isDragOver = false
         },
         pickFile() {
-            AssetManager.pickFiles(
-                'Now pick your scripts',
-                [],
-                [{ name: 'Scripts', extensions: ['js'] }])
+            AssetManager.pickFile('.js', { multiple: true })
                 .then(fileList => {
                     for (const file of fileList)
                         this.addScript(file)
