@@ -1,4 +1,4 @@
-@value DeepPurple-400, Black-Icons, Black-Text from '@/common/colors.css';
+@value DeepPurple-400, Black-Icons, Black-Text, Grey-900, White-500 from '@/common/colors.css';
 
 .item {
     height: 48px;
@@ -29,4 +29,28 @@
 .icon {
     line-height: 48px;
     margin-right: 8px;
+}
+
+.dropArea {
+    min-height: 200px;
+}
+
+.dropZone {
+    height: 100px;
+    border: 1px dashed Grey-900;
+    border-radius: 2px;
+    margin: 8px 8px 0;
+    transition: height 0.3s ease, background-color 0.3s ease;
+    display: flex;
+    cursor: pointer;
+}
+
+.dragOver {
+    height: 200px;
+    background-color: White-500;
+}
+
+.addIcon {
+    color: Grey-900;
+    margin: auto;
 }

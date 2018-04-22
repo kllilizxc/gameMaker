@@ -1,8 +1,9 @@
 import styles from './style.css'
 import TreeView from '@/components/tree-view'
 import AssetManager from '@/common/asset-manager'
-import { logger } from '../../common/util'
 import Icon from '@/ui/icon'
+import FileDropper from '@/ui/file-dropper'
+import { mapGetters } from 'vuex'
 
 function joinPath(path, filename) {
     return path + '/' + filename
@@ -10,17 +11,11 @@ function joinPath(path, filename) {
 
 export default {
     name: 'explorer',
-    props: {
-        path: String
-    },
     data: () => ({
-        data: [],
+        isDragOver: false,
         chosenObj: null
     }),
     methods: {
-        haveChildren({ name, path }) {
-            return false
-        },
         setChosenItem(obj) {
             this.chosenObj = obj
             console.log(obj.name)
@@ -36,32 +31,55 @@ export default {
                       onClick={() => this.setChosenItem(obj)}
                       draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
             </div>
+        },
+        dropHandler(file) {
+            console.log(file)
+            this.isDragOver = false
+        },
+        dragOverHandler() {
+            this.isDragOver = true
+        },
+        dragLeaveHandler() {
+            this.isDragOver = false
+        },
+        pickFile() {
+            AssetManager.pickFile('', { multiple: true })
+                .then(fileList => {
+                    for (const file of fileList)
+                        console.log(file)
+                })
         }
     },
-    watch: {
-        path: {
-            handler(val) {
-                if (!val) return
-            },
-            immediate: true
+    computed: {
+        ...mapGetters(['assets']),
+        assetsTree() {
+            return Object.keys(this.assets).map(key => ({ key, assets: this.assets[key] }))
         }
     },
     render() {
         const {
-            data,
-            path,
-            haveChildren,
+            assetsTree,
+            dropHandler,
+            dragOverHandler,
+            dragLeaveHandler,
+            isDragOver,
+            pickFile,
             renderItem
         } = this
 
         return <div class={styles.explorer}>
-            {path
-                ? <TreeView data={data}
-                            renderItemFunction={renderItem}
-                            getIdFunction={d => d.name}
-                            getChildrenFunction={() => false}
-                            haveChildrenFunction={haveChildren}/>
-                : <p class={styles.hint}>You should save first to use the explorer</p>}
+            <TreeView data={assetsTree}
+                      renderItemFunction={renderItem}
+                      getIdFunction={d => d.key || d  }
+                      getChildrenFunction={d => Promise.resolve(d.assets)}
+                      haveChildrenFunction={d => Promise.resolve(d.assets && d.assets.length > 0)}/>
+            <FileDropper onFileDrop={dropHandler}
+                         onFileDragOver={dragOverHandler}
+                         onFileDragLeave={dragLeaveHandler}>
+                <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }} onClick={pickFile}>
+                    <Icon className={styles.addIcon} icon={'add'} size={48}/>
+                </div>
+            </FileDropper>
         </div>
     }
 }

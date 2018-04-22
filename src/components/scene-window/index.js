@@ -25,16 +25,12 @@ export default {
                     .then(() => this.$refs.treeView.setTreeData())
             }
         },
-        handleDelete(obj) {
-            obj.dispose()
-        },
         renderItem(obj) {
             const isChosen = this.gameObject && obj.id === this.gameObject.id
             return <SceneItem isChosen={isChosen}
                               value={obj}
                               onClick={this.chooseGameObject}
                               onDrop={this.handleDrop}
-                              onDelete={this.handleDelete}
                               onDragOver={() => true}
                               onDelete={this.removeGameObject}/>
         }

@@ -29,6 +29,11 @@ const state = {
     scriptsMap: {},
     scripts: {},
     filesMap: {},
+    assets: {
+        models: [],
+        textures: [],
+        scripts: []
+    },
     rawGameObjects: {},
     filename: null
 }
@@ -75,6 +80,15 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
+        uploadAssets: ({ state, commit }, files) => {
+            console.log(files)
+            files.forEach(file => {
+                AssetManager.readLocalFile(file)
+                    .then(data => {
+                        console.log(data)
+                    })
+            })
+        },
         setScene: ({ state, commit, dispatch }, scene) => {
             scene.canvas = state.canvas
             commit(SET_SCENE, scene)
