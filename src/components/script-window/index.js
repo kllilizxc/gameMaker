@@ -38,8 +38,12 @@ export default {
             this.scripts = Object.keys(scripts).map(key => scripts[key])
         },
         addScript(file) {
-            this.$store.dispatch('addScript', file)
-                .then(this.forceRefresh)
+            if (file instanceof File) {
+                this.$store.dispatch('uploadAssets', [file])
+                    .then(([fileData]) => this.$store.dispatch('addScript', fileData))
+            } else if (file.data) {
+                this.$store.dispatch('addScript', file)
+            }
         },
         forceRefresh() {
             this.refreshScripts = !this.refreshScripts

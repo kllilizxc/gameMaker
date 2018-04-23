@@ -60,12 +60,13 @@ export const trimFilenameExtension = filename => trimFilename(filename).replace(
 const events = ['fields', 'actions', 'init', 'update', 'onFocus', 'onBlur', 'lateUpdate']
 const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
-    AssetManager.readLocalFile(typeof file === 'string' ? file : file.path).then((content: string) =>
-        Promise.resolve({
-            name: trimFilenameExtension(typeof file === 'string' ? file : file.name),
-            path: typeof file === 'string' ? file : file.path,
-            Behavior: new Function('BABYLON', 'scene', ...events, `${content}\n${returnValues}`).bind(gameObject)
-        }))
+    AssetManager.readLocalFileByPath(typeof file === 'string' ? file : file.path).then((content: string) =>
+        Promise.resolve(getScriptObject(typeof file === 'string' ? file : file.name, content, gameObject)))
+
+export const getScriptObject = (name, content, gameObject) => ({
+    name: trimFilenameExtension(name),
+    Behavior: new Function('BABYLON', 'scene', ...events, `${content}\n${returnValues}`).bind(gameObject)
+})
 
 export const random16Bytes = () => btoa(Math.random().toString(16).substr(7))
 export const random64Bytes = () => random16Bytes() + random16Bytes() + random16Bytes() + random16Bytes()

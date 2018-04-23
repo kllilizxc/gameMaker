@@ -1,5 +1,5 @@
 import {
-    stateToActions, stateToGetters, stateToMutations, readScriptFromFile, trimFilename, removeInArray
+    stateToActions, stateToGetters, stateToMutations, getScriptObject, trimFilename, removeInArray
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
@@ -29,11 +29,6 @@ const state = {
     scriptsMap: {},
     scripts: {},
     filesMap: {},
-    assets: {
-        models: [],
-        textures: [],
-        scripts: []
-    },
     rawGameObjects: {},
     filename: null
 }
@@ -80,15 +75,6 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
-        uploadAssets: ({ state, commit }, files) => {
-            console.log(files)
-            files.forEach(file => {
-                AssetManager.readLocalFile(file)
-                    .then(data => {
-                        console.log(data)
-                    })
-            })
-        },
         setScene: ({ state, commit, dispatch }, scene) => {
             scene.canvas = state.canvas
             commit(SET_SCENE, scene)
@@ -98,8 +84,7 @@ export default {
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
-        addScript: ({ commit, state }, file) => readScriptFromFile(file, state.gameObject)
-            .then(script => commit(ADD_SCRIPT, script)),
+        addScript: ({ commit, state }, file) => commit(ADD_SCRIPT, getScriptObject(file.name, file.data, state.gameObject)),
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
             if (parent && isParent(parent, child)) return
             child.setParent(parent)
@@ -125,7 +110,7 @@ export default {
             state.filename = filename
         },
         openScene: ({ state, dispatch, commit }, filename) => {
-            AssetManager.readLocalFile(filename)
+            AssetManager.readLocalFileByPath(filename)
                 .then(data => {
                     data = JSON.parse(data)
                     state.scriptsMap = data.scriptsMap
@@ -191,7 +176,7 @@ export default {
                     const scriptsMap = {}
                     Promise.all(Object.keys(state.scripts).map(name => {
                         const path = state.scripts[name]
-                        return AssetManager.readLocalFile(path).then(content => scriptsMap[name] = content)
+                        return AssetManager.readLocalFileByPath(path).then(content => scriptsMap[name] = content)
                     })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
                     dispatch('saveScene', getFilePathFromDir(dir, 'index.scene'))
                 })

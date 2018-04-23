@@ -5,10 +5,6 @@ import Icon from '@/ui/icon'
 import FileDropper from '@/ui/file-dropper'
 import { mapGetters } from 'vuex'
 
-function joinPath(path, filename) {
-    return path + '/' + filename
-}
-
 export default {
     name: 'explorer',
     data: () => ({
@@ -18,22 +14,26 @@ export default {
     methods: {
         setChosenItem(obj) {
             this.chosenObj = obj
-            console.log(obj.name)
         },
         handleDragStart(e, obj) {
-            e.dataTransfer.setData('filename', joinPath(obj.path, obj.name))
+            if (obj.assets !== undefined) {
+                e.preventDefault()
+                e.stopPropagation()
+                return false
+            }
+            e.dataTransfer.setData('file', JSON.stringify(obj))
         },
-        renderItem(obj, haveChildren) {
+        renderItem(obj) {
             const isChosen = obj === this.chosenObj
             return <div class={[styles.item, {[styles.chosen]: isChosen}]}>
-                <Icon className={styles.icon} icon={haveChildren ? 'folder' : 'insert_drive_file'} size={24}/>
+                <Icon className={styles.icon} icon={obj.assets ? 'folder' : 'insert_drive_file'} size={24}/>
                 <span class={styles.name}
                       onClick={() => this.setChosenItem(obj)}
                       draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
             </div>
         },
         dropHandler(file) {
-            console.log(file)
+            this.$store.dispatch('uploadAssets', [file])
             this.isDragOver = false
         },
         dragOverHandler() {
@@ -44,16 +44,13 @@ export default {
         },
         pickFile() {
             AssetManager.pickFile('', { multiple: true })
-                .then(fileList => {
-                    for (const file of fileList)
-                        console.log(file)
-                })
+                .then(fileList => this.$store.dispatch('uploadAssets', fileList))
         }
     },
     computed: {
         ...mapGetters(['assets']),
         assetsTree() {
-            return Object.keys(this.assets).map(key => ({ key, assets: this.assets[key] }))
+            return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))
         }
     },
     render() {
@@ -70,7 +67,7 @@ export default {
         return <div class={styles.explorer}>
             <TreeView data={assetsTree}
                       renderItemFunction={renderItem}
-                      getIdFunction={d => d.key || d  }
+                      getIdFunction={d => d.name}
                       getChildrenFunction={d => Promise.resolve(d.assets)}
                       haveChildrenFunction={d => Promise.resolve(d.assets && d.assets.length > 0)}/>
             <FileDropper onFileDrop={dropHandler}

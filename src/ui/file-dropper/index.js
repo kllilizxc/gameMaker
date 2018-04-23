@@ -1,5 +1,4 @@
 import { mapGetters } from 'vuex'
-import { trimFilename } from '../../common/util'
 
 export default {
     name: 'file-dropper',
@@ -10,8 +9,8 @@ export default {
             e.preventDefault()
             const { dataTransfer } = e
 
-            const filename = dataTransfer.getData('filename')
-            if (filename) this.$emit('fileDrop', { name: trimFilename(filename), path: filename })
+            const file = dataTransfer.getData('file')
+            if (file) this.$emit('fileDrop', JSON.parse(file))
 
             const gameObjectId = dataTransfer.getData('gameObject')
             if (gameObjectId) this.$emit('gameObjectDrop', this.scene.getMeshByID(gameObjectId).gameObject)
