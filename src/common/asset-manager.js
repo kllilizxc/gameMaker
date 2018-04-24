@@ -18,14 +18,14 @@ export default class AssetManager {
         rawFile.send(null)
     })
 
-    static readLocalFile = file => new Promise(resolve => {
+    static readLocalFile = (file, asUrl = false) => new Promise(resolve => {
         const reader = new FileReader()
 
         // Closure to capture the file information.
         reader.onload = e => resolve(e.target.result)
 
         // Read in the image file as a data URL.
-        reader.readAsText(file)
+        reader[asUrl ? 'readAsDataURL' : 'readAsText'](file)
     })
 
     static writeFile = (filename, data) => {

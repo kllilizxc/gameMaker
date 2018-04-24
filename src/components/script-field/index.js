@@ -7,6 +7,7 @@ import MenuItem from '@/ui/menu-item'
 import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
+import AssetManager from '@/common/asset-manager'
 
 export const STRING_TYPE = 'STRING'
 export const NUMBER_TYPE = 'NUMBER'
@@ -82,7 +83,10 @@ export default {
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
                 <FilePicker type='file' initTitle={options.value || ''}
-                            onInput={file => this.setFieldValue(field, file.path)}/>
+                            onInput={file => {
+                                AssetManager.readLocalFile(file, true)
+                                    .then(data => this.setFieldValue(field, data))
+                            }}/>
             </div>
         },
         renderGameObjectPicker(h: any, field): any {

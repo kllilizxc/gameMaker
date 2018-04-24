@@ -33,7 +33,9 @@ fields = {
             texture: {
                 type: 'FILE',
                 get: () => diffuseTexture,
-                set: val => standardMaterial.diffuseTexture = new BABYLON.Texture(diffuseTexture = val, scene)
+                set: val => {
+                    standardMaterial.diffuseTexture = new BABYLON.Texture(diffuseTexture = val, scene)
+                }
             },
             hasAlpha: {
                 type: 'BOOLEAN',

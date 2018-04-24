@@ -20,7 +20,6 @@ export default {
     methods: {
         handleFileDrop(file) {
             if (this.type !== 'file') return
-            console.log(file)
             this.$emit('input', file)
             this.title = file.name
             this.dragOver = false
