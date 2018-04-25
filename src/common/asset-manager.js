@@ -5,20 +5,14 @@ export default class AssetManager {
 
     static readFileSync = async file => await this.readFile(file)
 
-    static readLocalFileByPath = file => new Promise(resolve => {
-        const rawFile = new XMLHttpRequest()
-        rawFile.open('GET', file, false)
-        rawFile.onreadystatechange = function () {
-            if (rawFile.readyState === 4) {
-                if (rawFile.status === 200 || rawFile.status === 0) {
-                    resolve(rawFile.responseText)
-                }
-            }
-        }
-        rawFile.send(null)
+    static readLocalFileByPath = file => fetch(file).then(data => {
+        console.log(data)
+        return data
     })
 
     static readLocalFile = (file, asUrl = false) => new Promise(resolve => {
+        if (typeof file === 'string') return AssetManager.readLocalFileByPath(file)
+
         const reader = new FileReader()
 
         // Closure to capture the file information.
@@ -52,4 +46,3 @@ export default class AssetManager {
         input.click()
     })
 }
-

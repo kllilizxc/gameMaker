@@ -82,10 +82,10 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker type='file' initTitle={options.value || ''}
+                <FilePicker type='file' initTitle={options.value.name || ''}
                             onInput={file => {
-                                AssetManager.readLocalFile(file, true)
-                                    .then(data => this.setFieldValue(field, data))
+                                this.$store.dispatch('uploadAssets', file)
+                                    .then(fileData => this.setFieldValue(field, fileData))
                             }}/>
             </div>
         },

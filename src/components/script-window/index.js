@@ -39,8 +39,8 @@ export default {
         },
         addScript(file) {
             if (file instanceof File) {
-                this.$store.dispatch('uploadAssets', [file])
-                    .then(([fileData]) => this.$store.dispatch('addScript', fileData))
+                this.$store.dispatch('uploadAssets', file)
+                    .then((fileData) => this.$store.dispatch('addScript', fileData))
             } else if (file.data) {
                 this.$store.dispatch('addScript', file)
             }

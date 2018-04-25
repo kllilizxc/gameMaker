@@ -60,8 +60,10 @@ export const trimFilenameExtension = filename => trimFilename(filename).replace(
 const events = ['fields', 'actions', 'init', 'update', 'onFocus', 'onBlur', 'lateUpdate']
 const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
-    AssetManager.readLocalFileByPath(typeof file === 'string' ? file : file.path).then((content: string) =>
-        Promise.resolve(getScriptObject(typeof file === 'string' ? file : file.name, content, gameObject)))
+    AssetManager.readLocalFile(file).then((content: string) =>
+        Promise.resolve(getScriptObject(typeof file === 'string'
+            ? trimFilenameExtension(file)
+            : file.name, content, gameObject)))
 
 export const getScriptObject = (name, content, gameObject) => ({
     name: trimFilenameExtension(name),

@@ -28,7 +28,6 @@ const state = {
     gameObjects: [],
     scriptsMap: {},
     scripts: {},
-    filesMap: {},
     rawGameObjects: {},
     filename: null
 }
@@ -63,11 +62,9 @@ export default {
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, 'values', groupName)
             scriptsMap[gameObject.id][scriptName].values[groupName][fieldName] = value
         },
-        [SET_SCRIPT_VALUE]({ gameObject, scriptsMap, filesMap }, { scriptName, fieldName, value, type }) {
+        [SET_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, fieldName, value, type }) {
             if (type === FILE_TYPE) {
-                const filename = trimFilename(value)
-                filesMap[filename] = value
-                value = filename
+                value = value.name
             }
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, 'values')
             scriptsMap[gameObject.id][scriptName].values[fieldName] = value
@@ -91,31 +88,31 @@ export default {
             removeInArray(gameObjects, ({ id }) => id === child.id)
             if (!parent) gameObjects.push(child)
         },
-        newScene: ({ state, dispatch }) => {
+        newScene: ({ rootState, state, dispatch }) => {
             state.scripts = {}
             state.scriptsMap = {}
-            state.filesMap = {}
+            rootState.filesMap = {}
             state.gameObjects = []
             state.filename = ''
             return dispatch('setScene', new BABYLON.Scene(state.engine))
         },
-        saveScene: ({ state }, filename) => {
+        saveScene: ({ state, rootState }, filename) => {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
             serializedScene.scripts = state.scripts
-            serializedScene.filesMap = state.filesMap
+            serializedScene.filesMap = rootState.filesMap
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
             logger.log(serializedScene)
             AssetManager.writeFile(filename, JSON.stringify(serializedScene))
             state.filename = filename
         },
-        openScene: ({ state, dispatch, commit }, filename) => {
-            AssetManager.readLocalFileByPath(filename)
+        openScene: ({ state, rootState, dispatch, commit }, filename) => {
+            AssetManager.readLocalFile(filename)
                 .then(data => {
                     data = JSON.parse(data)
                     state.scriptsMap = data.scriptsMap
                     state.scripts = data.scripts
-                    state.filesMap = data.filesMap
+                    rootState.filesMap = data.filesMap
                     state.gameObjects = []
                     state.gameObject = null
                     state.scene = null
@@ -176,7 +173,7 @@ export default {
                     const scriptsMap = {}
                     Promise.all(Object.keys(state.scripts).map(name => {
                         const path = state.scripts[name]
-                        return AssetManager.readLocalFileByPath(path).then(content => scriptsMap[name] = content)
+                        return AssetManager.readLocalFile(path).then(content => scriptsMap[name] = content)
                     })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
                     dispatch('saveScene', getFilePathFromDir(dir, 'index.scene'))
                 })

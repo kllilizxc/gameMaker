@@ -4,6 +4,7 @@ import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
 
 const sceneStore = store.state.scene
+const assetStore = store.state.asset
 
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
@@ -18,7 +19,7 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
     else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
     else if (type === FILE_TYPE) {
-        options.value = values && sceneStore.filesMap[values[name]]
+        options.value = values && { name: values[name], data: assetStore.filesMap[values[name]] }
     } else {
         options.value = values && values[name]
         if (options.value === undefined) options.value = get()

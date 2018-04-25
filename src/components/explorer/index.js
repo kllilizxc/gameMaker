@@ -29,11 +29,11 @@ export default {
                 <Icon className={styles.icon} icon={obj.assets ? 'folder' : 'insert_drive_file'} size={24}/>
                 <span class={styles.name}
                       onClick={() => this.setChosenItem(obj)}
-                      draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name}</span>
+                      draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name || obj}</span>
             </div>
         },
         dropHandler(file) {
-            this.$store.dispatch('uploadAssets', [file])
+            this.$store.dispatch('uploadAssets', file)
             this.isDragOver = false
         },
         dragOverHandler() {
@@ -67,7 +67,7 @@ export default {
         return <div class={styles.explorer}>
             <TreeView data={assetsTree}
                       renderItemFunction={renderItem}
-                      getIdFunction={d => d.name}
+                      getIdFunction={d => d.name || d}
                       getChildrenFunction={d => Promise.resolve(d.assets)}
                       haveChildrenFunction={d => Promise.resolve(d.assets && d.assets.length > 0)}/>
             <FileDropper onFileDrop={dropHandler}
