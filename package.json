@@ -11,8 +11,9 @@
         "lint": "eslint --ext .js,.vue src"
     },
     "dependencies": {
-        "babylonjs": "^3.2.0-beta.1",
+        "babylonjs": "^3.1.1",
         "babylonjs-editcontrol": "^3.1.0",
+        "babylonjs-loaders": "^3.1.1",
         "brace": "^0.11.1",
         "muse-ui": "^2.1.0",
         "vue": "^2.5.16",

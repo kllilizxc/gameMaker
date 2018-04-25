@@ -9,6 +9,10 @@ import COLORS from '@/common/colors.css'
 
 import { mapGetters } from 'vuex'
 
+import * as API from './common/api'
+
+window.gm = API
+
 export default {
     name: 'app',
     computed: {

@@ -39,13 +39,6 @@ export default {
 
             this.initScene()
 
-            const options = new BABYLON.SceneOptimizerOptions(50, 2000)
-            options.addOptimization(new BABYLON.HardwareScalingOptimization(0, 1))
-
-            // Optimizer
-            const optimizer = new BABYLON.SceneOptimizer(scene, options)
-            optimizer.start()
-
             scene.collisionsEnabled = true
             scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
             this.editControl && this.editControl.detach()
@@ -53,7 +46,7 @@ export default {
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
                 let pickedGameObject = pickResult.hit && pickResult.pickedMesh && this.scene.getMeshByID(pickResult.pickedMesh.id)
-                pickedGameObject = pickedGameObject.gameObject
+                if (pickedGameObject) pickedGameObject = pickedGameObject.gameObject
                 if (pickedGameObject) {
                     this.pickedMesh = pickResult.pickedMesh
                     this.attachEditControl(this.pickedMesh)

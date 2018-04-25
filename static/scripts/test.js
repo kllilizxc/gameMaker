@@ -1,22 +1,15 @@
-let scaling = 0
-let gameObject
+let file
 
 fields = {
-    gameObject: {
-        type: 'GAMEOBJECT',
-        get: () => gameObject,
-        set: val => gameObject = val
-    },
-    scaling: {
-        type: 'NUMBER',
-        get: () => scaling,
+    file: {
+        type: 'FILE',
+        get: () => file,
         set: val => {
-            scaling = val
-            console.log(gameObject)
-            gameObject && gameObject.getScript('transform').action('setScaling', val)
+            file = val
+            gm.loadMesh(file, scene).then(meshes => console.log(meshes))
         }
     }
 }
 
-function update() {
+function init() {
 }

@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs'
+import 'babylonjs-loaders'
 import store from '../store'
 
 const sceneStore = store.state.scene

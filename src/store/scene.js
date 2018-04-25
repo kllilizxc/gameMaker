@@ -1,5 +1,5 @@
 import {
-    stateToActions, stateToGetters, stateToMutations, getScriptObject, trimFilename, removeInArray
+    stateToActions, stateToGetters, stateToMutations, getScriptObject, removeInArray
 } from '../common/util'
 import * as BABYLON from 'babylonjs'
 import AssetManager from '@/common/asset-manager'
@@ -148,8 +148,8 @@ export default {
         },
         setScriptValue: ({ commit }, data) => commit(SET_SCRIPT_VALUE, data),
         setGroupScriptValue: ({ commit }, data) => commit(SET_GROUP_SCRIPT_VALUE, data),
-        createGameObject({ state: { scene }, dispatch, commit }, { name, script, scripts, id }) {
-            const gameObject = getNewGameObject({ id, name }, scene)
+        createGameObject({ state: { scene }, dispatch, commit }, { name, script, scripts, id, mesh }) {
+            const gameObject = getNewGameObject({ id, name }, scene, mesh)
             if (script) scripts = [script]
             return gameObject.addDefaultScripts(scripts)
                 .then(() => {
@@ -174,8 +174,8 @@ export default {
     }
 }
 
-function getNewGameObject({ id, name, sort }, scene) {
-    return new GameObject(name, new BABYLON.Mesh(name, scene), sort, id)
+function getNewGameObject({ id, name, sort }, scene, mesh) {
+    return new GameObject(name, mesh || new BABYLON.Mesh(name, scene), sort, id)
 }
 
 function isParent(child, parent) {

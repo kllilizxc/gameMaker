@@ -2,6 +2,7 @@ import { UUID, readScriptFromFile, getScriptObject, removeInArray } from '../com
 import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
+import { loadMesh } from '../common/api'
 
 const sceneStore = store.state.scene
 const assetStore = store.state.asset
@@ -46,13 +47,22 @@ export default class GameObject {
             Object.keys(scriptsMap)
                 .sort((a, b) => scriptsMap[a].sort - scriptsMap[b].sort)
                 .forEach(name => {
-                    const scriptContent = assetStore.filesMap[name]
-                    const values = scriptsMap[name].values
-                    const script = getScriptObject(name, scriptContent, this)
-                    const scriptObject = new Script(script, this, scriptsMap[name].sort)
-                    const { fields } = scriptObject
-                    fields && restoreFieldsValues(fields, values)
-                    this.addScript(scriptObject)
+                    if (name === '__self__') {
+                        // restore model
+                        const { model } = scriptsMap[name].values
+                        if (model)
+                            loadMesh({ name: model, data: assetStore.filesMap[model] }, sceneStore.scene)
+                                .then(([mesh]) => this.setMesh(mesh))
+                    } else {
+                        // restore other scripts
+                        const scriptContent = assetStore.filesMap[name]
+                        const values = scriptsMap[name].values
+                        const script = getScriptObject(name, scriptContent, this)
+                        const scriptObject = new Script(script, this, scriptsMap[name].sort)
+                        const { fields } = scriptObject
+                        fields && restoreFieldsValues(fields, values)
+                        this.addScript(scriptObject)
+                    }
                 })
         }
     }
@@ -104,6 +114,7 @@ export default class GameObject {
         if (parent) mesh.parent = parent
         this.mesh.dispose()
         this.mesh = mesh
+        this.mesh.gameObject = this
     }
 
     getScript(name) {

@@ -7,7 +7,7 @@ export default class AssetManager {
 
     static readLocalFileByPath = file => fetch(file).then(response => response.text())
 
-    static readLocalFile = (file, asUrl = false) => {
+    static readLocalFile = (file, mode = 'Text') => {
         if (typeof file === 'string') return AssetManager.readLocalFileByPath(file)
         return new Promise(resolve => {
             const reader = new FileReader()
@@ -16,7 +16,7 @@ export default class AssetManager {
             reader.onload = e => resolve(e.target.result)
 
             // Read in the image file as a data URL.
-            reader[asUrl ? 'readAsDataURL' : 'readAsText'](file)
+            reader[`readAs${mode}`](file)
         })
     }
 
