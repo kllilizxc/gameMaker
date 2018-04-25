@@ -1,5 +1,5 @@
 // @flow
-import { stateToGetters, trimFilenameExtension } from '../common/util'
+import { stateToGetters, trimFilename } from '../common/util'
 import AssetManager from '@/common/asset-manager'
 
 type State = {}
@@ -21,10 +21,10 @@ export default {
     actions: {
         uploadAssets: ({ state, commit }, files) => {
             const isSingle = !files[0]
-            const toReturn = Promise.all([...files]
-                .map(file => AssetManager.readLocalFile(file)
+            const toReturn = Promise.all((isSingle ? [files] : [...files])
+                .map(file => AssetManager.readLocalFile(file, true)
                     .then(data => {
-                        const fileData = { name: trimFilenameExtension(file.name), data }
+                        const fileData = { name: trimFilename(file.name), data }
                         const uploadFile = type => {
                             const assets = state.assets[type]
                             if (assets.find(filename => filename === fileData.name)) return
@@ -33,7 +33,8 @@ export default {
                         }
                         switch (file.type) {
                             case 'image/png':
-                                uploadFile('texture')
+                            case 'image/gif':
+                                uploadFile('textures')
                                 break
                             case 'application/javascript':
                                 uploadFile('scripts')

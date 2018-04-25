@@ -2,9 +2,10 @@
 import Script from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
-import Icon from '@/ui/icon'
 import { mapGetters } from 'vuex'
-import AssetManager from '@/common/asset-manager'
+import MenuItem from 'Ui/menu-item'
+import MenuPicker from 'Components/menu-picker'
+import defaultScripts from '../../../static/scripts'
 
 export default {
     name: 'script-window',
@@ -58,13 +59,6 @@ export default {
         dragLeaveHandler() {
             this.isDragOver = false
         },
-        pickFile() {
-            AssetManager.pickFile('.js', { multiple: true })
-                .then(fileList => {
-                    for (const file of fileList)
-                        this.addScript(file)
-                })
-        },
         setScriptValue(data) {
             if (this.isPlaying) return
             if (data.groupName)
@@ -82,8 +76,8 @@ export default {
             dropHandler,
             dragOverHandler,
             dragLeaveHandler,
+            addScript,
             isDragOver,
-            pickFile,
             deleteScript,
             setScriptValue
         } = this
@@ -96,8 +90,16 @@ export default {
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>
-                <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }} onClick={pickFile}>
-                    <Icon className={styles.addIcon} icon={'add'} size={48}/>
+                <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }}>
+                    <MenuPicker class={styles.menuPicker}
+                                items={Object.keys(defaultScripts).map(key => ({ key, data: defaultScripts[key] }))}
+                                onInput={key => addScript({ name: key, data: defaultScripts[key] })}
+                                renderFunction={({ key, data }) =>
+                                    <MenuItem title={key}>
+                                        {Object.keys(data).map(childKey =>
+                                            <MenuItem title={childKey}/>)}
+                                    </MenuItem>
+                                }/>
                 </div>
             </FileDropper>
         </div>

@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs'
 import store from '../store'
 
 const sceneStore = store.state.scene
+const assetStore = store.state.asset
 
 function getScriptObject(script) {
     const { name, Behavior } = script
@@ -9,10 +10,12 @@ function getScriptObject(script) {
     return { name, ...events }
 }
 
-function registerScript(id, { name, path }, sort) {
-    const { scriptsMap, scripts } = sceneStore
+function registerScript(id, { name, content }, sort) {
+    const { scriptsMap } = sceneStore
+    const { filesMap } = assetStore
     scriptsMap[id] = scriptsMap[id] || {}
-    if (!scripts[name]) scripts[name] = path
+    // register in filesMap
+    if (!filesMap[name]) filesMap[name] = content
     scriptsMap[id][name] = scriptsMap[id][name] || { sort, values: {} }
 }
 

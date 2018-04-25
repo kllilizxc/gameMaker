@@ -11,7 +11,7 @@ export default {
         getIdFunction: Function,
         haveChildrenFunction: {
             type: Function,
-            default: () => Promise.resolve(true)
+            default: () => true
         },
         renderItemFunction: {
             type: Function,
@@ -19,7 +19,7 @@ export default {
         },
         getChildrenFunction: {
             type: Function,
-            default: () => Promise.resolve([])
+            default: () => []
         },
         initFold: {
             type: Boolean,
@@ -50,40 +50,35 @@ export default {
             this.treeData = this.getItemDataFromPropData(this.data)
         },
         getItemDataFromPropData(data) {
-            return data.map(obj => {
+            return data && data.map(obj => {
                 const d = {
                     children: [],
-                    haveChildren: false,
+                    haveChildren: this.haveChildrenFunction(obj) || false,
                     raw: obj
                 }
 
-                this.haveChildrenFunction(obj)
-                    .then(value => d.haveChildren = value)
-                    .then(() => this.toggleItem(d, this.initFold))
-
+                this.toggleItem(d, this.initFold)
                 return d
             })
         },
         toggleItem(obj, fold) {
             this.chosenObj = obj
-            if (!fold && obj.haveChildren) { // if have children
-                this.getChildrenFunction(obj.raw).then(data =>
-                    obj.children = this.getItemDataFromPropData(data))
-            }
+            if (!fold && obj.haveChildren)
+                obj.children = this.getItemDataFromPropData(this.getChildrenFunction(obj.raw))
         },
-        renderItem(obj) {
+        renderItem(obj, parent) {
             const INDENT_LENGTH = 16
             return <div key={this.getIdFunction(obj.raw)}>
                 <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren} onInput={fold => this.toggleItem(obj, fold)}>
-                    <div slot='title'>{this.renderItemFunction(obj.raw, obj.haveChildren)}</div>
+                    <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
                     <div class={styles.children} slot='content' style={{ marginLeft: `${INDENT_LENGTH}px` }}>
-                        {this.renderItemList(obj.children)}
+                        {this.renderItemList(obj.children, obj)}
                     </div>
                 </DropDown>
             </div>
         },
-        renderItemList(array) {
-            return array.map(obj => this.renderItem(obj))
+        renderItemList(array, parent) {
+            return array.map(obj => this.renderItem(obj, parent))
         }
     },
     render() {

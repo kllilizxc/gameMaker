@@ -33,9 +33,7 @@ fields = {
             texture: {
                 type: 'FILE',
                 get: () => diffuseTexture,
-                set: val => {
-                    standardMaterial.diffuseTexture = new BABYLON.Texture(diffuseTexture = val, scene)
-                }
+                set: val => val && (standardMaterial.diffuseTexture = new BABYLON.Texture((diffuseTexture = val).data, scene))
             },
             hasAlpha: {
                 type: 'BOOLEAN',
@@ -73,7 +71,7 @@ fields = {
             texture: {
                 type: 'FILE',
                 get: () => specularTexture,
-                set: val => standardMaterial.specularTexture = new BABYLON.Texture(specularTexture = val, scene)
+                set: val => val && (standardMaterial.specularTexture = new BABYLON.Texture(specularTexture = val.data, scene))
             },
             hasAlpha: {
                 type: 'BOOLEAN',
@@ -111,7 +109,7 @@ fields = {
             texture: {
                 type: 'FILE',
                 get: () => emissiveTexture,
-                set: val => standardMaterial.emissiveTexture = new BABYLON.Texture(emissiveTexture = val, scene)
+                set: val => val && (standardMaterial.emissiveTexture = new BABYLON.Texture(emissiveTexture = val.data, scene))
             },
             hasAlpha: {
                 type: 'BOOLEAN',
@@ -149,7 +147,7 @@ fields = {
             texture: {
                 type: 'FILE',
                 get: () => ambientTexture,
-                set: val => standardMaterial.ambientTexture = new BABYLON.Texture(ambientTexture = val, scene)
+                set: val => val && (standardMaterial.ambientTexture = new BABYLON.Texture(ambientTexture = val.data, scene))
             },
             hasAlpha: {
                 type: 'BOOLEAN',

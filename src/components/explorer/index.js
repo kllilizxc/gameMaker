@@ -21,7 +21,7 @@ export default {
                 e.stopPropagation()
                 return false
             }
-            e.dataTransfer.setData('file', JSON.stringify(obj))
+            e.dataTransfer.setData('file', JSON.stringify({ name: obj, data: this.filesMap[obj] }))
         },
         renderItem(obj) {
             const isChosen = obj === this.chosenObj
@@ -48,7 +48,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['assets']),
+        ...mapGetters(['assets', 'filesMap']),
         assetsTree() {
             return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))
         }
@@ -67,9 +67,10 @@ export default {
         return <div class={styles.explorer}>
             <TreeView data={assetsTree}
                       renderItemFunction={renderItem}
+                      initFold={false}
                       getIdFunction={d => d.name || d}
-                      getChildrenFunction={d => Promise.resolve(d.assets)}
-                      haveChildrenFunction={d => Promise.resolve(d.assets && d.assets.length > 0)}/>
+                      getChildrenFunction={d => d.assets}
+                      haveChildrenFunction={d => d.assets && d.assets.length > 0}/>
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

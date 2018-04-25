@@ -1,4 +1,4 @@
-import { UUID, readScriptFromFile, removeInArray } from '../common/util'
+import { UUID, readScriptFromFile, getScriptObject, removeInArray } from '../common/util'
 import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
@@ -45,15 +45,14 @@ export default class GameObject {
         if (scriptsMap) {
             Object.keys(scriptsMap)
                 .sort((a, b) => scriptsMap[a].sort - scriptsMap[b].sort)
-                .map(name => {
-                    const scriptPath = sceneStore.scripts[name]
+                .forEach(name => {
+                    const scriptContent = assetStore.filesMap[name]
                     const values = scriptsMap[name].values
-                    return readScriptFromFile(scriptPath, this).then(script => {
-                        const scriptObject = new Script(script, this, scriptsMap[name].sort)
-                        const { fields } = scriptObject
-                        fields && restoreFieldsValues(fields, values)
-                        this.addScript(scriptObject)
-                    })
+                    const script = getScriptObject(name, scriptContent, this)
+                    const scriptObject = new Script(script, this, scriptsMap[name].sort)
+                    const { fields } = scriptObject
+                    fields && restoreFieldsValues(fields, values)
+                    this.addScript(scriptObject)
                 })
         }
     }
@@ -79,10 +78,8 @@ export default class GameObject {
     }
 
     addDefaultScripts(scriptNames) {
-        return Promise.all(scriptNames.map(name => {
-            const path = getDefaultScriptsPath(name)
-            return readScriptFromFile(path, this).then(script => ({ ...script, path }))
-        })).then(scripts => scripts.forEach(script => this.addScript(new Script(script, this))))
+        return Promise.all(scriptNames.map(name => readScriptFromFile(getDefaultScriptsPath(name), this)))
+            .then(scripts => scripts.forEach(script => this.addScript(new Script(script, this))))
     }
 
     onScriptsReady() {

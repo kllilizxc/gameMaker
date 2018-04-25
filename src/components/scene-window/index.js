@@ -47,8 +47,8 @@ export default {
             <TreeView data={gameObjects} ref='treeView'
                       getIdFunction={obj => obj.id}
                       initFold={false}
-                      getChildrenFunction={obj => Promise.resolve(obj.getChildren())}
-                      haveChildrenFunction={obj => Promise.resolve(obj.getChildren() && obj.getChildren().length > 0)}
+                      getChildrenFunction={obj => obj.getChildren()}
+                      haveChildrenFunction={obj => obj.getChildren() && obj.getChildren().length > 0}
                       renderItemFunction={renderItem}
                       selected={gameObject}/>
             <div class={styles.dropArea} onDragover={e => {

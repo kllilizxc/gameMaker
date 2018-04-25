@@ -27,7 +27,6 @@ const state = {
     scene: null,
     gameObjects: [],
     scriptsMap: {},
-    scripts: {},
     rawGameObjects: {},
     filename: null
 }
@@ -58,7 +57,10 @@ export default {
         [ADD_SCRIPT]({ gameObject }, script) {
             gameObject.addScript(new Script(script, gameObject))
         },
-        [SET_GROUP_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, groupName, fieldName, value }) {
+        [SET_GROUP_SCRIPT_VALUE]({ gameObject, scriptsMap }, { scriptName, groupName, fieldName, value, type }) {
+            if (type === FILE_TYPE) {
+                value = value.name
+            }
             setObjectIfUndefined(scriptsMap, gameObject.id, scriptName, 'values', groupName)
             scriptsMap[gameObject.id][scriptName].values[groupName][fieldName] = value
         },
@@ -81,7 +83,7 @@ export default {
         },
         addGameObject: ({ commit }, gameObjects) => commit(ADD_GAMEOBJECT, gameObjects),
         setGameObjects: ({ commit }, gameObjects) => commit(SET_GAMEOBJECTS, gameObjects),
-        addScript: ({ commit, state }, file) => commit(ADD_SCRIPT, getScriptObject(file.name, file.data, state.gameObject)),
+        addScript: ({ commit, state }, file) => state.gameObject && commit(ADD_SCRIPT, getScriptObject(file.name, file.data, state.gameObject)),
         setGameObjectParent: ({ state: { gameObjects, childrenGameObjects } }, { child, parent }) => {
             if (parent && isParent(parent, child)) return
             child.setParent(parent)
@@ -89,30 +91,28 @@ export default {
             if (!parent) gameObjects.push(child)
         },
         newScene: ({ rootState, state, dispatch }) => {
-            state.scripts = {}
             state.scriptsMap = {}
             rootState.filesMap = {}
             state.gameObjects = []
             state.filename = ''
             return dispatch('setScene', new BABYLON.Scene(state.engine))
         },
-        saveScene: ({ state, rootState }, filename) => {
+        saveScene: ({ state, rootState }) => {
             const serializedScene = {}
             serializedScene.scriptsMap = state.scriptsMap
-            serializedScene.scripts = state.scripts
-            serializedScene.filesMap = rootState.filesMap
+            serializedScene.filesMap = rootState.asset.filesMap
+            serializedScene.assets = rootState.asset.assets
             serializedScene.rawGameObjects = getMeshes(state.gameObjects)
             logger.log(serializedScene)
-            AssetManager.writeFile(filename, JSON.stringify(serializedScene))
-            state.filename = filename
+            AssetManager.writeFile('scene.scene', JSON.stringify(serializedScene))
         },
-        openScene: ({ state, rootState, dispatch, commit }, filename) => {
-            AssetManager.readLocalFile(filename)
+        openScene: ({ state, rootState, dispatch, commit }, file) => {
+            AssetManager.readLocalFile(file)
                 .then(data => {
                     data = JSON.parse(data)
                     state.scriptsMap = data.scriptsMap
-                    state.scripts = data.scripts
-                    rootState.filesMap = data.filesMap
+                    rootState.asset.filesMap = data.filesMap
+                    rootState.asset.assets = data.assets
                     state.gameObjects = []
                     state.gameObject = null
                     state.scene = null
@@ -120,8 +120,6 @@ export default {
                     logger.log(data)
                     dispatch('loadScene', data.rawGameObjects)
                 })
-            state.filename = filename
-            localStorage['GM:filename'] = filename
         },
         restoreScene: ({ dispatch, state: { gameObjects } }) =>
             dispatch('loadScene', getMeshes(gameObjects)),
@@ -170,11 +168,6 @@ export default {
             const getFilePathFromDir = (dir, filename) => `${dir}/${filename}`
             AssetManager.pickFile('', { directory: true })
                 .then(dir => {
-                    const scriptsMap = {}
-                    Promise.all(Object.keys(state.scripts).map(name => {
-                        const path = state.scripts[name]
-                        return AssetManager.readLocalFile(path).then(content => scriptsMap[name] = content)
-                    })).then(() => AssetManager.writeFile(`${dir}/scripts.json`, JSON.stringify(scriptsMap)))
                     dispatch('saveScene', getFilePathFromDir(dir, 'index.scene'))
                 })
         }

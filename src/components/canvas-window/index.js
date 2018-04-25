@@ -28,18 +28,13 @@ export default {
             this.canvas.detachEditControl()
             this.canvas.dispose()
             AssetManager.pickFile('.scene')
-                .then(([file]) => this.$store.dispatch('openScene', file.name))
+                .then(([file]) => this.$store.dispatch('openScene', file))
         },
         togglePlay() {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)
         },
         saveScene() {
-            if (!this.filename) return this.saveSceneAs()
-            this.$store.dispatch('saveScene', this.filename)
-        },
-        saveSceneAs() {
-            AssetManager.pickFile('.scene')
-                .then(filename => this.$store.dispatch('saveScene', filename))
+            this.$store.dispatch('saveScene')
         },
         setEditMode() {
             const { canvas } = this
@@ -55,7 +50,7 @@ export default {
         }
     },
     render(h) {
-        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, saveSceneAs, setEditMode } = this
+        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, setEditMode } = this
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
@@ -64,10 +59,7 @@ export default {
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
-                <IconMenu slot='left' icon='save' anchorOrigin={origin} targetOrigin={origin}>
-                    <MenuItem title='save' onClick={saveScene}/>
-                    <MenuItem title='save as' onClick={saveSceneAs}/>
-                </IconMenu>
+                <IconButton slot='left' icon='save' onClick={saveScene}/>
                 <IconButton slot='left' icon='build' onClick={build}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
                     {gameObjects.map(gameObject => <MenuItem title={gameObject} onClick={() => this.canvas[`create${gameObject}`]()}/>)}

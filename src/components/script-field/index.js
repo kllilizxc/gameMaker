@@ -7,7 +7,6 @@ import MenuItem from '@/ui/menu-item'
 import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
-import AssetManager from '@/common/asset-manager'
 
 export const STRING_TYPE = 'STRING'
 export const NUMBER_TYPE = 'NUMBER'
@@ -70,11 +69,11 @@ export default {
         },
         renderInputGroup(h: any, field): any {
             const { options, children } = field
-
             return <div class={styles.inputGroup}>
                 <div class={styles.groupLabel}>{options.label}</div>
                 <div class={styles.container}>
-                    {Object.keys(children).map(name => this.parseOption(h, { name, parent: field.name, ...children[name] }))}
+                    {Object.keys(children).map(name =>
+                        this.parseOption(h, { name, parent: field.name, ...children[name] }))}
                 </div>
             </div>
         },
@@ -82,10 +81,13 @@ export default {
             const { options } = field
             return <div class={styles.filePicker}>
                 <div class={styles.label}>{options.label}</div>
-                <FilePicker type='file' initTitle={options.value.name || ''}
+                <FilePicker type='file' initTitle={options.value && options.value.name || ''}
                             onInput={file => {
-                                this.$store.dispatch('uploadAssets', file)
-                                    .then(fileData => this.setFieldValue(field, fileData))
+                                if (file instanceof File)
+                                    this.$store.dispatch('uploadAssets', file)
+                                        .then(fileData => this.setFieldValue(field, fileData))
+                                else
+                                    this.setFieldValue(field, file)
                             }}/>
             </div>
         },

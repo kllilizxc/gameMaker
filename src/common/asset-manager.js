@@ -5,22 +5,20 @@ export default class AssetManager {
 
     static readFileSync = async file => await this.readFile(file)
 
-    static readLocalFileByPath = file => fetch(file).then(data => {
-        console.log(data)
-        return data
-    })
+    static readLocalFileByPath = file => fetch(file).then(response => response.text())
 
-    static readLocalFile = (file, asUrl = false) => new Promise(resolve => {
+    static readLocalFile = (file, asUrl = false) => {
         if (typeof file === 'string') return AssetManager.readLocalFileByPath(file)
+        return new Promise(resolve => {
+            const reader = new FileReader()
 
-        const reader = new FileReader()
+            // Closure to capture the file information.
+            reader.onload = e => resolve(e.target.result)
 
-        // Closure to capture the file information.
-        reader.onload = e => resolve(e.target.result)
-
-        // Read in the image file as a data URL.
-        reader[asUrl ? 'readAsDataURL' : 'readAsText'](file)
-    })
+            // Read in the image file as a data URL.
+            reader[asUrl ? 'readAsDataURL' : 'readAsText'](file)
+        })
+    }
 
     static writeFile = (filename, data) => {
         const file = new Blob([data])
@@ -36,7 +34,7 @@ export default class AssetManager {
         }, 0)
     }
 
-    static pickFile = (filters = '', { multiple, directory }) => new Promise(resolve => {
+    static pickFile = (filters = '', { multiple, directory } = {}) => new Promise(resolve => {
         const input = document.createElement('input')
         input.type = 'file'
         input.accept = filters
