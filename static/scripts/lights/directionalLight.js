@@ -1,4 +1,4 @@
-const directionalLight = new BABYLON.DirectionalLight(this.name, new BABYLON.Vector3(2, -3, -1), scene)
+const directionalLight = new BABYLON.DirectionalLight(this.name, new BABYLON.Vector3(20, -15, 30), scene)
 this.setMesh(directionalLight)
 this.getLight = () => directionalLight
 

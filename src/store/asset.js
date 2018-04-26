@@ -24,9 +24,11 @@ export default {
             const toReturn = Promise.all((isSingle ? [files] : [...files])
                 .map(file => {
                     const extension = file.name.match(/\.([0-9a-z]+)$/i)[1].toLowerCase()
-                    let mode = 'DataUrl'
-                    if (extension === 'js' || extension === 'obj' || extension === 'gltf') mode = 'Text'
+                    // set read mode
+                    let mode = 'DataURL'
+                    if (extension === 'js' || extension === 'obj' || extension === 'gltf' || extension === 'babylon') mode = 'Text'
                     else if (extension === 'stl') mode = 'ArrayBuffer'
+
                     return AssetManager.readLocalFile(file, mode) // load scripts as plain text and others as data url
                         .then(data => {
                             const fileData = { name: trimFilename(file.name), data }

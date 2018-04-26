@@ -4,7 +4,7 @@ const logger = console
 
 export const loadMesh = ({ name, data }, scene) => new Promise(resolve => {
     const extension = name.match(/\.([0-9a-z]+)$/i)[1].toLowerCase()
-    let meshes = []
+    const meshes = []
     switch (extension) {
         case 'obj':
             new BABYLON.OBJFileLoader().importMesh(null, scene, data, null, meshes)
@@ -13,11 +13,9 @@ export const loadMesh = ({ name, data }, scene) => new Promise(resolve => {
             new BABYLON.STLFileLoader().importMesh(null, scene, data, null, meshes)
             break
         case 'gltf':
-            new BABYLON.GLTFFileLoader().importMeshAsync(null, scene, data, null, loadedMeshes => {
-                meshes = loadedMeshes
-                resolve(meshes)
-            })
-            break
+            return new BABYLON.GLTFFileLoader().importMeshAsync(null, scene, data, null, resolve)
+        case 'babylon':
+            return BABYLON.SceneLoader.ImportMesh(null, null, `data:${data}`, scene, resolve)
         default:
             logger.error('Invalid mesh file extension: ' + extension)
     }

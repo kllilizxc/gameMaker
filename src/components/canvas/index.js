@@ -37,6 +37,9 @@ export default {
                 this.camera = scene.activeCamera
             }
 
+            // environment
+            scene.ambientColor = new BABYLON.Color3(0.51, 0.51, 0.51)
+
             this.initScene()
 
             scene.collisionsEnabled = true

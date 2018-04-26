@@ -44,27 +44,34 @@ export default class GameObject {
             ? sort
             : sceneStore.gameObjects.reduce((max, cur) => Math.max(max, cur.sort), -1) + 1
         if (scriptsMap) {
-            Object.keys(scriptsMap)
-                .sort((a, b) => scriptsMap[a].sort - scriptsMap[b].sort)
-                .forEach(name => {
-                    if (name === '__self__') {
-                        // restore model
-                        const { model } = scriptsMap[name].values
-                        if (model)
-                            loadMesh({ name: model, data: assetStore.filesMap[model] }, sceneStore.scene)
-                                .then(([mesh]) => this.setMesh(mesh))
-                    } else {
-                        // restore other scripts
-                        const scriptContent = assetStore.filesMap[name]
-                        const values = scriptsMap[name].values
-                        const script = getScriptObject(name, scriptContent, this)
-                        const scriptObject = new Script(script, this, scriptsMap[name].sort)
-                        const { fields } = scriptObject
-                        fields && restoreFieldsValues(fields, values)
-                        this.addScript(scriptObject)
-                    }
-                })
+            this.restoreModel(scriptsMap).then(() => {
+                Object.keys(scriptsMap)
+                    .sort((a, b) => scriptsMap[a].sort - scriptsMap[b].sort)
+                    .forEach(name => {
+                        if (name !== '__self__') {
+                            // restore other scripts
+                            const scriptContent = assetStore.filesMap[name]
+                            const values = scriptsMap[name].values
+                            const script = getScriptObject(name, scriptContent, this)
+                            const scriptObject = new Script(script, this, scriptsMap[name].sort)
+                            const { fields } = scriptObject
+                            fields && restoreFieldsValues(fields, values)
+                            this.addScript(scriptObject)
+                        }
+                    })
+            })
         }
+    }
+
+    restoreModel(scriptsMap) {
+        if (scriptsMap.__self__) {
+            // restore model
+            const { model } = scriptsMap.__self__.values
+            if (model)
+                return loadMesh({ name: model, data: assetStore.filesMap[model] }, sceneStore.scene)
+                    .then(([mesh]) => this.setMesh(mesh))
+        }
+        return Promise.resolve(true)
     }
 
     clone(name) {

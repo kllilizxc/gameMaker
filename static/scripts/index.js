@@ -1,7 +1,7 @@
 const defaultScrips = {}
 
 const scripts = {
-    materials: ['standardMaterial']
+    materials: ['standardMaterial', 'pbrMaterial']
 }
 
 const outerScripts = ['physics']

@@ -1,7 +1,7 @@
 const standardMaterial = new BABYLON.StandardMaterial('standardMaterial', scene)
 this.getMesh().material = standardMaterial
 this.getMesh().receiveShadows = true
-let diffuseTexture, specularTexture, emissiveTexture, ambientTexture
+let diffuseTexture, specularTexture, emissiveTexture, ambientTexture, bumpTexture
 
 fields = {
     diffuseColor: {
@@ -153,6 +153,21 @@ fields = {
                 type: 'BOOLEAN',
                 get: () => standardMaterial.ambientTexture && standardMaterial.ambientTexture.hasAlpha,
                 set: val => standardMaterial.ambientTexture && (standardMaterial.ambientTexture.hasAlpha = val)
+            }
+        }
+    },
+    bumpTexture: {
+        type: 'GROUP',
+        children: {
+            texture: {
+                type: 'FILE',
+                get: () => bumpTexture,
+                set: val => val && (standardMaterial.bumpTexture = new BABYLON.Texture(bumpTexture = val.data, scene))
+            },
+            hasAlpha: {
+                type: 'BOOLEAN',
+                get: () => standardMaterial.bumpTexture && standardMaterial.bumpTexture.hasAlpha,
+                set: val => standardMaterial.bumpTexture && (standardMaterial.bumpTexture.hasAlpha = val)
             }
         }
     },
