@@ -5,12 +5,13 @@ import SceneWindow from '@/components/scene-window'
 import ExplorerWindow from '@/components/explorer-window'
 import CanvasWindow from '@/components/canvas-window'
 import CodeEditor from '@/components/code-editor'
+import AnimationEditor from '@/components/animation-editor'
 import COLORS from '@/common/colors.css'
 
 import { mapGetters } from 'vuex'
 
 import * as API from './common/api'
-import UndoableAction from "./classes/undoableAction";
+import UndoableAction from './classes/undoableAction'
 
 window.gm = API
 
@@ -23,7 +24,8 @@ export default {
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
                 { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow ref='sceneWindow'/> },
                 { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
-                { icon: 'code', title: 'Code Editor', color: COLORS['Grey-300'], content: <CodeEditor/> }
+                { icon: 'code', title: 'Code Editor', color: COLORS['Grey-300'], content: <CodeEditor/> },
+                { icon: 'play_circle_filled', title: 'Animation Editor', color: COLORS['Grey-400'], content: <AnimationEditor/> }
             ]
         },
         defaultWindow() {
