@@ -14,6 +14,7 @@ export default {
     methods: {
         setChosenItem(obj) {
             this.chosenObj = obj
+            this.$store.dispatch('setCurrentScript', obj.name || obj)
         },
         handleDragStart(e, obj) {
             if (obj.assets !== undefined) {

@@ -20,7 +20,8 @@ const simpleState = {
     gameObject: null,
     isPlaying: false,
     engine: null,
-    canvas: null
+    canvas: null,
+    currentScript: null
 }
 
 const state = {

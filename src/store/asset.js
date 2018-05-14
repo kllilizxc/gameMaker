@@ -1,6 +1,7 @@
 // @flow
-import { stateToGetters, trimFilename } from '../common/util'
+import { stateToGetters, trimFilename, getScriptObject } from '../common/util'
 import AssetManager from '@/common/asset-manager'
+import Script from '../classes/script'
 
 type State = {}
 
@@ -62,6 +63,14 @@ export default {
             return isSingle
                 ? toReturn.then(data => data[0])
                 : toReturn
+        },
+        editFile({ state: { filesMap }, rootState: { scene: { gameObjects } } }, { file, value }) {
+            console.log('editFile')
+            filesMap[file] = value
+            gameObjects.forEach(gameObject => gameObject.forEach(obj => {
+                if (obj.scripts[file])
+                    obj.scripts[file] = new Script(getScriptObject(file, value, obj), obj)
+            }))
         }
     }
 }

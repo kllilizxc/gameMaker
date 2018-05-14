@@ -148,6 +148,11 @@ export default class GameObject {
         this.mesh.parent = parent && parent.mesh
     }
 
+    forEach(cb) {
+        cb(this)
+        this.getChildren().forEach(child => child.forEach(cb))
+    }
+
     dispose() {
         this.mesh.dispose()
         delete sceneStore.scriptsMap[this.id]
