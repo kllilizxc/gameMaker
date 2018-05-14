@@ -17,7 +17,6 @@ export default class UndoableAction {
         if (this.currentIndex === this.endIndex)
             this.endIndex = this.advance(this.endIndex)
         this.currentIndex = this.advance(this.currentIndex)
-        console.log('add', action)
         action.redo()
     }
 
@@ -27,7 +26,6 @@ export default class UndoableAction {
         const action = this.actionStack[index]
         if (!action) return
         this.currentIndex = index
-        console.log(action)
         action.undo()
     }
 
@@ -36,7 +34,6 @@ export default class UndoableAction {
         const action = this.actionStack[this.currentIndex]
         if (!action) return
         this.currentIndex = this.advance(this.currentIndex)
-        console.log(action)
         action.redo()
     }
 
