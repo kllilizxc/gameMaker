@@ -99,10 +99,28 @@ export default {
             if (!this.editControl) {
                 this.editControl = new EditControl(mesh, this.camera, this.canvas, 1, true)
                 this.editControl.enableTranslation()
+                this.editControl.addActionEndListener(actionType => {
+                    switch (actionType) {
+                        case 0: return this.setScriptValues('position')
+                        case 1: return this.setScriptValues('rotation')
+                        case 2: return this.setScriptValues('scaling')
+                    }
+                })
             } else {
                 this.editControl.show()
                 this.editControl.switchTo(mesh)
             }
+        },
+        setScriptValues(type) {
+            ['x', 'y', 'z'].forEach(field =>
+                this.$store.dispatch('setGroupScriptValue',
+                    {
+                        scriptName: 'transform.js',
+                        groupName: type,
+                        fieldName: field,
+                        value: this.gameObject.mesh[type][field],
+                        type: 'NUMBER'
+                    }))
         },
         detachEditControl() {
             this.editControl && this.editControl.detach()

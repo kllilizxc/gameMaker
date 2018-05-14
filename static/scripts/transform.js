@@ -28,8 +28,8 @@ if (this.getMesh().rotation)
         children: {
             x: {
                 type: 'NUMBER',
-                get: () =>  BABYLON.Tools.ToDegrees(this.getMesh().rotation.x),
-                set: val => this.getMesh().rotation.x =  BABYLON.Tools.ToRadians(val)
+                get: () => BABYLON.Tools.ToDegrees(this.getMesh().rotation.x),
+                set: val => this.getMesh().rotation.x = BABYLON.Tools.ToRadians(val)
             },
             y: {
                 type: 'NUMBER',
@@ -67,9 +67,21 @@ if (this.getMesh().scaling)
     }
 
 actions = {
-    setScaling(size) {
-        fields.scaling.children.x.set(size)
-        fields.scaling.children.y.set(size)
-        fields.scaling.children.z.set(size)
+    setScaling(x, y, z) {
+        fields.scaling.children.x.set(x)
+        fields.scaling.children.y.set(y)
+        fields.scaling.children.z.set(z)
+    },
+    setTranslation(x, y, z) {
+        const { position } = this.getMesh()
+        position.x = x
+        position.y = y
+        position.z = z
+    },
+    setRotation(x, y, z) {
+        const { rotation } = this.getMesh()
+        rotation.x = x
+        rotation.y = y
+        rotation.z = z
     }
 }
