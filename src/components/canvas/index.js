@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl
     from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
+import UndoableAction from "../../classes/undoableAction";
 
 export default {
     name: 'draw-canvas',
@@ -12,6 +13,7 @@ export default {
         pickedMesh: null,
         editControl: null,
         innerMeshes: null,
+        lastEditValue: null,
         t: -1
     }),
     computed: {
@@ -99,11 +101,26 @@ export default {
             if (!this.editControl) {
                 this.editControl = new EditControl(mesh, this.camera, this.canvas, 1, true)
                 this.editControl.enableTranslation()
-                this.editControl.addActionEndListener(actionType => {
+                this.editControl.addActionStartListener(actionType => {
+                    const { position, rotation, scaling } = this.gameObject.getMesh()
                     switch (actionType) {
-                        case 0: return this.setScriptValues('position')
-                        case 1: return this.setScriptValues('rotation')
-                        case 2: return this.setScriptValues('scaling')
+                        case 0:
+                            return this.lastEditValue = { ...position }
+                        case 1:
+                            return this.lastEditValue = { ...rotation }
+                        case 2:
+                            return this.lastEditValue = { ...scaling }
+                    }
+                })
+                this.editControl.addActionEndListener(actionType => {
+                    const { position, rotation, scaling } = this.gameObject.getMesh()
+                    switch (actionType) {
+                        case 0:
+                            return UndoableAction.addAction(new UndoableAction(this.lastEditValue, { ...position }, val => this.setScriptValues('position', val)))
+                        case 1:
+                            return UndoableAction.addAction(new UndoableAction(this.lastEditValue, { ...rotation }, val => this.setScriptValues('rotation', val)))
+                        case 2:
+                            return UndoableAction.addAction(new UndoableAction(this.lastEditValue, { ...scaling }, val => this.setScriptValues('scaling', val)))
                     }
                 })
             } else {
@@ -111,16 +128,18 @@ export default {
                 this.editControl.switchTo(mesh)
             }
         },
-        setScriptValues(type) {
-            ['x', 'y', 'z'].forEach(field =>
+        setScriptValues(type, value) {
+            ['x', 'y', 'z'].forEach(field => {
                 this.$store.dispatch('setGroupScriptValue',
                     {
                         scriptName: 'transform.js',
                         groupName: type,
                         fieldName: field,
-                        value: this.gameObject.mesh[type][field],
+                        value: value[field],
                         type: 'NUMBER'
-                    }))
+                    })
+                this.gameObject.getMesh()[type][field] = value[field]
+            })
         },
         detachEditControl() {
             this.editControl && this.editControl.detach()
