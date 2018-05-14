@@ -65,11 +65,10 @@ export default {
                 : toReturn
         },
         editFile({ state: { filesMap }, rootState: { scene: { gameObjects } } }, { file, value }) {
-            console.log('editFile')
             filesMap[file] = value
             gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])
-                    obj.scripts[file] = new Script(getScriptObject(file, value, obj), obj)
+                    obj.addScript(new Script(getScriptObject(file, value, obj), obj))
             }))
         }
     }
