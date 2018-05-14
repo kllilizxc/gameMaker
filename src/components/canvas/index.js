@@ -3,7 +3,7 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl
     from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
-import UndoableAction from "../../classes/undoableAction";
+import UndoableAction from '../../classes/undoableAction'
 
 export default {
     name: 'draw-canvas',

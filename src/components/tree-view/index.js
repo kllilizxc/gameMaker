@@ -69,7 +69,8 @@ export default {
         renderItem(obj, parent) {
             const INDENT_LENGTH = 16
             return <div key={this.getIdFunction(obj.raw)}>
-                <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren} onInput={fold => this.toggleItem(obj, fold)}>
+                <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren}
+                          onInput={fold => this.toggleItem(obj, fold)}>
                     <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
                     <div class={styles.children} slot='content' style={{ marginLeft: `${INDENT_LENGTH}px` }}>
                         {this.renderItemList(obj.children, obj)}
@@ -88,7 +89,9 @@ export default {
         } = this
 
         return <div class={styles.treeView}>
-            {renderItemList(treeData)}
+            {treeData.length > 0
+                ? renderItemList(treeData)
+                : <div>Nothing Found</div>}
         </div>
     }
 }
