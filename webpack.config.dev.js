@@ -4,7 +4,7 @@ const baseWebpackConfig = require('./webpack.config.base')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = merge(baseWebpackConfig, {
-    // mode: 'development',
+    mode: 'development',
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {

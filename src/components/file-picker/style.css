@@ -8,6 +8,7 @@
     background: Grey-200;
     cursor: pointer;
     border-radius: 4px;
+    overflow: hidden;
 }
 
 .dragOver {

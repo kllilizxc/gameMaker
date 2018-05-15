@@ -2,15 +2,17 @@
 import { stateToGetters, trimFilename } from '../common/util'
 import AssetManager from '@/common/asset-manager'
 
+export const getDefaultAssets = () => ({
+    models: [],
+    textures: [],
+    scripts: [],
+    others: []
+})
+
 type State = {}
 
 const state: State = {
-    assets: {
-        models: [],
-        textures: [],
-        scripts: [],
-        others: []
-    },
+    assets: getDefaultAssets(),
     filesMap: {}
 }
 
@@ -34,22 +36,24 @@ export default {
                             const fileData = { name: trimFilename(file.name), data }
                             const uploadFile = type => {
                                 const assets = state.assets[type]
-                                if (assets.find(filename => filename === fileData.name)) return
-                                assets.push(fileData.name)
+                                if (!assets.find(filename => filename === fileData.name))
+                                    assets.push(fileData.name)
                                 state.filesMap[fileData.name] = fileData.data
                             }
 
                             switch (extension) {
                                 case 'png':
                                 case 'gif':
+                                case 'jpg':
                                     uploadFile('textures')
                                     break
-                                case 'javascript':
+                                case 'js':
                                     uploadFile('scripts')
                                     break
                                 case 'stl':
                                 case 'obj':
                                 case 'gltf':
+                                case 'babylon':
                                     uploadFile('models')
                                     break
                                 default:
