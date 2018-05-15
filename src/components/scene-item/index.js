@@ -2,6 +2,7 @@ import TextField from '@/ui/text-field'
 import styles from './style.css'
 import Icon from '@/ui/icon'
 import IconButton from '@/ui/material-icon-button'
+import UndoableAction from "../../classes/undoableAction";
 
 export default {
     name: 'scene-item',
@@ -36,7 +37,7 @@ export default {
     },
     methods: {
         handleInput(val) {
-            this.innerValue.name = val
+            UndoableAction.addAction(new UndoableAction(this.innerValue.name, val, val => this.innerValue.name = val))
         },
         toggleEditMode() {
             this.editMode = !this.editMode

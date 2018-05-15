@@ -3,6 +3,7 @@ import TreeView from '../tree-view'
 import { mapGetters } from 'vuex'
 import SceneItem from '../scene-item'
 import GameObject from '../../classes/gameObject'
+import UndoableAction from '../../classes/undoableAction'
 
 export default {
     name: 'scene-window',
@@ -21,8 +22,10 @@ export default {
             if (gameObjectId) {
                 const dropMesh = GameObject.findGameObjectById(gameObjectId)
                 if (!dropMesh) return
-                this.$store.dispatch('setGameObjectParent', { child: dropMesh, parent: obj })
-                    .then(() => this.$refs.treeView.setTreeData())
+                const parentMesh = dropMesh.getMesh().parent
+                UndoableAction.addAction(new UndoableAction(parentMesh && parentMesh.gameObject, obj,
+                    val => this.$store.dispatch('setGameObjectParent', { child: dropMesh, parent: val })
+                        .then(() => this.$refs.treeView.setTreeData())))
             }
         },
         renderItem(obj) {

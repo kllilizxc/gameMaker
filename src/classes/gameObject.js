@@ -80,7 +80,7 @@ export default class GameObject {
         this.mesh.gameObject = null
         const clonedMesh = this.mesh.clone()
         this.mesh.gameObject = this
-        clonedMesh.gameObject = new GameObject(name, clonedMesh, null, id)
+        clonedMesh.gameObject = new GameObject(name || this.name, clonedMesh, null, id)
         return clonedMesh.gameObject
     }
 
@@ -147,6 +147,11 @@ export default class GameObject {
 
     setParent(parent) {
         this.mesh.parent = parent && parent.mesh
+    }
+
+    forEach(cb) {
+        cb(this)
+        this.getChildren().forEach(child => child.forEach(cb))
     }
 
     dispose() {

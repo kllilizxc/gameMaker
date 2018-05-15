@@ -10,6 +10,7 @@ import COLORS from '@/common/colors.css'
 import { mapGetters } from 'vuex'
 
 import * as API from './common/api'
+import UndoableAction from "./classes/undoableAction";
 
 window.gm = API
 
@@ -40,6 +41,13 @@ export default {
                 const { scene, gameObject } = this
                 if (scene && scene.activeCamera && scene.activeCamera.setTarget)
                     scene.activeCamera.setTarget(gameObject.getMesh().getAbsolutePosition())
+            } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+                // ctrl + shift + z
+                UndoableAction.redoAction()
+            } else if (e.ctrlKey && e.code === 'KeyZ') {
+                // ctrl + z
+                console.log('undo')
+                UndoableAction.undoAction()
             }
         }
     },

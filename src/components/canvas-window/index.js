@@ -8,6 +8,7 @@ import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 import { loadMesh } from '../../common/api'
 import { trimFilenameExtension } from '../../common/util'
+import UndoableAction from '../../classes/undoableAction'
 
 const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'FollowCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
 
@@ -99,6 +100,8 @@ export default {
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
                 <IconButton slot='left' icon='save' onClick={saveScene}/>
+                <IconButton slot='left' icon='undo' onClick={() => UndoableAction.undoAction()}/>
+                <IconButton slot='left' icon='redo' onClick={() => UndoableAction.redoAction()}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
                     {gameObjects.map(gameObject => <MenuItem title={gameObject} onClick={() => this.canvas[`create${gameObject}`]()}/>)}
                 </IconMenu>

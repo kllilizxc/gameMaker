@@ -7,6 +7,7 @@ import MenuItem from '@/ui/menu-item'
 import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
+import UndoableAction from '../../classes/undoableAction'
 
 export const STRING_TYPE = 'STRING'
 export const NUMBER_TYPE = 'NUMBER'
@@ -33,6 +34,9 @@ export default {
     },
     methods: {
         setFieldValue(field, value) {
+            const oldValue = field.get()
+            if (oldValue === value) return
+            UndoableAction.addAction(new UndoableAction(oldValue, value, field.set))
             field.set(value)
             const data = { fieldName: field.name, value, type: field.type }
             if (field.parent) data.groupName = field.parent
@@ -43,6 +47,7 @@ export default {
                 props,
                 on: {
                     input: value => {
+                        console.log(value)
                         this.setFieldValue(field, value)
                     }
                 }
