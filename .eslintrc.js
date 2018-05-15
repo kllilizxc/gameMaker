@@ -14,7 +14,9 @@ module.exports = {
     // required to lint *.vue files
     plugins: [
         'html',
-        'flowtype'
+        'flowtype',
+        'import',
+        'node'
     ],
     // add your custom rules here
     rules: {
