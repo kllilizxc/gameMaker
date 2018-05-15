@@ -65,7 +65,7 @@ export default {
             const loadFileObject = fileObject => {
                 loadMesh(fileObject, this.scene)
                     .then(([mesh]) => {
-                        this.$store.dispatch('createGameObject', { name: trimFilenameExtension(fileObject.name), script: 'transform', mesh })
+                        this.$store.dispatch('createGameObject', { name: trimFilenameExtension(fileObject.name), script: 'basic/transform', mesh })
                             .then(gameObject => this.$store.dispatch('setGameObject', gameObject))
                             .then(() => this.$store.dispatch('setScriptValue', { scriptName: '__self__', fieldName: 'model', value: fileObject.name }))
                     })
@@ -94,7 +94,7 @@ export default {
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
-        return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler}>
+        return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler} style={{ cursor: this.isPlaying ? 'none' : '' }}>
             <Canvas ref='canvas'/>
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>

@@ -21,3 +21,12 @@ export const loadMesh = ({ name, data }, scene) => new Promise(resolve => {
     }
     resolve(meshes)
 })
+
+export const getIntersects = (theMesh, scene, precise = false) => {
+    const intersects = []
+    scene.meshes.forEach(mesh => {
+        if (mesh.intersectsMesh(theMesh, precise))
+            intersects.push(mesh)
+    })
+    return intersects
+}

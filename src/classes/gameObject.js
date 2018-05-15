@@ -2,7 +2,7 @@ import { UUID, readScriptFromFile, getScriptObject, removeInArray } from '../com
 import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
-import { loadMesh } from '../common/api'
+import { loadMesh, getIntersects } from '../common/api'
 
 const sceneStore = store.state.scene
 const assetStore = store.state.asset
@@ -121,6 +121,7 @@ export default class GameObject {
         if (parent) mesh.parent = parent
         this.mesh.dispose()
         this.mesh = mesh
+        this.mesh.id = this.id
         this.mesh.gameObject = this
     }
 
@@ -157,16 +158,20 @@ export default class GameObject {
         this.mesh.dispose()
         delete sceneStore.scriptsMap[this.id]
         removeInArray(sceneStore.gameObjects, obj => obj === this)
-        sceneStore.gameObject = null
     }
 
-    callEvent(eventName) {
+    callEvent(eventName, ...args) {
         const { scripts } = this
-        scripts && Object.keys(scripts).map(key => scripts[key])
-            .forEach(script => script[eventName] && script[eventName].bind(this)())
+        scripts && Object.keys(scripts).map(key => scripts[key]).sort((a, b) => a.sort - b.sort)
+            .forEach(script => script[eventName] && script[eventName].bind(this)(...args))
 
         const children = this.getChildren()
         if (children)
-            children.forEach(child => this.callEvent.call(child, eventName))
+            children.forEach(child => this.callEvent.call(child, eventName, ...args))
+    }
+
+    getIntersect(precise) {
+        return getIntersects(this.getMesh(), sceneStore.scene, precise)
+            .map(mesh => mesh.gameObject).filter(g => g)
     }
 }

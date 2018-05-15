@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
+const { VueLoaderPlugin } = require('vue-loader')
 
 function resolve(dir) {
     return path.join(__dirname, dir)
@@ -27,6 +28,7 @@ module.exports = {
     },
     target: 'web',
     plugins: [
+        new VueLoaderPlugin()
     ],
     module: {
         rules: [

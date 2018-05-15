@@ -1,14 +1,22 @@
 const defaultScrips = {}
 
 const scripts = {
-    materials: ['standardMaterial', 'pbrMaterial']
+    materials: ['standardMaterial', 'pbrMaterial', 'backgroundMaterial'],
+    cameras: ['arcRotateCamera', 'followCamera', 'universalCamera'],
+    geometries: ['boxGeometry', 'geometry', 'groundGeometry', 'planeGeometry', 'sphereGeometry'],
+    lights: ['directionalLight', 'hemisphericLight', 'pointLight', 'shadowGenerator', 'spotLight'],
+    basic: ['physics', 'transform']
 }
 
-const outerScripts = ['physics']
+const outerScripts = []
 
 Object.keys(scripts).forEach(key => {
-    scripts[key].forEach(name => defaultScrips[name] = require('raw-loader!./' + key + '/' + name))
+    scripts[key].forEach(function(name) {
+        defaultScrips[name] = require('raw-loader!./' + key + '/' + name)
+    })
 })
-outerScripts.forEach(name => defaultScrips[name] = require('raw-loader!./' + name))
+outerScripts.forEach(function(name) {
+    defaultScrips[name] = require('raw-loader!./' + name)
+})
 
 export default defaultScrips

@@ -16,7 +16,7 @@ function registerScript(id, { name, content }, sort) {
     const { filesMap } = assetStore
     scriptsMap[id] = scriptsMap[id] || {}
     // register in filesMap
-    if (!filesMap[name]) filesMap[name] = content
+    filesMap[name] = content
     scriptsMap[id][name] = scriptsMap[id][name] || { sort, values: {} }
 }
 

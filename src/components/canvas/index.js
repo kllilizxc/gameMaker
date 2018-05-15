@@ -3,6 +3,7 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl
     from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
+import { inputEvents } from '../../common/util'
 import UndoableAction from '../../classes/undoableAction'
 
 export default {
@@ -48,6 +49,7 @@ export default {
             scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
             this.editControl && this.editControl.detach()
             scene.onPointerDown = () => {
+                if (this.isPlaying) return this.callEvent('pointerdown')
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
                 let pickedGameObject = pickResult.hit && pickResult.pickedMesh && this.scene.getMeshByID(pickResult.pickedMesh.id)
@@ -69,6 +71,8 @@ export default {
             const { init, scene } = this
             this.detachEditControl()
             if (val) {
+                if (this.gameObject) this.gameObject.getMesh().showBoundingBox = false
+                this.canvas.focus()
                 init()
                 scene.registerBeforeRender(this.update)
                 scene.registerAfterRender(this.lateUpdate)
@@ -79,11 +83,11 @@ export default {
             }
         },
         gameObject(val, oldVal) {
-            if (oldVal) {
+            if (oldVal && val !== oldVal) {
                 oldVal.mesh.showBoundingBox = false
                 oldVal.callEvent('onBlur')
             }
-            if (!val) this.detachEditControl()
+            if (!val || val === oldVal) this.detachEditControl()
             else {
                 this.attachEditControl(val.getMesh())
                 val.mesh.showBoundingBox = true
@@ -94,7 +98,7 @@ export default {
     methods: {
         ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject', 'restoreScene']),
         attachEditControl(mesh) {
-            if (!(mesh.position && mesh.rotation && mesh.scaling)) {
+            if (this.isPlaying || !(mesh.position && mesh.rotation && mesh.scaling)) {
                 this.editControl && this.editControl.hide()
                 return
             }
@@ -173,73 +177,79 @@ export default {
             editControl.enableScaling()
         },
         createEmptyMesh(name = 'mesh') {
-            return this.createGameObject({ name, scripts: ['transform'] })
+            return this.createGameObject({ name, scripts: ['basic/transform'] })
         },
         createSphere(name = 'sphere') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/sphereGeometry'] })
+            return this.createGameObject({ name, scripts: ['basic/transform', 'geometries/sphereGeometry'] })
         },
         createBox(name = 'box') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/boxGeometry'] })
+            return this.createGameObject({ name, scripts: ['basic/transform', 'geometries/boxGeometry'] })
         },
         createPlane(name = 'plane') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/planeGeometry'] })
+            return this.createGameObject({ name, scripts: ['basic/transform', 'geometries/planeGeometry'] })
         },
         createGround(name = 'ground') {
-            return this.createGameObject({ name, scripts: ['transform', 'geometries/groundGeometry'] })
+            return this.createGameObject({ name, scripts: ['basic/transform', 'geometries/groundGeometry'] })
         },
         createPointLight(name = 'pointLight') {
-            this.createGameObject({ name, scripts: ['lights/pointLight', 'transform'] })
+            this.createGameObject({ name, scripts: ['lights/pointLight', 'basic/transform'] })
         },
         createDirectionalLight(name = 'directionalLight') {
-            this.createGameObject({ name, scripts: ['lights/directionalLight', 'transform', 'lights/shadowGenerator'] })
+            this.createGameObject({ name, scripts: ['lights/directionalLight', 'basic/transform', 'lights/shadowGenerator'] })
         },
         createSpotLight(name = 'spotLight') {
-            return this.createGameObject({ name, scripts: ['lights/spotLight', 'transform'] })
+            return this.createGameObject({ name, scripts: ['lights/spotLight', 'basic/transform'] })
         },
         createSkyBox(name = 'skyBox') {
             return this.createGameObject({
                 name,
-                scripts: ['transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox']
+                scripts: ['basic/transform', 'geometries/boxGeometry', 'materials/backgroundMaterial', 'skybox']
             })
         },
         createHemisphericLight(name = 'hemisphericLight') {
-            return this.createGameObject({ name, scripts: ['lights/hemisphericLight', 'transform'] })
+            return this.createGameObject({ name, scripts: ['lights/hemisphericLight', 'basic/transform'] })
         },
         createUniversalCamera(name = 'universalCamera') {
-            return this.createGameObject({ name, scripts: ['cameras/universalCamera', 'transform'] })
+            return this.createGameObject({ name, scripts: ['cameras/universalCamera', 'basic/transform'] })
         },
         createArcRotateCamera(name = 'arcRotateCamera') {
-            return this.createGameObject({ name, scripts: ['cameras/arcRotateCamera', 'transform'] })
+            return this.createGameObject({ name, scripts: ['cameras/arcRotateCamera', 'basic/transform'] })
         },
         createFollowCamera(name = 'followCamera') {
-            return this.createGameObject({ name, scripts: ['cameras/followCamera', 'transform'] })
+            return this.createGameObject({ name, scripts: ['cameras/followCamera', 'basic/transform'] })
         },
         createBoxArea(name = 'boxArea') {
-            return this.createGameObject({ name, scripts: ['transform', 'boxArea'] })
+            return this.createGameObject({ name, scripts: ['basic/transform', 'boxArea'] })
         },
         animate() {
         },
         init() {
-            this.gameObjects.forEach(gameObject => gameObject.callEvent('init'))
+            this.callEvent('init')
         },
         update() {
-            this.gameObjects.forEach(gameObject => gameObject.callEvent('update'))
+            this.callEvent('update')
         },
         lateUpdate() {
-            this.gameObjects.forEach(gameObject => gameObject.callEvent('lateUpdate'))
+            this.callEvent('lateUpdate')
+        },
+        callEvent(eventName, ...args) {
+            this.gameObjects.forEach(gameObject => gameObject.callEvent(eventName, ...args))
         },
         render() {
             const {
-                scene, engine, editControl, camera, canvas
+                scene, engine, editControl, canvas, isPlaying
             } = this
 
             engine.resize() // TODO move out of render loop
-            if (editControl && editControl.isEditing())
-                camera.detachControl(canvas)
+            if (isPlaying || (editControl && editControl.isEditing()))
+                scene.activeCamera && scene.activeCamera.detachControl(canvas)
             else
-                camera.attachControl(canvas)
+                scene.activeCamera && scene.activeCamera.attachControl(canvas)
             scene.getBoundingBoxRenderer().render()
             scene.render()
+        },
+        registerInputEvent(eventName) {
+            this.canvas.addEventListener(eventName, e => this.isPlaying && this.callEvent(eventName, e))
         }
     },
     mounted() {
@@ -248,7 +258,13 @@ export default {
         this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
         this.$store.dispatch('setCanvas', canvas)
         this.$store.dispatch('setEngine', this.engine)
-        this.$store.dispatch('newScene')
+        this.$store.dispatch('openScene', 'static/scenes/spaceShooter.scene')
+
+        canvas.addEventListener('webglcontextlost', function(event) {
+            this.$store.dispatch('saveScene')
+        }, false)
+
+        inputEvents.forEach(this.registerInputEvent)
     },
     beforeDestory() {
     },

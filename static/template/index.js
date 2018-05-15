@@ -199,13 +199,13 @@ class GameObject {
         this.mesh.parent = parent && parent.mesh
     }
 
-    callEvent(eventName) {
+    callEvent(eventName, ...args) {
         const { scripts } = this
         scripts && Object.keys(scripts).map(key => scripts[key])
-            .forEach(script => script[eventName] && script[eventName].bind(this)())
+            .forEach(script => script[eventName] && script[eventName].bind(this)(...args))
 
         const children = this.getChildren()
         if (children)
-            children.forEach(child => this.callEvent.call(child, eventName))
+            children.forEach(child => this.callEvent.call(child, eventName, ...args))
     }
 }

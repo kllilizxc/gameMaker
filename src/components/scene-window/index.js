@@ -12,8 +12,8 @@ export default {
             this.$store.dispatch('setGameObject', obj)
         },
         removeGameObject(obj) {
-            obj.dispose()
             this.$store.dispatch('setGameObject', null)
+            obj.dispose()
             this.$refs.treeView.setTreeData()
         },
         handleDrop({ e, obj }) {

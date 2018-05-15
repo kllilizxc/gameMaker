@@ -22,8 +22,8 @@ export default {
     },
     watch: {
         gameObject: {
-            handler(val) {
-                if (!val) {
+            handler(val, oldVal) {
+                if (!val || val === oldVal) {
                     this.scripts = []
                     return
                 }

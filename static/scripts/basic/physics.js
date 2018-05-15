@@ -38,6 +38,10 @@ actions = {
     applyForce: force => {
         if (!this.physicsImpostor) return
         this.physicsImpostor.applyForce(force, this.getMesh().getAbsolutePosition())
+    },
+    setLinearVelocity: velocity => {
+        if (!this.physicsImpostor) return
+        this.physicsImpostor.setLinearVelocity(velocity)
     }
 }
 

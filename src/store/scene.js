@@ -6,6 +6,7 @@ import AssetManager from '@/common/asset-manager'
 import GameObject from '../classes/gameObject'
 import Script from '../classes/script'
 import { FILE_TYPE } from '@/components/script-field'
+import { getDefaultAssets } from './asset'
 
 const SET_SCENE = 'SET_SCENE'
 const ADD_GAMEOBJECT = 'ADD_GAMEOBJECT'
@@ -93,7 +94,8 @@ export default {
         },
         newScene: ({ rootState, state, dispatch }) => {
             state.scriptsMap = {}
-            rootState.filesMap = {}
+            rootState.asset.filesMap = {}
+            rootState.asset.assets = getDefaultAssets()
             state.gameObjects = []
             state.filename = ''
             return dispatch('setScene', new BABYLON.Scene(state.engine))
@@ -132,6 +134,7 @@ export default {
             if (state.scriptsMap[state.gameObject.id])
                 delete state.scriptsMap[state.gameObject.id][name]
             const { gameObject } = state
+            dispatch('setGameObject', null)
             gameObject.getMesh().dispose()
             removeInArray(state.gameObjects, obj => obj === this)
             state.gameObject = null
@@ -187,7 +190,9 @@ function isParent(child, parent) {
 const getMesh = gameObject => {
     const { mesh, id, name, sort } = gameObject
     return {
-        id, name, sort,
+        id,
+        name,
+        sort,
         className: mesh.getClassName(),
         children: getMeshes(gameObject.getChildren())
     }
