@@ -46,7 +46,6 @@ export default {
                 UndoableAction.redoAction()
             } else if (e.ctrlKey && e.code === 'KeyZ') {
                 // ctrl + z
-                console.log('undo')
                 UndoableAction.undoAction()
             }
         }
