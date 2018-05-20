@@ -24,8 +24,10 @@ export default {
                 if (!dropMesh) return
                 const parentMesh = dropMesh.getMesh().parent
                 UndoableAction.addAction(new UndoableAction(parentMesh && parentMesh.gameObject, obj,
-                    val => this.$store.dispatch('setGameObjectParent', { child: dropMesh, parent: val })
-                        .then(() => this.$refs.treeView.setTreeData())))
+                    val => {
+                        this.game.setGameObjectParent({ child: dropMesh, parent: val })
+                        this.$refs.treeView.setTreeData()
+                    }))
             }
         },
         renderItem(obj) {
@@ -38,7 +40,16 @@ export default {
                               onDelete={this.removeGameObject}/>
         }
     },
-    computed: mapGetters(['gameObject', 'gameObjects', 'scene']),
+    computed: mapGetters(['gameObject', 'game']),
+    data: () => ({ gameObjects: null }),
+    watch: {
+        'game.gameObjects': {
+            handler(val) {
+                this.gameObjects = val
+            },
+            immediate: true
+        }
+    },
     render() {
         const {
             gameObject,

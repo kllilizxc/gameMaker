@@ -30,3 +30,4 @@ export const getIntersects = (theMesh, scene, precise = false) => {
     })
     return intersects
 }
+

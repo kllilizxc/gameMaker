@@ -18,7 +18,7 @@ export default {
         editMode: 0
     }),
     computed: {
-        ...mapGetters(['isPlaying', 'scene', 'filename']),
+        ...mapGetters(['isPlaying', 'game']),
         canvas() { return this.$refs.canvas }
     },
     methods: {
@@ -63,11 +63,11 @@ export default {
             e.preventDefault()
 
             const loadFileObject = fileObject => {
-                loadMesh(fileObject, this.scene)
+                loadMesh(fileObject, this.game.scene)
                     .then(([mesh]) => {
                         this.$store.dispatch('createGameObject', { name: trimFilenameExtension(fileObject.name), script: 'basic/transform', mesh })
                             .then(gameObject => this.$store.dispatch('setGameObject', gameObject))
-                            .then(() => this.$store.dispatch('setScriptValue', { scriptName: '__self__', fieldName: 'model', value: fileObject.name }))
+                            .then(() => this.game.setScriptValue({ scriptName: '__self__', fieldName: 'model', value: fileObject.name }))
                     })
             }
 

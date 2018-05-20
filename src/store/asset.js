@@ -3,6 +3,9 @@ import { stateToGetters, trimFilename, getScriptObject } from '../common/util'
 import AssetManager from '@/common/asset-manager'
 import Script from '../classes/script'
 
+const CLEAR_ASSETS = 'CLEAR_ASSETS'
+const SET_ASSETS = 'SET_ASSETS'
+
 export const getDefaultAssets = () => ({
     models: [],
     textures: [],
@@ -13,16 +16,24 @@ export const getDefaultAssets = () => ({
 type State = {}
 
 const state: State = {
-    assets: getDefaultAssets(),
-    filesMap: {}
+    assets: getDefaultAssets()
 }
 
 export default {
     state,
     getters: stateToGetters(state),
-    mutations: {},
+    mutations: {
+        [CLEAR_ASSETS](state) {
+            state.assets = getDefaultAssets()
+        },
+        [SET_ASSETS](state, assets) {
+            state.assets = assets
+        }
+    },
     actions: {
-        uploadAssets: ({ state, commit }, files) => {
+        clearAssets: ({ commit }) => commit(CLEAR_ASSETS),
+        setAssets: ({ commit }, data) => commit(SET_ASSETS, data),
+        uploadAssets: ({ state, rootState: { scene: { game } }, commit }, files) => {
             const isSingle = !files[0]
             const toReturn = Promise.all((isSingle ? [files] : [...files])
                 .map(file => {
@@ -39,7 +50,7 @@ export default {
                                 const assets = state.assets[type]
                                 if (!assets.find(filename => filename === fileData.name))
                                     assets.push(fileData.name)
-                                state.filesMap[fileData.name] = fileData.data
+                                game.setFileValue(fileData.name, fileData.data)
                             }
 
                             switch (extension) {
@@ -68,8 +79,8 @@ export default {
                 ? toReturn.then(data => data[0])
                 : toReturn
         },
-        editFile({ state: { filesMap }, rootState: { scene: { gameObjects } } }, { file, value }) {
-            filesMap[file] = value
+        editFile({ ootState: { scene: { gameObjects, game } } }, { file, value }) {
+            game.setFileValue('file', value)
             gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])
                     obj.addScript(new Script(getScriptObject(file, value, obj), obj))

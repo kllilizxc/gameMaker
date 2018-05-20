@@ -18,7 +18,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['gameObject', 'isPlaying'])
+        ...mapGetters(['game', 'gameObject', 'isPlaying'])
     },
     watch: {
         gameObject: {
@@ -41,9 +41,9 @@ export default {
         addScript(file) {
             if (file instanceof File) {
                 this.$store.dispatch('uploadAssets', file)
-                    .then((fileData) => this.$store.dispatch('addScript', fileData))
+                    .then(fileData => this.game.addScript(this.gameObject, fileData))
             } else if (file.data) {
-                this.$store.dispatch('addScript', file)
+                this.game.addScript(this.gameObject, file)
             }
         },
         forceRefresh() {
@@ -62,9 +62,9 @@ export default {
         setScriptValue(data) {
             if (this.isPlaying) return
             if (data.groupName)
-                this.$store.dispatch('setGroupScriptValue', data)
+                this.game.setGroupScriptValue(this.gameObject, data)
             else
-                this.$store.dispatch('setScriptValue', data)
+                this.game.setScriptValue(this.gameObject, data)
         },
         deleteScript(name) {
             this.$store.dispatch('removeScript', name)
