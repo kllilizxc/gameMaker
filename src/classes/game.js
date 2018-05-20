@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs'
-import { removeInArray, getScriptObject } from '../common/util'
+import { removeInArray, getScriptObject, debounce } from '../common/util'
 import { FILE_TYPE } from '@/components/script-field'
 import Script from './script'
 import GameObject from './gameObject'
@@ -21,6 +21,7 @@ export default class Game {
     init() {
         this.engine = createEngine(this.canvas)
         this.scene = createScene(this.engine)
+        new ResizeObserver(debounce(() => this.engine.resize(), 1000)).observe(this.canvas)
         this.scene.canvas = this.canvas
         window.scene = this.scene
     }

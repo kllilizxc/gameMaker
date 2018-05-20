@@ -247,11 +247,7 @@ export default {
 
         this.game.setCanvas(canvas)
         this.$store.dispatch('openScene', 'static/scenes/spaceShooter.scene')
-            .then(() => {
-                const { engine } = this.game
-                new ResizeObserver(debounce(() => engine.resize(), 1000)).observe(this.canvas)
-                window.addEventListener('resize', debounce(() => engine.resize(), 100))
-            })
+        window.addEventListener('resize', debounce(() => this.game.engine.resize(), 100))
 
         canvas.addEventListener('webglcontextlost', function (event) {
             this.$store.dispatch('saveScene')
