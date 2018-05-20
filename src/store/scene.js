@@ -9,7 +9,6 @@ const logger = console
 const simpleState = {
     gameObject: null,
     isPlaying: false,
-    currentScript: null,
     game: new Game()
 }
 
