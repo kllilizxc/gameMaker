@@ -1,7 +1,6 @@
 let width = 1, height = 1, depth = 1
 const setGeometry = () => {
     const vertexData = BABYLON.VertexData.CreateBox({ width, height, depth })
-    console.log(this, this.getMesh(), this.getMesh().setVerticesData)
     vertexData.applyToMesh(this.getMesh(), true)
 }
 setGeometry()
