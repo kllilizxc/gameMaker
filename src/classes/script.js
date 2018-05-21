@@ -25,7 +25,7 @@ export default class Script {
         this.sort = sort !== undefined
             ? sort
             : Object.keys(gameObject.scripts)
-            .reduce((max, cur) => Math.max(max, gameObject.scripts[cur].sort), -1) + 1
+                .reduce((max, cur) => Math.max(max, gameObject.scripts[cur].sort), -1) + 1
         registerScript(gameObject.id, script, this.sort)
         this.actions && Object.keys(this.actions).forEach(name => this[name] = this.actions[name])
     }

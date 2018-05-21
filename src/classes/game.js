@@ -125,7 +125,7 @@ export default class Game {
 
     async createGameObject({ name, script, scripts, id, mesh }) {
         if (script) scripts = [script]
-        const gameObject = this.getNewGameObject({ id, name }, this.scene, mesh)
+        const gameObject = this.getNewGameObject({ id, name }, mesh)
         await gameObject.addDefaultScripts(scripts)
         this.addGameObject(gameObject)
         return gameObject
