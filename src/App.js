@@ -18,7 +18,7 @@ window.gm = API
 export default {
     name: 'app',
     computed: {
-        ...mapGetters(['scene', 'gameObject']),
+        ...mapGetters(['game', 'gameObject']),
         windowLabels() {
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
@@ -40,15 +40,13 @@ export default {
                 this.$store.dispatch('duplicateGameObject')
                     .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
             } else if (e.code === 'KeyF') {
-                const { scene, gameObject } = this
-                if (scene && scene.activeCamera && scene.activeCamera.setTarget)
-                    scene.activeCamera.setTarget(gameObject.getMesh().getAbsolutePosition())
+                const { game, gameObject } = this
+                game.setCameraTarget(gameObject)
             } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
                 // ctrl + shift + z
                 UndoableAction.redoAction()
             } else if (e.ctrlKey && e.code === 'KeyZ') {
                 // ctrl + z
-                console.log('undo')
                 UndoableAction.undoAction()
             }
         }

@@ -22,7 +22,7 @@ export default {
                 e.stopPropagation()
                 return false
             }
-            e.dataTransfer.setData('file', JSON.stringify({ name: obj, data: this.filesMap[obj] }))
+            e.dataTransfer.setData('file', JSON.stringify({ name: obj, data: this.game.filesMap[obj] }))
         },
         renderItem(obj) {
             const isChosen = obj === this.chosenObj
@@ -49,7 +49,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['assets', 'filesMap']),
+        ...mapGetters(['assets', 'game']),
         assetsTree() {
             return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))
         }

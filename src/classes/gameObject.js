@@ -4,8 +4,7 @@ import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
 import { loadMesh, getIntersects } from '../common/api'
 
-const sceneStore = store.state.scene
-const assetStore = store.state.asset
+const { game } = store.state.scene
 
 const getDefaultScriptsPath = name => `static/scripts/${name}.js`
 
@@ -20,7 +19,7 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
     else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
     else if (type === FILE_TYPE) {
-        options.value = values && { name: values[name], data: assetStore.filesMap[values[name]] }
+        options.value = values && { name: values[name], data: game.filesMap[values[name]] }
     } else {
         options.value = values && values[name]
         if (options.value === undefined) options.value = get()
@@ -39,10 +38,10 @@ export default class GameObject {
         this.mesh.gameObject = this
         this.scripts = {}
         this.scriptsReadyHandlers = []
-        const scriptsMap = sceneStore.scriptsMap[this.id]
+        const scriptsMap = game.scriptsMap[this.id]
         this.sort = sort !== undefined
             ? sort
-            : sceneStore.gameObjects.reduce((max, cur) => Math.max(max, cur.sort), -1) + 1
+            : game.getMaxGameObjectsSort() + 1
         if (scriptsMap) {
             this.restoreModel(scriptsMap).then(() => {
                 Object.keys(scriptsMap)
@@ -50,7 +49,7 @@ export default class GameObject {
                     .forEach(name => {
                         if (name !== '__self__') {
                             // restore other scripts
-                            const scriptContent = assetStore.filesMap[name]
+                            const scriptContent = game.filesMap[name]
                             const values = scriptsMap[name].values
                             const script = getScriptObject(name, scriptContent, this)
                             const scriptObject = new Script(script, this, scriptsMap[name].sort)
@@ -68,7 +67,7 @@ export default class GameObject {
             // restore model
             const { model } = scriptsMap.__self__.values
             if (model)
-                return loadMesh({ name: model, data: assetStore.filesMap[model] }, sceneStore.scene)
+                return loadMesh({ name: model, data: game.filesMap[model] }, game.scene)
                     .then(([mesh]) => this.setMesh(mesh))
         }
         return Promise.resolve(true)
@@ -76,7 +75,7 @@ export default class GameObject {
 
     clone(name) {
         const id = UUID()
-        sceneStore.scriptsMap[id] = JSON.parse(JSON.stringify(sceneStore.scriptsMap[this.id]))
+        game.cloneScriptsMap(this.id, id)
         this.mesh.gameObject = null
         const clonedMesh = this.mesh.clone()
         this.mesh.gameObject = this
@@ -85,7 +84,7 @@ export default class GameObject {
     }
 
     static findGameObjectById(id) {
-        return sceneStore.scene.getMeshByID(id) && sceneStore.scene.getMeshByID(id).gameObject
+        return game.getGameObjectById(id)
     }
 
     addDefaultScript(name) {
@@ -156,8 +155,7 @@ export default class GameObject {
 
     dispose() {
         this.mesh.dispose()
-        delete sceneStore.scriptsMap[this.id]
-        removeInArray(sceneStore.gameObjects, obj => obj === this)
+        game.disposeGameObject(this)
     }
 
     callEvent(eventName, ...args) {
@@ -171,7 +169,7 @@ export default class GameObject {
     }
 
     getIntersect(precise) {
-        return getIntersects(this.getMesh(), sceneStore.scene, precise)
+        return getIntersects(this.getMesh(), game.scene, precise)
             .map(mesh => mesh.gameObject).filter(g => g)
     }
 }

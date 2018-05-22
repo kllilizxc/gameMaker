@@ -47,7 +47,6 @@ export default {
                 props,
                 on: {
                     input: value => {
-                        console.log(value)
                         this.setFieldValue(field, value)
                     }
                 }

@@ -2,32 +2,30 @@ import * as BABYLON from 'babylonjs'
 import 'babylonjs-loaders'
 import store from '../store'
 
-const sceneStore = store.state.scene
-const assetStore = store.state.asset
+const { game } = store.state.scene
 
-function getScriptObject(script) {
-    const { name, Behavior } = script
-    const events = Behavior(BABYLON, sceneStore.scene)
-    return { name, ...events }
+function getScriptEvents(script) {
+    const { Behavior } = script
+    return Behavior(BABYLON, game.scene)
 }
 
 function registerScript(id, { name, content }, sort) {
-    const { scriptsMap } = sceneStore
-    const { filesMap } = assetStore
+    const { scriptsMap } = game
     scriptsMap[id] = scriptsMap[id] || {}
     // register in filesMap
-    filesMap[name] = content
+    game.setFileValue(name, content)
     scriptsMap[id][name] = scriptsMap[id][name] || { sort, values: {} }
 }
 
 export default class Script {
     constructor(script, gameObject, sort) {
-        const scriptObject = getScriptObject(script)
-        Object.keys(scriptObject).forEach(key => this[key] = scriptObject[key])
+        this.name = script.name
+        const scriptEvents = getScriptEvents(script)
+        Object.keys(scriptEvents).forEach(key => scriptEvents[key] && (this[key] = scriptEvents[key]))
         this.sort = sort !== undefined
             ? sort
             : Object.keys(gameObject.scripts)
-            .reduce((max, cur) => Math.max(max, gameObject.scripts[cur].sort), -1) + 1
+                .reduce((max, cur) => Math.max(max, gameObject.scripts[cur].sort), -1) + 1
         registerScript(gameObject.id, script, this.sort)
         this.actions && Object.keys(this.actions).forEach(name => this[name] = this.actions[name])
     }

@@ -34,7 +34,7 @@ export default {
             immediateReleaseWindow
         } = this
 
-        return <div class={styles.window}>
+        return <div class={styles.window} ref='root'>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>
                 {title && <Draggable class={styles.draggable}

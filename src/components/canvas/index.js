@@ -3,14 +3,12 @@ import * as BABYLON from 'babylonjs'
 import styles from './style.css'
 import EditControl
     from 'exports-loader?org.ssatguru.babylonjs.component.EditControl!imports-loader?BABYLON=babylonjs!babylonjs-editcontrol/dist/EditControl'
-import { inputEvents } from '../../common/util'
+import { inputEvents, debounce } from '../../common/util'
 import UndoableAction from '../../classes/undoableAction'
 
 export default {
     name: 'draw-canvas',
     data: () => ({
-        engine: null,
-        camera: null,
         pickedMesh: null,
         editControl: null,
         innerMeshes: null,
@@ -18,32 +16,28 @@ export default {
         t: -1
     }),
     computed: {
-        ...mapGetters(['scene', 'gameObjects', 'isPlaying', 'gameObject']),
+        ...mapGetters(['game', 'isPlaying', 'gameObject']),
         canvas() {
             return this.$refs.canvas
         }
     },
     watch: {
-        scene(scene) {
+        'game.scene'(scene) {
             if (!scene) return
             window.scene = scene
-            const { engine, render, canvas } = this
+            const { game: { engine }, render, canvas } = this
 
             scene.clearColor = new BABYLON.Color4(0.41, 0.44, 0.42, 0.6)
 
             if (!scene.activeCamera) {
-                this.camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
-                this.camera.setTarget(BABYLON.Vector3.Zero())
-                this.camera.attachControl(canvas, true)
-                scene.activeCamera = this.camera
-            } else {
-                this.camera = scene.activeCamera
+                const camera = new BABYLON.UniversalCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene)
+                camera.setTarget(BABYLON.Vector3.Zero())
+                camera.attachControl(canvas, true)
+                scene.activeCamera = camera
             }
 
             // environment
             scene.ambientColor = new BABYLON.Color3(0.51, 0.51, 0.51)
-
-            this.initScene()
 
             scene.collisionsEnabled = true
             scene.enablePhysics(null, new BABYLON.CannonJSPlugin())
@@ -52,7 +46,7 @@ export default {
                 if (this.isPlaying) return this.callEvent('pointerdown')
                 if (this.editControl && this.editControl.isPointerOver()) return
                 const pickResult = scene.pick(scene.pointerX, scene.pointerY)
-                let pickedGameObject = pickResult.hit && pickResult.pickedMesh && this.scene.getMeshByID(pickResult.pickedMesh.id)
+                let pickedGameObject = pickResult.hit && pickResult.pickedMesh && this.game.scene.getMeshByID(pickResult.pickedMesh.id)
                 if (pickedGameObject) pickedGameObject = pickedGameObject.gameObject
                 if (pickedGameObject) {
                     this.pickedMesh = pickResult.pickedMesh
@@ -68,7 +62,7 @@ export default {
             engine.runRenderLoop(render)
         },
         isPlaying(val) {
-            const { init, scene } = this
+            const { init, game: { scene } } = this
             this.detachEditControl()
             if (val) {
                 if (this.gameObject) this.gameObject.getMesh().showBoundingBox = false
@@ -96,14 +90,14 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['addGameObject', 'setGameObject', 'addScript', 'createGameObject', 'restoreScene']),
+        ...mapActions(['setGameObject', 'createGameObject', 'restoreScene']),
         attachEditControl(mesh) {
             if (this.isPlaying || !(mesh.position && mesh.rotation && mesh.scaling)) {
                 this.editControl && this.editControl.hide()
                 return
             }
             if (!this.editControl) {
-                this.editControl = new EditControl(mesh, this.camera, this.canvas, 1, true)
+                this.editControl = new EditControl(mesh, this.game.scene.activeCamera, this.canvas, 1, true)
                 this.editControl.enableTranslation()
                 this.editControl.addActionStartListener(actionType => {
                     const { position, rotation, scaling } = this.gameObject.getMesh()
@@ -134,14 +128,13 @@ export default {
         },
         setScriptValues(type, value) {
             ['x', 'y', 'z'].forEach(field => {
-                this.$store.dispatch('setGroupScriptValue',
-                    {
-                        scriptName: 'transform.js',
-                        groupName: type,
-                        fieldName: field,
-                        value: value[field],
-                        type: 'NUMBER'
-                    })
+                this.game.setGroupScriptValue(this.gameObject, {
+                    scriptName: 'transform.js',
+                    groupName: type,
+                    fieldName: field,
+                    value: value[field],
+                    type: 'NUMBER'
+                })
                 this.gameObject.getMesh()[type][field] = value[field]
             })
         },
@@ -149,11 +142,9 @@ export default {
             this.editControl && this.editControl.detach()
             this.editControl = null
         },
-        initScene() {
-        },
         dispose() {
             this.detachEditControl()
-            this.scene.dispose()
+            this.game.scene.dispose()
         },
         enableTranslation() {
             const { editControl } = this
@@ -233,14 +224,13 @@ export default {
             this.callEvent('lateUpdate')
         },
         callEvent(eventName, ...args) {
-            this.gameObjects.forEach(gameObject => gameObject.callEvent(eventName, ...args))
+            this.game.gameObjects.forEach(gameObject => gameObject.callEvent(eventName, ...args))
         },
         render() {
             const {
-                scene, engine, editControl, canvas, isPlaying
+                game: { scene }, editControl, canvas, isPlaying
             } = this
 
-            engine.resize() // TODO move out of render loop
             if (isPlaying || (editControl && editControl.isEditing()))
                 scene.activeCamera && scene.activeCamera.detachControl(canvas)
             else
@@ -255,12 +245,12 @@ export default {
     mounted() {
         const { canvas } = this
 
-        this.engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true })
-        this.$store.dispatch('setCanvas', canvas)
-        this.$store.dispatch('setEngine', this.engine)
+        this.game.setCanvas(canvas)
         this.$store.dispatch('openScene', 'static/scenes/spaceShooter.scene')
+        // this.$store.dispatch('newScene')
+        window.addEventListener('resize', debounce(() => this.game.engine.resize(), 100))
 
-        canvas.addEventListener('webglcontextlost', function(event) {
+        canvas.addEventListener('webglcontextlost', function (event) {
             this.$store.dispatch('saveScene')
         }, false)
 
@@ -269,6 +259,6 @@ export default {
     beforeDestory() {
     },
     render() {
-        return <canvas class={styles.canvas} ref="canvas"/>
+        return <canvas class={styles.canvas} ref="canvas" />
     }
 }

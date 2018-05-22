@@ -2,7 +2,7 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'file-dropper',
-    computed: mapGetters(['scene']),
+    computed: mapGetters(['game']),
     methods: {
         dropHandler(e) {
             e.stopPropagation()
@@ -13,8 +13,8 @@ export default {
             if (file) this.$emit('fileDrop', JSON.parse(file))
 
             const gameObjectId = dataTransfer.getData('gameObject')
-            const mesh = this.scene.getMeshByID(gameObjectId)
-            if (gameObjectId && mesh) this.$emit('gameObjectDrop', mesh.gameObject)
+            const gameObject = this.game.getGameObjectById(gameObjectId)
+            if (gameObjectId && gameObject) this.$emit('gameObjectDrop', gameObject)
 
             if (dataTransfer.items) {
                 for (let i = 0; i < dataTransfer.items.length; ++i) {

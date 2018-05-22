@@ -12,12 +12,13 @@ export default {
     }),
     watch: {
         currentScript(val) {
-            if (!val || !this.filesMap[val]) this.editor.setValue('')
-            else this.editor.setValue(this.filesMap[val])
+            const { filesMap } = this.game
+            if (!val || !filesMap[val]) this.editor.setValue('')
+            else this.editor.setValue(filesMap[val])
         }
     },
     computed: {
-        ...mapGetters(['currentScript', 'filesMap'])
+        ...mapGetters(['currentScript', 'game'])
     },
     mounted() {
         this.editor = ace.edit('editorCotainer')
