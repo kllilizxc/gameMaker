@@ -1,0 +1,22 @@
+@value Red-500 from 'Common/colors.css';
+
+.animationEditor {
+    display: flex;
+}
+
+.recording {
+    color: Red-500;
+}
+
+.toolBar {
+    display: flex;
+}
+
+.leftPanel {
+    max-width: 400px;
+    width: 40%;
+}
+
+.rightPanel {
+    flex-grow: 1;
+}
