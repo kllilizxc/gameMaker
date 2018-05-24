@@ -1,12 +1,14 @@
-@value Red-400, Black-Icons, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
+@value Red-300, Black-Icons, Black-HintText, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
 
 .animationEditor {
     display: flex;
     height: 100%;
+    overflow: hidden;
 }
 
 .toolBar {
     border-bottom: 1px solid Grey-400;
+    height: 48px;
 }
 
 .toolBar :global(.mu-icon){
@@ -14,7 +16,7 @@
 }
 
 .recording :global(.mu-icon){
-    color: Red-400;
+    color: Red-300;
 }
 
 .leftPanel {
@@ -36,4 +38,62 @@
 
 .fields {
     font-size: 16px;
+}
+
+.fieldItem {
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fieldItem:nth-child(2n+1) {
+    background: Grey-200;
+}
+
+.timeline {
+    height: 48px;
+    border-bottom: 1px solid Grey-400;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.keyContainer, .keyContainer svg, .timeline svg {
+    width: 100%;
+    height: 100%;
+}
+
+.bigLine {
+    stroke-width: 1;
+    stroke: Black-Icons;
+}
+
+.hintLine {
+    stroke: Black-HintText;
+    stroke-width: 0.5;
+}
+
+.hint {
+    padding: 16px;
+}
+
+.frameRect {
+    fill: Black-Icons;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.frameRect:hover:not(.setFrame) {
+    opacity: 0.4;
+}
+
+.setFrame {
+    opacity: 1;
+    cursor: move;
+}
+
+.chosenFrame {
+    fill: Red-300;
 }

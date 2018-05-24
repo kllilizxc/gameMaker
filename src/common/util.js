@@ -63,7 +63,7 @@ const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
     AssetManager.readLocalFile(file).then(content =>
         getScriptObject(typeof file === 'string'
-            ? trimFilename(file)
+            ? trimFilenameExtension(file)
             : file.name, content, gameObject))
 
 export const getScriptObject = (name, content, gameObject) => ({

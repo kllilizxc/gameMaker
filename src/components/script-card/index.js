@@ -1,7 +1,7 @@
 import styles from './style.css'
 import ScriptField from '../script-field'
 import Card from '@/ui/card'
-import { camelToWords, trimFilenameExtension } from '../../common/util'
+import { camelToWords } from '../../common/util'
 import DropDown from '@/ui/drop-down'
 import IconButton from '@/ui/material-icon-button'
 
@@ -11,7 +11,7 @@ export default {
         return <Card class={styles.scriptCard}>
             <DropDown initFold={false} canFold={!!fields}>
                 <div class={styles.title} slot='title'>
-                    <div>{camelToWords(trimFilenameExtension(name))}</div>
+                    <div>{camelToWords(name)}</div>
                     <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
                                 onClick={() => listeners.delete(name)}/>
                 </div>

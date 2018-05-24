@@ -63,11 +63,12 @@ export default {
         },
         toggleItem(obj, fold) {
             this.chosenObj = obj
+            obj.fold = fold
             if (!fold && obj.haveChildren)
                 obj.children = this.getItemDataFromPropData(this.getChildrenFunction(obj.raw))
         },
         renderItem(obj, parent) {
-            return <div class={styles.itemContainer} key={this.getIdFunction(obj.raw)}>
+            return <div class={styles.itemContainer} key={this.getIdFunction(obj.raw)} ref='item' refInFor>
                 <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren}
                           onInput={fold => this.toggleItem(obj, fold)}>
                     <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
