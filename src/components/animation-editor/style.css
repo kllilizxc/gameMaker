@@ -100,5 +100,15 @@
 
 .indicator {
     stroke: Purple-200;
-    stroke-width: 4;
+    stroke-width: 3;
+    opacity: 0.8;
+}
+
+.indicator:hover {
+    stroke-width: 6;
+    opacity: 1;
+}
+
+.numberText {
+    user-select: none;
 }

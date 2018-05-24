@@ -31,16 +31,12 @@
                 <svg>
                     <g v-for="i in duration" :transform="`translate(${i * bigNumberLength}, 0)`" :key="i">
                         <line :class="$style.bigLine" x1="0" y1="0" x2="0" y2="20"/>
-                        <text transform="translate(0, 40)">{{i}}</text>
+                        <text :class="$style.numberText" transform="translate(0, 40)">{{i}}</text>
                         <g :transform="`translate(${-bigNumberLength}, 0)`">
                             <line :class="$style.bigLine" v-for="j in 1/interval-1" :key="j"
                                   x1="0" y1="0" x2="0" y2="10"
                                   :transform="`translate(${j * smallNumberLength}, 0)`"/>
                         </g>
-                    </g>
-                    <g>
-                        <line ref="indicator" :x1="chosenX * smallNumberLength" :x2="chosenX * smallNumberLength"
-                              y1="0" y2="48" :class="[$style.setFrame, $style.indicator]"/>
                     </g>
                 </svg>
             </div>
