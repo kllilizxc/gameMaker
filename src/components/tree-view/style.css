@@ -6,11 +6,13 @@
     color: Black-Text;
 }
 
-.itemContainer:nth-child(2n) {
+.treeView > .itemContainer:nth-child(2n+1) {
     background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
 }
 
 .children {
+    margin-left: 16px;
 }
 
 .treeView {

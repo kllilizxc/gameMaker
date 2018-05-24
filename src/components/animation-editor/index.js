@@ -19,7 +19,7 @@ export default {
             if (!this.gameObject) return []
             const { scripts } = this.gameObject
             return Object.keys(scripts).map(name => { // scripts
-                const fields = scripts[name]
+                const { fields } = scripts[name]
                 const fieldsArray = Object.keys(fields).map(fieldName => { // fields
                     const field = fields[fieldName]
                     if (field.type === GROUP_TYPE)
@@ -61,7 +61,6 @@ export default {
                 </div>
                 <TreeView class={styles.fields}
                           data={fieldsData}
-                          indent={0}
                           getIdFunction={i => i.name}
                           haveChildrenFunction={i => i.children && i.children.length > 0}
                           getChildrenFunction={i => i.children}

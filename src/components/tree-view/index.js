@@ -25,11 +25,7 @@ export default {
             type: Boolean,
             default: true
         },
-        selected: Object,
-        indent: {
-            type: Number,
-            default: 16
-        }
+        selected: Object
     },
     data: () => ({
         treeData: [],
@@ -75,7 +71,7 @@ export default {
                 <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren}
                           onInput={fold => this.toggleItem(obj, fold)}>
                     <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
-                    <div class={styles.children} slot='content' style={{ paddingLeft: `${this.indent}px` }}>
+                    <div class={styles.children} slot='content'>
                         {this.renderItemList(obj.children, obj)}
                     </div>
                 </DropDown>
