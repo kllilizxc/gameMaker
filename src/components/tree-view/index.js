@@ -25,7 +25,11 @@ export default {
             type: Boolean,
             default: true
         },
-        selected: Object
+        selected: Object,
+        indent: {
+            type: Number,
+            default: 16
+        }
     },
     data: () => ({
         treeData: [],
@@ -67,12 +71,11 @@ export default {
                 obj.children = this.getItemDataFromPropData(this.getChildrenFunction(obj.raw))
         },
         renderItem(obj, parent) {
-            const INDENT_LENGTH = 16
-            return <div key={this.getIdFunction(obj.raw)}>
+            return <div class={styles.itemContainer} key={this.getIdFunction(obj.raw)}>
                 <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren}
                           onInput={fold => this.toggleItem(obj, fold)}>
                     <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
-                    <div class={styles.children} slot='content' style={{ marginLeft: `${INDENT_LENGTH}px` }}>
+                    <div class={styles.children} slot='content' style={{ paddingLeft: `${this.indent}px` }}>
                         {this.renderItemList(obj.children, obj)}
                     </div>
                 </DropDown>
@@ -91,7 +94,7 @@ export default {
         return <div class={styles.treeView}>
             {treeData.length > 0
                 ? renderItemList(treeData)
-                : <div>Nothing Found</div>}
+                : <div class={styles.hint}>Nothing Found</div>}
         </div>
     }
 }

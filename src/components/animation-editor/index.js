@@ -1,5 +1,5 @@
 import styles from './style.css'
-import Icon from '@/ui/icon'
+import Icon from '@/ui/material-icon-button'
 import TreeView from '@/components/tree-view'
 import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
@@ -50,17 +50,18 @@ export default {
         }
     },
     render() {
-        const { isRecording, togglePlaying, toggleRecording, fieldsData } = this
+        const { isRecording, isPlaying, togglePlaying, toggleRecording, fieldsData } = this
 
         return <div class={styles.animationEditor}>
             <div class={styles.leftPanel}>
                 <div class={styles.toolBar}>
-                    <Icon icon='fiber_manual_record' size={24} className={[styles.toolIcon, { [styles.recording]: isRecording }]}
+                    <Icon icon='fiber_manual_record' size={24} class={[styles.toolIcon, { [styles.recording]: isRecording }]}
                           onClick={toggleRecording}/>
-                    <Icon icon='play_arrow' size={24} className={styles.toolIcon} onClick={togglePlaying}/>
+                    <Icon icon={isPlaying ? 'pause' : 'play_arrow'} size={24} class={styles.toolIcon} onClick={togglePlaying}/>
                 </div>
                 <TreeView class={styles.fields}
                           data={fieldsData}
+                          indent={0}
                           getIdFunction={i => i.name}
                           haveChildrenFunction={i => i.children && i.children.length > 0}
                           getChildrenFunction={i => i.children}

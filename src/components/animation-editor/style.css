@@ -1,26 +1,39 @@
-@value Red-500 from 'Common/colors.css';
+@value Red-400, Black-Icons, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
 
 .animationEditor {
     display: flex;
-}
-
-.recording {
-    color: Red-500;
+    height: 100%;
 }
 
 .toolBar {
-    display: flex;
+    border-bottom: 1px solid Grey-400;
+}
+
+.toolBar :global(.mu-icon){
+    color: Black-Icons;
+}
+
+.recording :global(.mu-icon){
+    color: Red-400;
 }
 
 .leftPanel {
+    min-width: 168px;
     max-width: 400px;
-    width: 40%;
+    width: 25%;
+    background: Grey-300;
+    border-right: 1px solid Grey-400;
 }
 
 .rightPanel {
     flex-grow: 1;
+    background: Grey-200;
 }
 
 .toolIcon {
     cursor: pointer;
+}
+
+.fields {
+    font-size: 16px;
 }

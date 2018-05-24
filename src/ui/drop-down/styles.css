@@ -9,6 +9,7 @@
 .title {
     height: 48px;
     line-height: 48px;
+    padding-left: 16px;
 }
 
 .unFold :global(.mu-icon) {
