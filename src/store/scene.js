@@ -2,19 +2,19 @@ import {
     stateToActions, stateToGetters, stateToMutations
 } from '../common/util'
 import AssetManager from '@/common/asset-manager'
-import Game from '../classes/game';
+import Game from '../classes/game'
 
 const logger = console
 
 const simpleState = {
     gameObject: null,
     isPlaying: false,
-    game: new Game()
+    game: new Game(),
+    currentScript: null
 }
 
 const state = {
-    rawGameObjects: {},
-    filename: null
+    rawGameObjects: {}
 }
 
 export default {
