@@ -36,6 +36,7 @@ export default {
 
         return <div class={styles.window} ref='root'>
             <Card class={styles.container}
+                  roundCorner={false}
                   style={{ backgroundColor: color }}>
                 {title && <Draggable class={styles.draggable}
                                      touchStart={handleTouchStart}
