@@ -1,5 +1,5 @@
 import styles from './style.css'
-import IconButton from '@/ui/material-icon-button'
+import Icon from '@/ui/icon'
 import TreeView from '@/components/tree-view'
 import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
@@ -16,7 +16,8 @@ export default {
     computed: {
         ...mapGetters(['gameObject']),
         fieldsData() {
-            const { scripts } = this.gameObjects
+            if (!this.gameObject) return []
+            const { scripts } = this.gameObject
             return Object.keys(scripts).map(name => { // scripts
                 const fields = scripts[name]
                 const fieldsArray = Object.keys(fields).map(fieldName => { // fields
@@ -49,19 +50,19 @@ export default {
         }
     },
     render() {
-        const { isRcording, togglePlaying, toggleRecording, fieldsData } = this
+        const { isRecording, togglePlaying, toggleRecording, fieldsData } = this
 
         return <div class={styles.animationEditor}>
             <div class={styles.leftPanel}>
                 <div class={styles.toolBar}>
-                    <IconButton icon='fiber_manual_record' size={24} class={{ [styles.recording]: isRcording }}
-                                onClick={toggleRecording}/>
-                    <IconButton icon='play_arrow' size={24} onClick={togglePlaying}/>
+                    <Icon icon='fiber_manual_record' size={24} className={[styles.toolIcon, { [styles.recording]: isRecording }]}
+                          onClick={toggleRecording}/>
+                    <Icon icon='play_arrow' size={24} className={styles.toolIcon} onClick={togglePlaying}/>
                 </div>
                 <TreeView class={styles.fields}
                           data={fieldsData}
                           getIdFunction={i => i.name}
-                          haveChildrenFunction={i => i.children}
+                          haveChildrenFunction={i => i.children && i.children.length > 0}
                           getChildrenFunction={i => i.children}
                           renderItemFunction={i => i.name}/>
             </div>
