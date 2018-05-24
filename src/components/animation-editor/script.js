@@ -20,6 +20,7 @@ export default {
         addMenuTrigger: null,
         addMenuIsOpen: false,
         chosenFrame: { x: -1, y: -1 },
+        chosenX: 0,
         keyArray: []
     }),
     computed: {
@@ -113,7 +114,7 @@ export default {
         },
         setOrChoseFrame(x, y) {
             if (this.frameIsSet(x, y)) {
-               // chose frame
+                // chose frame
                 this.setChosenFrame(x, y)
             } else {
                 // set frame
@@ -136,19 +137,26 @@ export default {
             const newTimestamp = this.getTimestampOfFrame(newX)
             const key = this.keys[keyName]
             const value = key[timestamp]
-            console.log(key, timestamp, newTimestamp, value)
             delete key[timestamp]
             key[newTimestamp] = value
-            console.log(key)
             this.$forceUpdate()
         },
+        isChosenX(x) {
+            return x === this.chosenX
+        },
+        choseX(x) {
+            this.chosenX = x
+            this.$refs.indicator.setAttributeNS(null, 'x1', x)
+            this.$refs.indicator.setAttributeNS(null, 'x2', x)
+        },
         makeDraggable(svg) {
-            let selectedElement
+            let selectedElement, lastX
             svg.addEventListener('mousedown', startDrag)
+            svg.addEventListener('mousemove', drag)
             svg.addEventListener('mouseup', endDrag)
             svg.addEventListener('mouseleave', endDrag)
 
-            const { moveFrame, smallNumberLength } = this
+            const { moveFrame, smallNumberLength, choseX } = this
 
             function getMousePosition(e) {
                 const CTM = svg.getScreenCTM()
@@ -157,22 +165,29 @@ export default {
 
             function startDrag(e) {
                 selectedElement = e.target
-                console.log(selectedElement, styles.setFrame)
                 if (!selectedElement.classList.contains(styles.setFrame))
                     selectedElement = null
             }
 
-            function endDrag(e) {
+            function drag(e) {
                 if (selectedElement) {
                     e.preventDefault()
                     const pos = getMousePosition(e)
                     const newX = Math.round(pos / smallNumberLength)
-                    const { x, y } = selectedElement.dataset
+                    let { x, y } = selectedElement.dataset
+                    x = lastX === undefined ? x : lastX
                     if (+x !== newX) {
-                        moveFrame(+x, +y, newX)
+                        if (selectedElement.classList.contains(styles.indicator))
+                            choseX(newX)
+                        else
+                            moveFrame(+x, +y, newX)
+                        lastX = newX
                     }
-                    selectedElement = null
                 }
+            }
+
+            function endDrag() {
+                selectedElement = null
             }
         }
     }

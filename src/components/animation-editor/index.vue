@@ -38,6 +38,10 @@
                                   :transform="`translate(${j * smallNumberLength}, 0)`"/>
                         </g>
                     </g>
+                    <g>
+                        <line ref="indicator" :x1="chosenX * smallNumberLength" :x2="chosenX * smallNumberLength"
+                              y1="0" y2="48" :class="[$style.setFrame, $style.indicator]"/>
+                    </g>
                 </svg>
             </div>
             <div :class="$style.keyContainer">
@@ -63,6 +67,10 @@
                                   @click="() => setOrChoseFrame(x, y)" @dblclick="() => removeFrame(x, y)"
                                   :transform="`translate(${x * smallNumberLength}, ${(y - .5) * 48 - 5}) rotate(45)`"/>
                         </g>
+                    </g>
+                    <g>
+                        <line ref="indicator" :x1="chosenX * smallNumberLength" :x2="chosenX * smallNumberLength"
+                              y1="0" y2="1000" :class="[$style.setFrame, $style.indicator]"/>
                     </g>
                 </svg>
             </div>

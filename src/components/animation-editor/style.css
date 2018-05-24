@@ -1,4 +1,4 @@
-@value Red-300, Black-Icons, Black-HintText, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
+@value Red-300, Purple-200, Black-Icons, Black-HintText, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
 
 .animationEditor {
     display: flex;
@@ -96,4 +96,9 @@
 
 .chosenFrame {
     fill: Red-300;
+}
+
+.indicator {
+    stroke: Purple-200;
+    stroke-width: 4;
 }
