@@ -7,20 +7,27 @@ import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
 import styles from './style.css'
 
+const INIT_BIG_NUMBER_LENGTH = 100
+const INIT_SMALL_NUMBER_STEPS_NUM = 5
+const INIT_SMALL_NUMBER_LENGTH = INIT_BIG_NUMBER_LENGTH / INIT_SMALL_NUMBER_STEPS_NUM
+const MIN_BIG_NUMBER_STEP = 1
+
 export default {
     name: 'animation-editor',
     components: { IconButton, TreeView, Menu, MenuItem, Popover },
     data: () => ({
-        duration: 5,
-        interval: 0.2,
-        bigNumberLength: 100,
+        duration: 40,
+        smallStepsNum: INIT_SMALL_NUMBER_STEPS_NUM,
+        bigNumberLength: INIT_BIG_NUMBER_LENGTH,
+        bigNumberStep: MIN_BIG_NUMBER_STEP,
         keys: {},
         isRecording: false,
         isPlaying: false,
         addMenuTrigger: null,
         addMenuIsOpen: false,
-        chosenFrame: { x: -1, y: -1 },
-        chosenX: 0,
+        chosenFrame: -1,
+        indicatorTimestamp: 0,
+        showInsideLines: false,
         keyArray: []
     }),
     computed: {
@@ -47,19 +54,55 @@ export default {
             }).filter(f => f.children)
         },
         smallNumberLength() {
-            return this.bigNumberLength / (1 / this.interval)
+            return this.bigNumberLength / this.smallStepsNum
         },
         totalNumberLength() {
-            return this.duration * 1 / this.interval
+            return this.duration * this.smallStepsNum
+        },
+        scrollConstant() {
+            return Math.log(this.smallNumberLength / INIT_SMALL_NUMBER_LENGTH) / Math.log(INIT_SMALL_NUMBER_STEPS_NUM)
+        },
+        canBeSmaller() {
+            return this.bigNumberStep > MIN_BIG_NUMBER_STEP
+        },
+        indicatorPos() {
+            return this.getPosByTimestamp(this.indicatorTimestamp)
         }
     },
     created() {
     },
     mounted() {
         this.addMenuTrigger = this.$refs.addButton.$el
-        this.makeDraggable(this.$refs.svg)
+        this.makeDraggable()
+        this.$refs.timeline.addEventListener('wheel', this.scrollOnTimeline)
     },
     methods: {
+        scrollOnTimeline(e) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            this.bigNumberLength = Math.max(this.bigNumberLength + Math.floor(e.deltaY / 10), INIT_SMALL_NUMBER_LENGTH)
+
+            if (this.bigNumberLength <= INIT_BIG_NUMBER_LENGTH / 4)
+                this.showInsideLines = false
+            else if (this.bigNumberStep > 1 && this.bigNumberLength > INIT_BIG_NUMBER_LENGTH / 4)
+                this.showInsideLines = true
+
+            if (this.bigNumberLength === INIT_SMALL_NUMBER_LENGTH) {
+                this.bigNumberLength = INIT_BIG_NUMBER_LENGTH
+                this.bigNumberStep *= this.smallStepsNum
+            } else if (this.canBeSmaller && this.smallNumberLength >= INIT_BIG_NUMBER_LENGTH) {
+                this.bigNumberLength = INIT_BIG_NUMBER_LENGTH
+                this.bigNumberStep /= this.smallStepsNum
+            }
+        },
+        secondToTime(sec) {
+            sec = Math.floor(sec)
+            const minutes = Math.floor(sec / 60)
+            let seconds = sec % 60
+            if (seconds < 10) seconds = `0${seconds}`
+            return `${minutes}:${seconds}`
+        },
         toggleRecording() {
             this.isRecording = !this.isRecording
         },
@@ -95,93 +138,80 @@ export default {
             this.keys[name][timestamp] = value
             this.$forceUpdate()
         },
-        getTimestampOfFrame(x) {
-            return parseInt((x - 1) * this.interval * 1000)
+        getPosByTimestamp(timestamp) {
+            return timestamp / 1000 * this.bigNumberLength / this.bigNumberStep
+        },
+        getTimestampFromPos(pos) {
+            return Math.floor(pos * this.bigNumberStep / this.bigNumberLength * 1000)
         },
         getKeyNameOfFrame(y) {
-            return this.keyArray[y - 1]
+            return this.keyArray[y]
         },
-        frameIsSet(x, y) {
-            const key = this.keys[this.getKeyNameOfFrame(y)]
-            return key && key[this.getTimestampOfFrame(x)] !== undefined
+        frameIsChosen(timestamp) {
+            return this.chosenFrame === timestamp
         },
-        frameIsChosen(x, y) {
-            return this.chosenFrame.x === x && this.chosenFrame.y === y
+        setChosenFrame(timestamp = -1) {
+            this.chosenFrame = timestamp
         },
-        setChosenFrame(x = -1, y = -1) {
-            this.chosenFrame.x = x
-            this.chosenFrame.y = y
-        },
-        setOrChoseFrame(x, y) {
-            if (this.frameIsSet(x, y)) {
-                // chose frame
-                this.setChosenFrame(x, y)
-            } else {
-                // set frame
-                const keyName = this.getKeyNameOfFrame(y)
-                const timestamp = this.getTimestampOfFrame(x)
-                const value = this.getKeyValue(keyName)
-                this.addFrame(keyName, timestamp, value)
-            }
-        },
-        removeFrame(x, y) {
+        removeFrame(timestamp, y) {
             const keyName = this.getKeyNameOfFrame(y)
-            const timestamp = this.getTimestampOfFrame(x)
             delete this.keys[keyName][timestamp]
             this.setChosenFrame()
             this.$forceUpdate()
         },
-        moveFrame(x, y, newX) {
+        moveFrame(timestamp, y, newTimestamp) {
             const keyName = this.getKeyNameOfFrame(y)
-            const timestamp = this.getTimestampOfFrame(x)
-            const newTimestamp = this.getTimestampOfFrame(newX)
             const key = this.keys[keyName]
             const value = key[timestamp]
             delete key[timestamp]
             key[newTimestamp] = value
             this.$forceUpdate()
         },
-        isChosenX(x) {
-            return x === this.chosenX
+        setIndicator(timestamp) {
+            this.indicatorTimestamp = timestamp
         },
-        choseX(x) {
-            this.chosenX = x
-            this.$refs.indicator.setAttributeNS(null, 'x1', x)
-            this.$refs.indicator.setAttributeNS(null, 'x2', x)
+        addFrameInMousePos(e) {
+            const pos = this.getMousePosition(e)
+            const timestamp = this.getTimestampFromPos(Math.round(pos.x / this.smallNumberLength) * this.smallNumberLength)
+            const keyName = this.getKeyNameOfFrame(Math.floor(pos.y / 48))
+            const keyValue = this.getKeyValue(keyName)
+            this.addFrame(keyName, timestamp, keyValue)
         },
-        makeDraggable(svg) {
-            let selectedElement, lastX
+        getMousePosition(e) {
+            const { svg } = this.$refs
+            const CTM = svg.getScreenCTM()
+            return {
+                x: (e.clientX - CTM.e) / CTM.a,
+                y: (e.clientY - CTM.f) / CTM.d
+            }
+        },
+        makeDraggable() {
+            const { svg } = this.$refs
+            let selectedElement
             svg.addEventListener('mousedown', startDrag)
             svg.addEventListener('mousemove', drag)
             svg.addEventListener('mouseup', endDrag)
             svg.addEventListener('mouseleave', endDrag)
 
-            const { moveFrame, smallNumberLength, choseX } = this
-
-            function getMousePosition(e) {
-                const CTM = svg.getScreenCTM()
-                return (e.clientX - CTM.e) / CTM.a
-            }
+            const { moveFrame, getMousePosition, getTimestampFromPos, smallNumberLength, setIndicator } = this
 
             function startDrag(e) {
                 selectedElement = e.target
-                if (!selectedElement.classList.contains(styles.setFrame))
+                if (!selectedElement.classList.contains(styles.draggable))
                     selectedElement = null
             }
 
             function drag(e) {
                 if (selectedElement) {
                     e.preventDefault()
-                    const pos = getMousePosition(e)
-                    const newX = Math.round(pos / smallNumberLength)
-                    let { x, y } = selectedElement.dataset
-                    x = lastX === undefined ? x : lastX
-                    if (+x !== newX) {
+                    const newX = Math.round(getMousePosition(e).x / smallNumberLength) * smallNumberLength
+                    const newTimestamp = getTimestampFromPos(newX)
+                    const { timestamp, y } = selectedElement.dataset
+                    if (timestamp !== newTimestamp) {
                         if (selectedElement.classList.contains(styles.indicator))
-                            choseX(newX)
+                            setIndicator(newTimestamp)
                         else
-                            moveFrame(+x, +y, newX)
-                        lastX = newX
+                            moveFrame(timestamp, +y, newTimestamp)
                     }
                 }
             }
