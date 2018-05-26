@@ -9,6 +9,9 @@
 .toolBar {
     border-bottom: 1px solid Grey-400;
     height: 48px;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .toolBar :global(.mu-icon){

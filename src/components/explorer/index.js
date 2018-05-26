@@ -4,17 +4,34 @@ import AssetManager from '@/common/asset-manager'
 import Icon from '@/ui/icon'
 import FileDropper from '@/ui/file-dropper'
 import { mapGetters } from 'vuex'
+import TextField from '@/ui/text-field'
+import IconButton from '@/ui/material-icon-button'
 
 export default {
     name: 'explorer',
     data: () => ({
         isDragOver: false,
-        chosenObj: null
+        chosenObj: null,
+        editingObj: null,
+        updateAssets: false,
+        editValue: null
     }),
     methods: {
         setChosenItem(obj) {
             this.chosenObj = obj
-            this.$store.dispatch('setCurrentScript', obj.name || obj)
+            this.$store.dispatch('setCurrentFile', obj.name || obj)
+        },
+        forceUpdateAssets() {
+            this.updateAssets = !this.updateAssets
+        },
+        toggleEditMode(obj) {
+            if (this.editingObj === obj) {
+                this.editFileName(this.editValue || obj.name || obj)
+                this.editValue = null
+                this.editingObj = null
+                this.forceUpdateAssets()
+            } else
+                this.editingObj = obj
         },
         handleDragStart(e, obj) {
             if (obj.assets !== undefined) {
@@ -24,13 +41,34 @@ export default {
             }
             e.dataTransfer.setData('file', JSON.stringify({ name: obj, data: this.game.filesMap[obj] }))
         },
+        editFileName(value) {
+            const { editingObj } = this
+            const oldName = editingObj.name || editingObj
+            this.$store.dispatch('editAssetName', { oldName, name: value })
+        },
+        handleKeydown(e, obj) {
+            if (e.code === 'Enter')
+                this.toggleEditMode(obj)
+        },
+        handleDelete(obj) {
+            this.$store.dispatch('removeAsset', obj.name || obj)
+                .then(this.forceUpdateAssets)
+        },
         renderItem(obj) {
             const isChosen = obj === this.chosenObj
-            return <div class={[styles.item, {[styles.chosen]: isChosen}]}>
+            const value = obj.name || obj
+            return <div class={[styles.item, { [styles.chosen]: isChosen }]}>
                 <Icon className={styles.icon} icon={obj.assets ? 'folder' : 'insert_drive_file'} size={24}/>
                 <span class={styles.name}
                       onClick={() => this.setChosenItem(obj)}
-                      draggable onDragstart={e => this.handleDragStart(e, obj)}>{obj.name || obj}</span>
+                      onDblclick={() => this.toggleEditMode(obj)}
+                      onKeydown={e => this.handleKeydown(e, obj)}
+                      draggable onDragstart={e => this.handleDragStart(e, obj)}>{
+                    this.editingObj === obj
+                        ? <TextField value={value} onInput={val => this.editValue = val}/>
+                        : value
+                }</span>
+                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24} onClick={() => this.handleDelete(obj)}/>}
             </div>
         },
         dropHandler(file) {
@@ -51,6 +89,7 @@ export default {
     computed: {
         ...mapGetters(['assets', 'game']),
         assetsTree() {
+            const { updateAssets } = this
             return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))
         }
     },

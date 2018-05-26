@@ -2,7 +2,7 @@ import TextField from '@/ui/text-field'
 import styles from './style.css'
 import Icon from '@/ui/icon'
 import IconButton from '@/ui/material-icon-button'
-import UndoableAction from "../../classes/undoableAction";
+import UndoableAction from '../../classes/undoableAction'
 
 export default {
     name: 'scene-item',

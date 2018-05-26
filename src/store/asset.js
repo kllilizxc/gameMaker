@@ -6,13 +6,15 @@ import Script from '../classes/script'
 const CLEAR_ASSETS = 'CLEAR_ASSETS'
 const SET_ASSETS = 'SET_ASSETS'
 const CREATE_ANIMATION = 'CREATE_ANIMATION'
+const EDIT_ASSET_NAME = 'EDIT_ASSET_NAME'
+const REMOVE_ASSET = 'REMOVE_ASSET'
 
 export const getDefaultAssets = () => ({
     models: [],
     textures: [],
     scripts: [],
     prefabs: [],
-    tamplates: [],
+    templates: [],
     animations: [],
     others: []
 })
@@ -35,6 +37,20 @@ export default {
         },
         [CREATE_ANIMATION](state, name) {
             state.assets.animations.push(name)
+        },
+        [EDIT_ASSET_NAME](state, { oldName, name }) {
+            Object.keys(state.assets).forEach(category => {
+                const fileNames = state.assets[category]
+                const index = fileNames.findIndex(fileName => fileName === oldName)
+                if (index !== -1) fileNames[index] = name
+            })
+        },
+        [REMOVE_ASSET](state, name) {
+            Object.keys(state.assets).forEach(category => {
+                const fileNames = state.assets[category]
+                const index = fileNames.findIndex(fileName => fileName === name)
+                if (index !== -1) fileNames.splice(index, 1)
+            })
         }
     },
     actions: {
@@ -44,6 +60,15 @@ export default {
             const file = { name: 'newAnimation.anim', data: '' }
             commit(CREATE_ANIMATION, file.name)
             return dispatch('createFile', file)
+        },
+        editAssetName: ({ dispatch, commit }, data) => {
+            commit(EDIT_ASSET_NAME, data)
+            dispatch('editFileName', data)
+        },
+        removeAsset: ({ dispatch, commit, rootState: { scene: { game } } }, name) => {
+            commit(REMOVE_ASSET, name)
+            delete game.filesMap[name]
+            dispatch('setCurrentFile', null)
         },
         uploadAssets: ({ state, rootState: { scene: { game } }, commit }, files) => {
             const isSingle = !files[0]
@@ -91,9 +116,9 @@ export default {
                 ? toReturn.then(data => data[0])
                 : toReturn
         },
-        editFile({ ootState: { scene: { gameObjects, game } } }, { file, value }) {
-            game.setFileValue('file', value)
-            gameObjects.forEach(gameObject => gameObject.forEach(obj => {
+        editFile({ rootState: { scene: { gameObjects, game } } }, { file, value }) {
+            game.setFileValue(file, value)
+            gameObjects && gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])
                     obj.addScript(new Script(getScriptObject(file, value, obj), obj))
             }))

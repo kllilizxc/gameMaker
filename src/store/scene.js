@@ -27,6 +27,11 @@ export default {
         ...stateToActions(simpleState),
         createFile: ({ state: { game } }, file) =>
             game.setFileValue(file.name, file.data),
+        editFileName: ({ state: { game } }, { oldName, name }) => {
+            const value = game.filesMap[oldName]
+            delete game.filesMap[oldName]
+            game.filesMap[name] = value
+        },
         newScene: ({ state: { game }, dispatch }) => {
             dispatch('clearAssets')
             game.clearData()
