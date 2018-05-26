@@ -6,7 +6,7 @@ import MenuItem from '@/ui/menu-item'
 import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
 import styles from './style.css'
-import UndoableAction from "../../classes/undoableAction";
+import UndoableAction from '../../classes/undoableAction'
 
 const INIT_BIG_NUMBER_LENGTH = 100
 const INIT_SMALL_NUMBER_STEPS_NUM = 5
@@ -21,18 +21,25 @@ export default {
         smallStepsNum: INIT_SMALL_NUMBER_STEPS_NUM,
         bigNumberLength: INIT_BIG_NUMBER_LENGTH,
         bigNumberStep: MIN_BIG_NUMBER_STEP,
-        keys: {},
         isRecording: false,
         isPlaying: false,
         addMenuTrigger: null,
         addMenuIsOpen: false,
         chosenFrame: -1,
+        keys: {},
         indicatorTimestamp: 0,
         showInsideLines: false,
         keyArray: []
     }),
+    watch: {
+        currentFile: {
+            handler: 'readKeysFromFile',
+            immediate: true
+        },
+        currentFileUpdated() { this.readKeysFromFile() }
+    },
     computed: {
-        ...mapGetters(['gameObject', 'currentFile']),
+        ...mapGetters(['gameObject', 'currentFile', 'currentFileUpdated', 'assets', 'game']),
         fieldsData() {
             if (!this.gameObject) return []
             const { scripts } = this.gameObject
@@ -70,20 +77,44 @@ export default {
             return this.getPosByTimestamp(this.indicatorTimestamp)
         }
     },
-    created() {
-    },
     mounted() {
         this.addMenuTrigger = this.$refs.addButton.$el
         this.makeDraggable()
         this.$refs.timeline.addEventListener('wheel', this.scrollOnTimeline)
     },
     methods: {
+        readKeysFromFile() {
+            const { game, currentFile } = this
+            if (!currentFile) return
+            const isAnim = this.assets.animations.find(name => name === currentFile)
+            let keys = this.keys
+            try {
+                if (isAnim) keys = JSON.parse(game.filesMap[currentFile])
+            } catch (e) {
+                return
+            }
+            this.keys = keys
+            this.setKeyArray()
+        },
+        writeKeysToFile() {
+            const { currentFile } = this
+            if (!currentFile) return
+            this.$store.dispatch('setFileValue', { name: currentFile, content: JSON.stringify(this.keys, null, '\t') })
+            this.$forceUpdate()
+        },
         createAnimation() {
             const animName = 'newAnimation'
-            UndoableAction.addAction(new UndoableAction(animName, { name: animName, category: 'animations', data: '// Animation' }, val => {
-                if (val.name) this.$store.dispatch('createAsset', val)
-                else this.$store.dispatch('removeAsset', animName)
-            }))
+            UndoableAction.addAction(new UndoableAction(
+                animName,
+                {
+                    name: animName,
+                    category: 'animations',
+                    data: '{\n}'
+                },
+                val => {
+                    if (val.name) this.$store.dispatch('createAsset', val)
+                    else this.$store.dispatch('removeAsset', animName)
+                }))
         },
         scrollOnTimeline(e) {
             e.preventDefault()
@@ -144,7 +175,7 @@ export default {
                 this.setKeyArray()
             }
             this.keys[name][timestamp] = value
-            this.$forceUpdate()
+            this.writeKeysToFile()
         },
         getPosByTimestamp(timestamp) {
             return timestamp / 1000 * this.bigNumberLength / this.bigNumberStep
@@ -165,7 +196,7 @@ export default {
             const keyName = this.getKeyNameOfFrame(y)
             delete this.keys[keyName][timestamp]
             this.setChosenFrame()
-            this.$forceUpdate()
+            this.writeKeysToFile()
         },
         moveFrame(timestamp, y, newTimestamp) {
             const keyName = this.getKeyNameOfFrame(y)
@@ -173,7 +204,7 @@ export default {
             const value = key[timestamp]
             delete key[timestamp]
             key[newTimestamp] = value
-            this.$forceUpdate()
+            this.writeKeysToFile()
         },
         setIndicator(timestamp) {
             this.indicatorTimestamp = timestamp

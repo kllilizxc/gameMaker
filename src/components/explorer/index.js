@@ -6,21 +6,20 @@ import FileDropper from '@/ui/file-dropper'
 import { mapGetters } from 'vuex'
 import TextField from '@/ui/text-field'
 import IconButton from '@/ui/material-icon-button'
-import UndoableAction from "../../classes/undoableAction";
+import UndoableAction from '../../classes/undoableAction'
 
 export default {
     name: 'explorer',
     data: () => ({
         isDragOver: false,
-        chosenObj: null,
         editingObj: null,
         updateAssets: false,
         editValue: null
     }),
     methods: {
         setChosenItem(obj) {
-            this.chosenObj = obj
-            this.$store.dispatch('setCurrentFile', obj.name || obj)
+            if (obj.name) return
+            this.$store.dispatch('setCurrentFile', obj)
         },
         forceUpdateAssets() {
             this.updateAssets = !this.updateAssets
@@ -70,7 +69,7 @@ export default {
             ))
         },
         renderItem(obj) {
-            const isChosen = obj === this.chosenObj
+            const isChosen = obj === this.currentFile
             const value = obj.name || obj
             return <div class={[styles.item, { [styles.chosen]: isChosen }]}>
                 <Icon className={styles.icon} icon={obj.assets ? 'folder' : 'insert_drive_file'} size={24}/>
@@ -103,7 +102,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters(['assets', 'game']),
+        ...mapGetters(['assets', 'game', 'currentFile']),
         assetsTree() {
             const { updateAssets } = this
             return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))

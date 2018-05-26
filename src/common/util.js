@@ -56,6 +56,11 @@ export const stateToActions = state =>
 
 export const trimFilename = filename => filename.replace(/^.*[\\\/]/, '')
 export const trimFilenameExtension = filename => trimFilename(filename).replace(/\.[^/.]+$/, '')
+export const getFileExtension = filename => filename.match(/\.([0-9a-z]+)$/i)[1].toLowerCase()
+export const getDuplicatedName = name => {
+    const match = name.match(/(.*?)(\d+)?$/)
+    return match[1] + (+(match[2] || 0) + 1)
+}
 
 export const inputEvents = ['keydown', 'keyup']
 const events = ['fields', 'actions', 'init', 'update', 'onFocus', 'onBlur', 'lateUpdate', 'pointerdown'].concat(inputEvents)

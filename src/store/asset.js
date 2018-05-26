@@ -1,5 +1,5 @@
 // @flow
-import { stateToGetters, trimFilename, getScriptObject } from '../common/util'
+import { stateToGetters, trimFilename, getScriptObject, getFileExtension, getDuplicatedName } from '../common/util'
 import AssetManager from '@/common/asset-manager'
 import Script from '../classes/script'
 
@@ -56,9 +56,11 @@ export default {
     actions: {
         clearAssets: ({ commit }) => commit(CLEAR_ASSETS),
         setAssets: ({ commit }, data) => commit(SET_ASSETS, data),
-        createAsset: ({ dispatch, commit }, { name, data, category }) => {
+        createAsset: ({ dispatch, commit, rootState: { scene: { game } } }, { name, data, category }) => {
+            while (game.filesMap[name] !== undefined) name = getDuplicatedName(name)
             const file = { name, data }
             commit(CREATE_ASSET, { name, category })
+            dispatch('setCurrentFile', name)
             return dispatch('createFile', file)
         },
         editAssetName: ({ dispatch, commit }, data) => {
@@ -74,7 +76,7 @@ export default {
             const isSingle = !files[0]
             const toReturn = Promise.all((isSingle ? [files] : [...files])
                 .map(file => {
-                    const extension = file.name.match(/\.([0-9a-z]+)$/i)[1].toLowerCase()
+                    const extension = getFileExtension(file.name)
                     // set read mode
                     let mode = 'DataURL'
                     if (extension === 'js' || extension === 'obj' || extension === 'gltf' || extension === 'babylon') mode = 'Text'
@@ -116,7 +118,7 @@ export default {
                 ? toReturn.then(data => data[0])
                 : toReturn
         },
-        editFile({ rootState: { scene: { gameObjects, game } } }, { file, value }) {
+        editFile({ dispatch, rootState: { scene: { gameObjects, game } } }, { file, value }) {
             game.setFileValue(file, value)
             gameObjects && gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])

@@ -17,4 +17,5 @@
     font-size: 18px;
     font-weight: bold;
     overflow: hidden;
+    user-select: none;
 }

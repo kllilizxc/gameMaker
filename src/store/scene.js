@@ -1,4 +1,5 @@
 import {
+    getDuplicatedName,
     stateToActions, stateToGetters, stateToMutations
 } from '../common/util'
 import AssetManager from '@/common/asset-manager'
@@ -14,7 +15,8 @@ const simpleState = {
 }
 
 const state = {
-    rawGameObjects: {}
+    rawGameObjects: {},
+    currentFileUpdated: false
 }
 
 export default {
@@ -25,6 +27,12 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
+        currentFileUpdate: ({ state }) =>
+            state.currentFileUpdated = !state.currentFileUpdated,
+        setFileValue: ({ state, dispatch }, { name, content }) => {
+            state.game.setFileValue(name, content)
+            dispatch('currentFileUpdate')
+        },
         createFile: ({ state: { game } }, file) =>
             game.setFileValue(file.name, file.data),
         editFileName: ({ state: { game } }, { oldName, name }) => {
@@ -86,8 +94,7 @@ export default {
                     return gameObject
                 }),
         duplicateGameObject: ({ dispatch, state: { gameObject, game } }) => {
-            const match = gameObject.name.match(/(.*?)(\d+)?$/)
-            const cloned = gameObject.clone(match[1] + (+(match[2] || 0) + 1))
+            const cloned = gameObject.clone(getDuplicatedName(game.name))
             if (!cloned.getRawGameObject().parent) game.addGameObject(cloned)
             return dispatch('setGameObject', cloned)
         }
