@@ -31,7 +31,7 @@ export default {
         keyArray: []
     }),
     computed: {
-        ...mapGetters(['gameObject']),
+        ...mapGetters(['gameObject', 'currentFile']),
         fieldsData() {
             if (!this.gameObject) return []
             const { scripts } = this.gameObject
@@ -77,6 +77,9 @@ export default {
         this.$refs.timeline.addEventListener('wheel', this.scrollOnTimeline)
     },
     methods: {
+        createAnimation() {
+            this.$store.dispatch('createAnimation')
+        },
         scrollOnTimeline(e) {
             e.preventDefault()
             e.stopPropagation()

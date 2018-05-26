@@ -10,7 +10,7 @@ const simpleState = {
     gameObject: null,
     isPlaying: false,
     game: new Game(),
-    currentScript: null
+    currentFile: null
 }
 
 const state = {
@@ -25,6 +25,8 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
+        createFile: ({ state: { game } }, file) =>
+            game.setFileValue(file.name, file.data),
         newScene: ({ state: { game }, dispatch }) => {
             dispatch('clearAssets')
             game.clearData()

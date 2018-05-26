@@ -9,6 +9,7 @@
                             @click="togglePlaying"/>
                 <IconButton icon="add" size="24" :class="$style.toolIcon"
                             @click="openAddMenu" ref="addButton"/>
+                <IconButton icon="insert_drive_file" size="24" :class="$style.toolIcon" @click="createAnimation"/>
                 <Popover :trigger="addMenuTrigger" :open="addMenuIsOpen" :close="handleAddMenuClose">
                     <Menu v-if="fieldsData.length > 0">
                         <MenuItem v-for="script in fieldsData" :title="script.name" :key="script.name"
@@ -25,7 +26,7 @@
                 </Popover>
             </div>
             <div :class="$style.fields">
-                <div :class="$style.fieldItem" v-for="keyName in keyArray">{{keyName}}</div>
+                <div :class="$style.fieldItem" v-for="keyName in keyArray" :key="keyName">{{keyName}}</div>
             </div>
         </div>
         <div :class="$style.rightPanel">
@@ -71,9 +72,9 @@
                               :transform="`translate(0, ${j * 48})`"/>
                     </g>
                     <g>
-                        <g v-for="(propertyName, y) in keyArray">
+                        <g v-for="(propertyName, y) in keyArray" :key="propertyName">
                             <rect :class="[$style.frameRect, $style.draggable, { [$style.chosenFrame]: frameIsChosen(timestamp) }]"
-                                  v-for="timestamp in Object.keys(keys[propertyName])"
+                                  v-for="timestamp in Object.keys(keys[propertyName])" :key="timestamp"
                                   height="10" width="10" :data-timestamp="timestamp" :data-y="y"
                                   @click="() => setChosenFrame(timestamp)" @dblclick="() => removeFrame(timestamp, y)"
                                   :transform="`translate(${getPosByTimestamp(timestamp)}, ${(y + .5) * 48 - 5}) rotate(45)`"/>

@@ -5,11 +5,15 @@ import Script from '../classes/script'
 
 const CLEAR_ASSETS = 'CLEAR_ASSETS'
 const SET_ASSETS = 'SET_ASSETS'
+const CREATE_ANIMATION = 'CREATE_ANIMATION'
 
 export const getDefaultAssets = () => ({
     models: [],
     textures: [],
     scripts: [],
+    prefabs: [],
+    tamplates: [],
+    animations: [],
     others: []
 })
 
@@ -28,11 +32,19 @@ export default {
         },
         [SET_ASSETS](state, assets) {
             state.assets = assets
+        },
+        [CREATE_ANIMATION](state, name) {
+            state.assets.animations.push(name)
         }
     },
     actions: {
         clearAssets: ({ commit }) => commit(CLEAR_ASSETS),
         setAssets: ({ commit }, data) => commit(SET_ASSETS, data),
+        createAnimation: ({ dispatch, commit }) => {
+            const file = { name: 'newAnimation.anim', data: '' }
+            commit(CREATE_ANIMATION, file.name)
+            return dispatch('createFile', file)
+        },
         uploadAssets: ({ state, rootState: { scene: { game } }, commit }, files) => {
             const isSingle = !files[0]
             const toReturn = Promise.all((isSingle ? [files] : [...files])

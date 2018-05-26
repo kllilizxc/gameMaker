@@ -11,21 +11,21 @@ export default {
         editor: null
     }),
     watch: {
-        currentScript(val) {
+        currentFile(val) {
             const { filesMap } = this.game
             if (!val || !filesMap[val]) this.editor.setValue('')
             else this.editor.setValue(filesMap[val])
         }
     },
     computed: {
-        ...mapGetters(['currentScript', 'game'])
+        ...mapGetters(['currentFile', 'game'])
     },
     mounted() {
         this.editor = ace.edit('editorCotainer')
         this.editor.getSession().setMode('ace/mode/javascript')
         this.editor.setKeyboardHandler('ace/keyboard/vim')
         this.editor.session.on('change', debounce(() => {
-            this.$store.dispatch('editFile', { file: this.currentScript, value: this.editor.getValue() })
+            this.$store.dispatch('editFile', { file: this.currentFile, value: this.editor.getValue() })
         }, 1000))
     },
     render() {
