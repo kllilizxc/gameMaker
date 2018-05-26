@@ -5,7 +5,7 @@ import Script from '../classes/script'
 
 const CLEAR_ASSETS = 'CLEAR_ASSETS'
 const SET_ASSETS = 'SET_ASSETS'
-const CREATE_ANIMATION = 'CREATE_ANIMATION'
+const CREATE_ASSET = 'CREATE_ASSET'
 const EDIT_ASSET_NAME = 'EDIT_ASSET_NAME'
 const REMOVE_ASSET = 'REMOVE_ASSET'
 
@@ -35,8 +35,8 @@ export default {
         [SET_ASSETS](state, assets) {
             state.assets = assets
         },
-        [CREATE_ANIMATION](state, name) {
-            state.assets.animations.push(name)
+        [CREATE_ASSET](state, { name, category }) {
+            state.assets[category].push(name)
         },
         [EDIT_ASSET_NAME](state, { oldName, name }) {
             Object.keys(state.assets).forEach(category => {
@@ -56,9 +56,9 @@ export default {
     actions: {
         clearAssets: ({ commit }) => commit(CLEAR_ASSETS),
         setAssets: ({ commit }, data) => commit(SET_ASSETS, data),
-        createAnimation: ({ dispatch, commit }) => {
-            const file = { name: 'newAnimation.anim', data: '' }
-            commit(CREATE_ANIMATION, file.name)
+        createAsset: ({ dispatch, commit }, { name, data, category }) => {
+            const file = { name, data }
+            commit(CREATE_ASSET, { name, category })
             return dispatch('createFile', file)
         },
         editAssetName: ({ dispatch, commit }, data) => {

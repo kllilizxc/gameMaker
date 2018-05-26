@@ -6,6 +6,7 @@ import FileDropper from '@/ui/file-dropper'
 import { mapGetters } from 'vuex'
 import TextField from '@/ui/text-field'
 import IconButton from '@/ui/material-icon-button'
+import UndoableAction from "../../classes/undoableAction";
 
 export default {
     name: 'explorer',
@@ -44,15 +45,29 @@ export default {
         editFileName(value) {
             const { editingObj } = this
             const oldName = editingObj.name || editingObj
-            this.$store.dispatch('editAssetName', { oldName, name: value })
+            UndoableAction.addAction(new UndoableAction(
+                { oldName: value, name: oldName },
+                { oldName, name: value },
+                val => this.$store.dispatch('editAssetName', val)
+                    .then(this.forceUpdateAssets)))
         },
         handleKeydown(e, obj) {
             if (e.code === 'Enter')
                 this.toggleEditMode(obj)
         },
         handleDelete(obj) {
-            this.$store.dispatch('removeAsset', obj.name || obj)
-                .then(this.forceUpdateAssets)
+            let category
+            const data = this.game.filesMap[obj]
+            this.assetsTree.forEach(({ assets, name }) => {
+                if (assets.find(fileName => fileName === obj))
+                    category = name
+            })
+            UndoableAction.addAction(new UndoableAction(
+                { name: obj, category, data },
+                obj,
+                val => this.$store.dispatch(val.name ? 'createAsset' : 'removeAsset', val)
+                    .then(this.forceUpdateAssets)
+            ))
         },
         renderItem(obj) {
             const isChosen = obj === this.chosenObj
@@ -68,7 +83,8 @@ export default {
                         ? <TextField value={value} onInput={val => this.editValue = val}/>
                         : value
                 }</span>
-                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24} onClick={() => this.handleDelete(obj)}/>}
+                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
+                                         onClick={() => this.handleDelete(obj)}/>}
             </div>
         },
         dropHandler(file) {

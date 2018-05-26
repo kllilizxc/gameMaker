@@ -6,6 +6,7 @@ import MenuItem from '@/ui/menu-item'
 import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
 import styles from './style.css'
+import UndoableAction from "../../classes/undoableAction";
 
 const INIT_BIG_NUMBER_LENGTH = 100
 const INIT_SMALL_NUMBER_STEPS_NUM = 5
@@ -78,7 +79,11 @@ export default {
     },
     methods: {
         createAnimation() {
-            this.$store.dispatch('createAnimation')
+            const animName = 'newAnimation'
+            UndoableAction.addAction(new UndoableAction(animName, { name: animName, category: 'animations', data: '// Animation' }, val => {
+                if (val.name) this.$store.dispatch('createAsset', val)
+                else this.$store.dispatch('removeAsset', animName)
+            }))
         },
         scrollOnTimeline(e) {
             e.preventDefault()
