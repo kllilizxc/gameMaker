@@ -211,6 +211,7 @@ export default {
         },
         addFrameInMousePos(e) {
             const pos = this.getMousePosition(e)
+            if (pos.y >= this.keyArray.length) return
             const timestamp = this.getTimestampFromPos(Math.round(pos.x / this.smallNumberLength) * this.smallNumberLength)
             const keyName = this.getKeyNameOfFrame(Math.floor(pos.y / 48))
             const keyValue = this.getKeyValue(keyName)

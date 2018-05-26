@@ -5,7 +5,7 @@ const scripts = {
     cameras: ['arcRotateCamera', 'followCamera', 'universalCamera'],
     geometries: ['boxGeometry', 'geometry', 'groundGeometry', 'planeGeometry', 'sphereGeometry'],
     lights: ['directionalLight', 'hemisphericLight', 'pointLight', 'shadowGenerator', 'spotLight'],
-    basic: ['physics', 'transform']
+    basic: ['physics', 'transform', 'animation']
 }
 
 const outerScripts = []
