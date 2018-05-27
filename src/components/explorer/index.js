@@ -25,6 +25,7 @@ export default {
             this.updateAssets = !this.updateAssets
         },
         toggleEditMode(obj) {
+            if (obj.children) return // not allow to edit category names
             if (this.editingObj === obj) {
                 this.editFileName(this.editValue || obj.name || obj)
                 this.editValue = null

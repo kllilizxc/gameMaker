@@ -1,5 +1,5 @@
 <template>
-    <mu-icon :value="value" :color="color" :size="size"/>
+    <mu-icon :class="$style.icon" :value="value" :color="color" :size="size"/>
 </template>
 <script>
     export default {
@@ -11,3 +11,8 @@
         }
     }
 </script>
+<style module>
+    .icon {
+        user-select: none;
+    }
+</style>

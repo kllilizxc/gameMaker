@@ -30,3 +30,7 @@ body {
     background-color: darkgrey;
     outline: 1px solid slategrey;
 }
+
+:global(.mu-icon) {
+    user-select: none;
+}
