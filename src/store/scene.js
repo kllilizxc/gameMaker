@@ -94,8 +94,8 @@ export default {
                     return gameObject
                 }),
         duplicateGameObject: ({ dispatch, state: { gameObject, game } }) => {
-            const cloned = gameObject.clone(getDuplicatedName(game.name))
-            if (!cloned.getRawGameObject().parent) game.addGameObject(cloned)
+            const cloned = gameObject.clone(getDuplicatedName(gameObject.name))
+            if (!cloned.getParent()) game.addGameObject(cloned)
             return dispatch('setGameObject', cloned)
         }
     }

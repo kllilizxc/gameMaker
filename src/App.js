@@ -35,14 +35,14 @@ export default {
     created() {
         window.$vm0 = this  // for debug
         document.onkeydown = e => {
-            if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
+            if (e.ctrlKey && e.altKey && e.code === 'KeyD') {
                 // ctrl + d
                 this.$store.dispatch('duplicateGameObject')
                     .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
-            } else if (e.code === 'KeyF') {
+            } else if (e.ctrlKey && e.altKey && e.code === 'KeyF') {
                 const { game, gameObject } = this
                 game.setCameraTarget(gameObject)
-            } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+            } else if (e.ctrlKey && e.code === 'KeyZ') {
                 // ctrl + shift + z
                 UndoableAction.redoAction()
             } else if (e.ctrlKey && e.code === 'KeyZ') {
