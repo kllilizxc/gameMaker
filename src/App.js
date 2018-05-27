@@ -35,7 +35,7 @@ export default {
     created() {
         window.$vm0 = this  // for debug
         document.onkeydown = e => {
-            if (e.ctrlKey && e.code === 'KeyD') {
+            if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
                 // ctrl + d
                 this.$store.dispatch('duplicateGameObject')
                     .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
