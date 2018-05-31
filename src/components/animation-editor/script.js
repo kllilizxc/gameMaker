@@ -204,6 +204,7 @@ export default {
             const value = key[timestamp]
             delete key[timestamp]
             key[newTimestamp] = value
+            console.log(timestamp, y, newTimestamp)
             this.writeKeysToFile()
         },
         setIndicator(timestamp) {

@@ -21,7 +21,6 @@ export default class Game {
     init() {
         this.engine = createEngine(this.canvas)
         this.scene = createScene(this.engine)
-        new ResizeObserver(debounce(() => this.engine.resize(), 1000)).observe(this.canvas)
         this.scene.canvas = this.canvas
         window.scene = this.scene
     }

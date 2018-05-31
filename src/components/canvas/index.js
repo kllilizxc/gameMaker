@@ -246,6 +246,7 @@ export default {
         const { canvas } = this
 
         this.game.setCanvas(canvas)
+        new ResizeObserver(debounce(() => this.game.engine.resize(), 1000)).observe(canvas)
         // this.$store.dispatch('openScene', 'static/scenes/spaceShooter.scene')
         this.$store.dispatch('newScene')
         window.addEventListener('resize', debounce(() => this.game.engine.resize(), 100))
