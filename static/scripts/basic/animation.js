@@ -29,7 +29,6 @@ function update() {
         if (!clip) return
         const { timestamp, loop } = initDatesMap[clipName]
         const isEnd = play(clip, date - timestamp)
-        console.log(isEnd, loop, initDatesMap)
         if (!loop && isEnd)
             delete initDatesMap[clipName]
         if (loop && isEnd)
