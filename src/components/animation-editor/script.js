@@ -88,7 +88,7 @@ export default {
             scriptName = trimFilenameExtension(scriptName)
             const name = this.addKey(scriptName, groupName, fieldName)
             this.keys[name][this.indicatorTimestamp] = value
-            this.$forceUpdate()
+            this.writeKeysToFile()
         }
     },
     methods: {

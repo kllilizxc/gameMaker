@@ -1,18 +1,11 @@
 let arrays = []
 fields = {
-    array: {
-        type: 'ARRAY',
-        child: {
-            type: 'NUMBER',
-            get: index => arrays[index],
-            set: (val, index) => arrays[index] = val
-        }
-    }
 }
+console.log(this)
 function init() {
-    console.log(arrays)
+    this.animation.play('newAnimation1', true)
 }
 
-function click(e) {
-    console.log(e)
+function pointerdown(e) {
+    this.animation.play('newAnimation')
 }

@@ -19,9 +19,10 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
     else if (type === ARRAY_TYPE) {
         const value = values[name]
         field.size = value.size
+        const fieldObj = {}
         for (let i = 0; i < value.size; i++)
-            field.child.set(value[i], i)
-        return
+            fieldObj[i] = field.child
+        return restoreFieldsValues(fieldObj, value)
     } else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
     else if (type === FILE_TYPE) {
@@ -30,7 +31,7 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
         options.value = values && values[name]
         if (options.value === undefined) options.value = get()
     }
-    set(options.value)
+    set(options.value, name)
 })
 
 export default class GameObject {
