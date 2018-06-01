@@ -81,6 +81,7 @@ export default class Game {
         }
         setObjectIfUndefined(this.scriptsMap, gameObject.id, scriptName, 'values', groupName)
         this.scriptsMap[gameObject.id][scriptName].values[groupName][fieldName] = value
+        this.onSetScript && this.onSetScript({ scriptName, groupName, fieldName, value })
     }
 
     setScriptValue(gameObject, { scriptName, fieldName, value, type }) {
@@ -89,6 +90,7 @@ export default class Game {
         }
         setObjectIfUndefined(this.scriptsMap, gameObject.id, scriptName, 'values')
         this.scriptsMap[gameObject.id][scriptName].values[fieldName] = value
+        this.onSetScript && this.onSetScript({ scriptName, fieldName, value })
     }
 
     addScript(gameObject, file) {

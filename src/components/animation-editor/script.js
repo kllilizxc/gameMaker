@@ -7,6 +7,7 @@ import { mapGetters } from 'vuex'
 import { GROUP_TYPE } from '../script-field'
 import styles from './style.css'
 import UndoableAction from '../../classes/undoableAction'
+import { trimFilenameExtension } from '../../common/util'
 
 const INIT_BIG_NUMBER_LENGTH = 100
 const INIT_SMALL_NUMBER_STEPS_NUM = 5
@@ -25,11 +26,12 @@ export default {
         isPlaying: false,
         addMenuTrigger: null,
         addMenuIsOpen: false,
-        chosenFrame: -1,
+        chosenFrame: { timestamp: -1, y: -1 },
         keys: {},
         indicatorTimestamp: 0,
         showInsideLines: false,
-        keyArray: []
+        keyArray: [],
+        t: null
     }),
     watch: {
         currentFile: {
@@ -81,6 +83,13 @@ export default {
         this.addMenuTrigger = this.$refs.addButton.$el
         this.makeDraggable()
         this.$refs.timeline.addEventListener('wheel', this.scrollOnTimeline)
+        this.game.onSetScript = ({ scriptName, groupName, fieldName, value }) => {
+            if (!this.isRecording) return
+            scriptName = trimFilenameExtension(scriptName)
+            const name = this.addKey(scriptName, groupName, fieldName)
+            this.keys[name][this.indicatorTimestamp] = value
+            this.$forceUpdate()
+        }
     },
     methods: {
         readKeysFromFile() {
@@ -147,6 +156,44 @@ export default {
         },
         togglePlaying() {
             this.isPlaying = !this.isPlaying
+            if (!this.gameObject) return
+            if (this.isPlaying) {
+                const initDate = Date.now()
+                const setData = () => {
+                    const date = Date.now()
+                    this.setIndicator(date - initDate)
+                    this.t = requestAnimationFrame(setData)
+                }
+                setData()
+            } else {
+                cancelAnimationFrame(this.t)
+                this.setIndicator(0)
+                this.t = null
+            }
+        },
+        play(timestamp) {
+            this.keyArray.forEach(keyName => {
+                const key = this.keys[keyName]
+                const frameArray = Object.keys(key)
+                    .map(timestamp => ({ timestamp, value: key[timestamp] }))
+                    .sort((a, b) => a.timestamp - b.timestamp)
+                const index = frameArray.findIndex(frame => frame.timestamp >= timestamp)
+                let keyValue
+                if (index === -1) {
+                    // no more keyFrames in the right
+                    keyValue = frameArray[frameArray.length - 1].value
+                } else if (index === 0) {
+                    // no more keyFrames in the left
+                    keyValue = frameArray[0].value
+                } else {
+                    // between 2 keyFrames
+                    const leftKey = frameArray[index - 1]
+                    const rightKey = frameArray[index]
+                    // intersect between 2 values
+                    keyValue = (timestamp - leftKey.timestamp) / (rightKey.timestamp - leftKey.timestamp) * (rightKey.value - leftKey.value) + leftKey.value
+                }
+                this.setFieldValue(keyName, keyValue)
+            })
         },
         openAddMenu() {
             this.addMenuIsOpen = !this.addMenuIsOpen
@@ -158,16 +205,21 @@ export default {
             this.keyArray = Object.keys(this.keys)
         },
         addKey(...names) {
-            const keyName = names.join('.')
-            this.addFrame(keyName, 0, this.getKeyValue(keyName))
+            const fieldName = names.filter(n => n).join('.')
+            if (!this.keys[fieldName])
+                this.addFrame(fieldName, 0, this.getFieldValue(fieldName))
             this.handleAddMenuClose()
+            return fieldName
         },
-        getKeyValue(keyName) {
-            const names = keyName.split('.')
-            let keyValue = this.gameObject[names[0]].fields[names[1]]
-            if (names[2]) keyValue = keyValue.children[names[2]]
-            keyValue = keyValue.get()
-            return keyValue
+        getField(fieldName) {
+            const names = fieldName.split('.')
+            let field = this.gameObject[names[0]].fields[names[1]]
+            if (names[2]) field = field.children[names[2]]
+            return field
+        },
+        getFieldValue(fieldName) {
+            const field = this.getField(fieldName)
+            return field && field.get()
         },
         addFrame(name, timestamp, value) {
             if (!this.keys[name]) {
@@ -186,11 +238,11 @@ export default {
         getKeyNameOfFrame(y) {
             return this.keyArray[y]
         },
-        frameIsChosen(timestamp) {
-            return this.chosenFrame === timestamp
+        frameIsChosen(timestamp, y) {
+            return this.chosenFrame.timestamp === timestamp && this.chosenFrame.y === y
         },
-        setChosenFrame(timestamp = -1) {
-            this.chosenFrame = timestamp
+        setChosenFrame(timestamp = -1, y: -1) {
+            this.chosenFrame = { timestamp, y }
         },
         removeFrame(timestamp, y) {
             const keyName = this.getKeyNameOfFrame(y)
@@ -204,11 +256,15 @@ export default {
             const value = key[timestamp]
             delete key[timestamp]
             key[newTimestamp] = value
-            console.log(timestamp, y, newTimestamp)
             this.writeKeysToFile()
         },
         setIndicator(timestamp) {
             this.indicatorTimestamp = timestamp
+            this.play(timestamp)
+        },
+        setFieldValue(fieldName, value) {
+            const field = this.getField(fieldName)
+            field && field.set(value)
         },
         addFrameInMousePos(e) {
             const pos = this.getMousePosition(e)
@@ -216,7 +272,7 @@ export default {
             if (index >= this.keyArray.length) return
             const timestamp = this.getTimestampFromPos(Math.round(pos.x / this.smallNumberLength) * this.smallNumberLength)
             const keyName = this.getKeyNameOfFrame(index)
-            const keyValue = this.getKeyValue(keyName)
+            const keyValue = this.getFieldValue(keyName)
             this.addFrame(keyName, timestamp, keyValue)
         },
         getMousePosition(e) {
@@ -229,7 +285,7 @@ export default {
         },
         makeDraggable() {
             const { svg } = this.$refs
-            let selectedElement
+            let selectedElement, lastX
             svg.addEventListener('mousedown', startDrag)
             svg.addEventListener('mousemove', drag)
             svg.addEventListener('mouseup', endDrag)
@@ -247,19 +303,24 @@ export default {
                 if (selectedElement) {
                     e.preventDefault()
                     const newX = Math.round(getMousePosition(e).x / smallNumberLength) * smallNumberLength
+                    if (lastX === newX) return
                     const newTimestamp = getTimestampFromPos(newX)
-                    const { timestamp, y } = selectedElement.dataset
-                    if (timestamp !== newTimestamp) {
+                    let { timestamp, y } = selectedElement.dataset
+                    timestamp = +timestamp
+                    const lastTimestamp = lastX !== null ? getTimestampFromPos(lastX) : timestamp
+                    if (lastTimestamp !== newTimestamp) {
                         if (selectedElement.classList.contains(styles.indicator))
                             setIndicator(newTimestamp)
                         else
-                            moveFrame(timestamp, +y, newTimestamp)
+                            moveFrame(lastTimestamp, +y, newTimestamp)
                     }
+                    lastX = newX
                 }
             }
 
             function endDrag() {
                 selectedElement = null
+                lastX = null
             }
         }
     }
