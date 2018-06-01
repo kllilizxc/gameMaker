@@ -1,7 +1,7 @@
 import { UUID, readScriptFromFile, getScriptObject, removeInArray } from '../common/util'
 import Script from './script'
 import store from '../store'
-import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE } from '../components/script-field'
+import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE, ARRAY_TYPE } from '../components/script-field'
 import { loadMesh, getIntersects } from '../common/api'
 
 const { game } = store.state.scene
@@ -16,7 +16,13 @@ const restoreFieldsValues = (fields, values) => Object.keys(fields).forEach(name
     const { type, get, set, options, children } = field
     if (type === GROUP_TYPE)
         return restoreFieldsValues(children, values[name])
-    else if (type === GAMEOBJECT_TYPE)
+    else if (type === ARRAY_TYPE) {
+        const value = values[name]
+        field.size = value.size
+        for (let i = 0; i < value.size; i++)
+            field.child.set(value[i], i)
+        return
+    } else if (type === GAMEOBJECT_TYPE)
         options.value = GameObject.findGameObjectById(values[name])
     else if (type === FILE_TYPE) {
         options.value = values && { name: values[name], data: game.filesMap[values[name]] }

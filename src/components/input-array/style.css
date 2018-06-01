@@ -1,0 +1,6 @@
+@value Black-SecondaryText from '@/common/colors.css';
+
+.label {
+    color: Black-SecondaryText;
+    font-size: 13px;
+}

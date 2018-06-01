@@ -8,6 +8,7 @@ import TextField from '@/ui/text-field'
 import NumberInput from '@/components/number-input'
 import FilePicker from '@/components/file-picker'
 import UndoableAction from '../../classes/undoableAction'
+import InputArray from '@/components/input-array'
 
 export const STRING_TYPE = 'STRING'
 export const NUMBER_TYPE = 'NUMBER'
@@ -16,6 +17,7 @@ export const ENUM_TYPE = 'ENUM'
 export const FILE_TYPE = 'FILE'
 export const GAMEOBJECT_TYPE = 'GAMEOBJECT'
 export const GROUP_TYPE = 'GROUP'
+export const ARRAY_TYPE = 'ARRAY'
 
 export type Field = {
     type: string,
@@ -105,6 +107,25 @@ export default {
                 }}/>
             </div>
         },
+        renderInputArray(h: any, field): any {
+            const { options } = field
+            return <div class={styles.inputArray}>
+                <div class={styles.groupLabel}>{options.label}</div>
+                <InputArray initSize={field.size}
+                            onInputSize={value => this.$emit('input', { fieldName: 'size', groupName: field.name, value })}
+                            renderItem={index => {
+                                const { child } = field
+                                return this.parseOption(h, {
+                                    name: '' + index,
+                                    parent: field.name,
+                                    type: child.type,
+                                    get: () => child.get(index),
+                                    set: val => child.set(val, index),
+                                    options: child.options
+                                })
+                            }}/>
+            </div>
+        },
         parseOption(h: any, field = this.field): any {
             if (!field) return
             this.getFieldValue(field)
@@ -123,6 +144,8 @@ export default {
                     return this.renderGameObjectPicker(h, field)
                 case GROUP_TYPE:
                     return this.renderInputGroup(h, field)
+                case ARRAY_TYPE:
+                    return this.renderInputArray(h, field)
                 default:
                     logger.error('Error! Not a valid option type!')
                     return
@@ -130,7 +153,7 @@ export default {
         },
         getFieldValue(field) {
             field.options = field.options || {}
-            if (field.type !== GROUP_TYPE) field.options.value = field.get()
+            if (field.type !== GROUP_TYPE && field.type !== ARRAY_TYPE) field.options.value = field.get()
             field.options.label = camelToWords(field.name)
         }
     },
