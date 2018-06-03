@@ -82,10 +82,7 @@ export default {
         },
         removeScript({ state, dispatch }, name) {
             const { gameObject, game } = state
-            game.removeScript(gameObject, name)
-            return dispatch('setGameObject', null).then(() =>
-                dispatch('setGameObject',
-                    game.loadGameObject(getRawGameObject(gameObject), gameObject.parent)))
+            return dispatch('setGameObject', game.removeScript(gameObject, name))
         },
         createGameObject: ({ state: { game }, dispatch }, data) =>
             game.createGameObject(data)
@@ -101,7 +98,7 @@ export default {
     }
 }
 
-const getRawGameObject = gameObject => {
+export const getRawGameObject = gameObject => {
     const { mesh, id, name, sort } = gameObject
     return {
         id,

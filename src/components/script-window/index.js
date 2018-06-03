@@ -52,7 +52,8 @@ export default {
         },
         dropHandler(file) {
             if (getFileExtension(file.name) === 'temp')
-                this.gameObject.addScriptFromTemplate(file)
+                this.$store.dispatch('setGameObject',
+                    this.game.addScriptFromTemplate(file, this.gameObject))
             else
                 this.addScript(file)
             this.isDragOver = false

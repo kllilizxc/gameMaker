@@ -3,6 +3,8 @@ import { removeInArray, getScriptObject, debounce } from '../common/util'
 import { FILE_TYPE } from '@/components/script-field'
 import Script from './script'
 import GameObject from './gameObject'
+import { getRawGameObject } from '@/store/scene'
+import { trimFilenameExtension } from "@/common/util";
 
 export default class Game {
     engine = null
@@ -64,6 +66,17 @@ export default class Game {
         this.gameObjects = gameObjects
     }
 
+    addScriptFromTemplate(file, gameObject) {
+        const { src, scriptMap } = JSON.parse(file.data)
+        const scriptName = trimFilenameExtension(file.name)
+        const content = this.filesMap[src + '.js']
+        this.scriptsMap[gameObject.id][scriptName] = scriptMap
+        gameObject.addScript(new Script(getScriptObject(file.name, content, gameObject), gameObject))
+        gameObject = this.reloadGameObject(gameObject)
+        gameObject.onScriptsReady()
+        return gameObject
+    }
+
     removeGameObject(gameObject) {
         removeInArray(this.gameObjects, ({ id }) => id === gameObject.id)
     }
@@ -99,10 +112,15 @@ export default class Game {
 
     removeScript(gameObject, scriptName) {
         if (this.scriptsMap[gameObject.id])
-            delete this.scriptsMap[gameObject.id][name]
+            delete this.scriptsMap[gameObject.id][scriptName]
 
+        return this.reloadGameObject(gameObject)
+    }
+
+    reloadGameObject(gameObject) {
         gameObject.getMesh().dispose()
         this.removeGameObject(this)
+        return this.loadGameObject(getRawGameObject(gameObject), gameObject.parent)
     }
 
     disposeGameObject(gameObject) {

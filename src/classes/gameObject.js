@@ -91,14 +91,6 @@ export default class GameObject {
         return clonedMesh.gameObject
     }
 
-    addScriptFromTemplate(file) {
-        const scriptMap = JSON.parse(file.data)
-        const scriptName = trimFilenameExtension(file.name)
-        const content = game.filesMap[scriptName + '.js']
-        this.addScript(new Script(getScriptObject(file.name, content, this), this))
-        game.scriptsMap[this.id][scriptName] = scriptMap
-    }
-
     static findGameObjectById(id) {
         return game.getGameObjectById(id)
     }

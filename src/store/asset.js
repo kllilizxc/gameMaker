@@ -71,7 +71,9 @@ export default {
             dispatch('setCurrentFile', name)
             return dispatch('createFile', file)
         },
-        editAssetName: ({ dispatch, commit }, data) => {
+        editAssetName: ({ dispatch, commit, rootState: { scene: { game } } }, data) => {
+            while (game.filesMap[data.name] !== undefined)
+                data.name = getDuplicatedName(data.name)
             commit(EDIT_ASSET_NAME, data)
             dispatch('editFileName', data)
         },

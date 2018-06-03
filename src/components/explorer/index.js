@@ -113,7 +113,9 @@ export default {
             const scriptMap = this.game.scriptsMap[id][name]
             this.$store.dispatch('createAsset', {
                 name,
-                data: JSON.stringify(scriptMap),
+                data: JSON.stringify({
+                    scriptMap, src: name
+                }),
                 category: 'templates'
             })
         },
@@ -125,7 +127,7 @@ export default {
             }, {})
             this.$store.dispatch('createAsset', {
                 name: gameObject.name,
-                data: JSON.stringify(scriptsMap),
+                data: JSON.stringify(scriptsMap, null, '\t'),
                 category: 'prefabs'
             })
         },
