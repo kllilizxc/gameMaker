@@ -60,7 +60,7 @@ export default {
                     else
                         return { name: fieldName, get: field.get, set: field.set }
                 })
-                return { name, children: fieldsArray }
+                return { name: trimFilenameExtension(name), children: fieldsArray }
             }).filter(f => f.children)
         },
         smallNumberLength() {

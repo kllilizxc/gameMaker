@@ -42,7 +42,7 @@ export default {
             } else if (e.ctrlKey && e.altKey && e.code === 'KeyF') {
                 const { game, gameObject } = this
                 game.setCameraTarget(gameObject)
-            } else if (e.ctrlKey && e.code === 'KeyZ') {
+            } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
                 // ctrl + shift + z
                 UndoableAction.redoAction()
             } else if (e.ctrlKey && e.code === 'KeyZ') {

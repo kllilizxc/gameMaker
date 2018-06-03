@@ -23,6 +23,7 @@ export default {
                 const dropMesh = GameObject.findGameObjectById(gameObjectId)
                 if (!dropMesh) return
                 const parentMesh = dropMesh.getMesh().parent
+                // undoable parenting
                 UndoableAction.addAction(new UndoableAction(parentMesh && parentMesh.gameObject, obj,
                     val => {
                         this.game.setGameObjectParent({ child: dropMesh, parent: val })

@@ -37,6 +37,7 @@ export default {
     },
     methods: {
         handleInput(val) {
+            // undoable rename
             UndoableAction.addAction(new UndoableAction(this.innerValue.name, val, val => this.innerValue.name = val))
         },
         toggleEditMode() {

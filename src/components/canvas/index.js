@@ -129,13 +129,13 @@ export default {
         setScriptValues(type, value) {
             ['x', 'y', 'z'].forEach(field => {
                 this.game.setGroupScriptValue(this.gameObject, {
-                    scriptName: 'transform.js',
+                    scriptName: 'transform',
                     groupName: type,
                     fieldName: field,
                     value: value[field],
                     type: 'NUMBER'
                 })
-                this.gameObject.getMesh()[type][field] = value[field]
+                this.gameObject.transform.fields[type].children[field].set(value[field])
             })
         },
         detachEditControl() {

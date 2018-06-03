@@ -68,11 +68,11 @@ const returnValues = `return {${events.join(',')}}`
 export const readScriptFromFile = (file, gameObject) =>
     AssetManager.readLocalFile(file).then(content =>
         getScriptObject(typeof file === 'string'
-            ? trimFilenameExtension(file)
+            ? file
             : file.name, content, gameObject))
 
 export const getScriptObject = (name, content, gameObject) => ({
-    name: trimFilename(name),
+    name: trimFilenameExtension(name),
     content,
     Behavior: new Function('BABYLON', 'scene', ...events, `${content}\n${returnValues}`).bind(gameObject)
 })
