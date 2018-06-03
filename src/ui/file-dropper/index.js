@@ -16,6 +16,9 @@ export default {
             const gameObject = this.game.getGameObjectById(gameObjectId)
             if (gameObjectId && gameObject) this.$emit('gameObjectDrop', gameObject)
 
+            const scriptData = dataTransfer.getData('script')
+            if (scriptData) this.$emit('scriptDrop', JSON.parse(scriptData))
+
             if (dataTransfer.items) {
                 for (let i = 0; i < dataTransfer.items.length; ++i) {
                     const item = dataTransfer.items[i]

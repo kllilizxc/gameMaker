@@ -10,7 +10,8 @@ export default {
     render(h, { props: { script: { name, fields } }, listeners }) {
         return <Card class={styles.scriptCard}>
             <DropDown initFold={false} canFold={!!fields}>
-                <div class={styles.title} slot='title'>
+                <div class={styles.title} slot='title' draggable
+                     onDragstart={e => listeners.drag({ e, name })}>
                     <div>{camelToWords(name)}</div>
                     <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
                                 onClick={() => listeners.delete(name)}/>

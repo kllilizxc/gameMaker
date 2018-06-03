@@ -108,6 +108,27 @@ export default {
             this.$store.dispatch('uploadAssets', file)
             this.isDragOver = false
         },
+        scriptDropHandler({ id, name }) {
+            this.isDragOver = false
+            const scriptMap = this.game.scriptsMap[id][name]
+            this.$store.dispatch('createAsset', {
+                name,
+                data: JSON.stringify(scriptMap),
+                category: 'templates'
+            })
+        },
+        gameObjectDropHandler(gameObject) {
+            this.isDragOver = false
+            const scriptsMap = Object.keys(gameObject.scripts).reduce((obj, scriptName) => {
+                obj[scriptName] = this.game.scriptsMap[gameObject.id][scriptName]
+                return obj
+            }, {})
+            this.$store.dispatch('createAsset', {
+                name: gameObject.name,
+                data: JSON.stringify(scriptsMap),
+                category: 'prefabs'
+            })
+        },
         dragOverHandler() {
             this.isDragOver = true
         },
@@ -130,6 +151,8 @@ export default {
         const {
             assetsTree,
             dropHandler,
+            gameObjectDropHandler,
+            scriptDropHandler,
             dragOverHandler,
             dragLeaveHandler,
             isDragOver,
@@ -145,6 +168,8 @@ export default {
                       getChildrenFunction={d => d.assets}
                       haveChildrenFunction={d => d.assets && d.assets.length > 0}/>
             <FileDropper onFileDrop={dropHandler}
+                         onGameObjectDrop={gameObjectDropHandler}
+                         onScriptDrop={scriptDropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>
                 <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }} onClick={pickFile}>

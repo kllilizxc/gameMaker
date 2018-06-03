@@ -1,11 +1,12 @@
 // @flow
-import Script from '../script-card'
+import ScriptCard from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
 import { mapGetters } from 'vuex'
 import MenuItem from 'Ui/menu-item'
 import MenuPicker from 'Components/menu-picker'
 import defaultScripts from '../../../static/scripts'
+import { getFileExtension, getScriptObject, trimFilenameExtension } from '@/common/util'
 
 export default {
     name: 'script-window',
@@ -50,7 +51,10 @@ export default {
             this.refreshScripts = !this.refreshScripts
         },
         dropHandler(file) {
-            this.addScript(file)
+            if (getFileExtension(file.name) === 'temp')
+                this.gameObject.addScriptFromTemplate(file)
+            else
+                this.addScript(file)
             this.isDragOver = false
         },
         dragOverHandler() {
@@ -58,6 +62,11 @@ export default {
         },
         dragLeaveHandler() {
             this.isDragOver = false
+        },
+        dragScript({ e, name }) {
+            e.dataTransfer.setData('script', JSON.stringify({
+                id: this.gameObject.id, name
+            }))
         },
         setScriptValue(data) {
             if (this.isPlaying) return
@@ -78,15 +87,17 @@ export default {
             dragLeaveHandler,
             addScript,
             isDragOver,
+            dragScript,
             deleteScript,
             setScriptValue
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts.map(script => <Script key={`${this.gameObject.id}:${script.name}`}
-                                           script={script}
-                                           onDelete={deleteScript}
-                                           onInput={setScriptValue}/>)}
+            {scripts.map(script => <ScriptCard key={`${this.gameObject.id}:${script.name}`}
+                                               script={script}
+                                               onDelete={deleteScript}
+                                               onDrag={dragScript}
+                                               onInput={setScriptValue}/>)}
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

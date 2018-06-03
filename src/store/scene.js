@@ -33,8 +33,8 @@ export default {
             state.game.setFileValue(name, content)
             dispatch('currentFileUpdate')
         },
-        createFile: ({ state: { game } }, file) =>
-            game.setFileValue(file.name, file.data),
+        createFile: ({ dispatch }, file) =>
+            dispatch('setFileValue', { name: file.name, content: file.data }),
         editFileName: ({ state: { game } }, { oldName, name }) => {
             const value = game.filesMap[oldName]
             delete game.filesMap[oldName]

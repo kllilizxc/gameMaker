@@ -19,6 +19,13 @@ export const getDefaultAssets = () => ({
     others: []
 })
 
+const extensions = {
+    animations: '.anim',
+    scripts: '.js',
+    prefabs: '.pref',
+    templates: '.temp'
+}
+
 type State = {}
 
 const state: State = {
@@ -57,7 +64,8 @@ export default {
         clearAssets: ({ commit }) => commit(CLEAR_ASSETS),
         setAssets: ({ commit }, data) => commit(SET_ASSETS, data),
         createAsset: ({ dispatch, commit, rootState: { scene: { game } } }, { name, data, category }) => {
-            while (game.filesMap[name] !== undefined) name = getDuplicatedName(name)
+            while (game.filesMap[name + extensions[category]] !== undefined) name = getDuplicatedName(name)
+            name += extensions[category]
             const file = { name, data }
             commit(CREATE_ASSET, { name, category })
             dispatch('setCurrentFile', name)
@@ -72,7 +80,7 @@ export default {
             delete game.filesMap[name]
             dispatch('setCurrentFile', null)
         },
-        uploadAssets: ({ state, rootState: { scene: { game } }, commit }, files) => {
+        uploadAssets: ({ state, dispatch, commit }, files) => {
             const isSingle = !files[0]
             const toReturn = Promise.all((isSingle ? [files] : [...files])
                 .map(file => {
@@ -89,7 +97,7 @@ export default {
                                 const assets = state.assets[type]
                                 if (!assets.find(filename => filename === fileData.name))
                                     assets.push(fileData.name)
-                                game.setFileValue(fileData.name, fileData.data)
+                                dispatch('setFileValue', { name: fileData.name, content: fileData.data })
                             }
 
                             switch (extension) {
@@ -107,6 +115,12 @@ export default {
                                 case 'babylon':
                                     uploadFile('models')
                                     break
+                                case 'pref':
+                                    uploadFile('prefabs')
+                                    break
+                                case 'temp':
+                                    uploadFile('templates')
+                                    break
                                 default:
                                     uploadFile('others')
                                     break
@@ -119,7 +133,7 @@ export default {
                 : toReturn
         },
         editFile({ dispatch, rootState: { scene: { gameObjects, game } } }, { file, value }) {
-            game.setFileValue(file, value)
+            dispatch('setFileValue', { name: file, content: value })
             gameObjects && gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])
                     obj.addScript(new Script(getScriptObject(file, value, obj), obj))

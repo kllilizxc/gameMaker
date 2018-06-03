@@ -3,6 +3,7 @@ import Script from './script'
 import store from '../store'
 import { GAMEOBJECT_TYPE, GROUP_TYPE, FILE_TYPE, ARRAY_TYPE } from '../components/script-field'
 import { loadMesh, getIntersects } from '../common/api'
+import { trimFilenameExtension } from '@/common/util'
 
 const { game } = store.state.scene
 
@@ -56,7 +57,7 @@ export default class GameObject {
                     .forEach(name => {
                         if (name !== '__self__') {
                             // restore other scripts
-                            const scriptContent = game.filesMap[name]
+                            const scriptContent = game.filesMap[name + '.js']
                             const values = scriptsMap[name].values
                             const script = getScriptObject(name, scriptContent, this)
                             const scriptObject = new Script(script, this, scriptsMap[name].sort)
@@ -90,14 +91,21 @@ export default class GameObject {
         return clonedMesh.gameObject
     }
 
+    addScriptFromTemplate(file) {
+        const scriptMap = JSON.parse(file.data)
+        const scriptName = trimFilenameExtension(file.name)
+        const content = game.filesMap[scriptName + '.js']
+        this.addScript(new Script(getScriptObject(file.name, content, this), this))
+        game.scriptsMap[this.id][scriptName] = scriptMap
+    }
+
     static findGameObjectById(id) {
         return game.getGameObjectById(id)
     }
 
     addDefaultScript(name) {
-        const path = getDefaultScriptsPath(name)
-        return readScriptFromFile(path, this)
-            .then(script => this.addScript(new Script({ ...script, path }, this)))
+        return readScriptFromFile(getDefaultScriptsPath(name), this)
+            .then(script => this.addScript(new Script(script, this)))
     }
 
     addDefaultScripts(scriptNames) {

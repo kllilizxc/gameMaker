@@ -13,7 +13,7 @@ function registerScript(id, { name, content }, sort) {
     const { scriptsMap } = game
     scriptsMap[id] = scriptsMap[id] || {}
     // register in filesMap
-    game.setFileValue(name, content)
+    game.setFileValue(name + '.js', content)
     scriptsMap[id][name] = scriptsMap[id][name] || { sort, values: {} }
 }
 
