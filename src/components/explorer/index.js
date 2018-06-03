@@ -8,6 +8,16 @@ import TextField from '@/ui/text-field'
 import IconButton from '@/ui/material-icon-button'
 import UndoableAction from '../../classes/undoableAction'
 
+export const templates = {
+    animation: `{
+}`,
+    script: `fields = {}
+
+function init() {}
+
+function update() {}`
+}
+
 export default {
     name: 'explorer',
     data: () => ({
@@ -83,9 +93,16 @@ export default {
                         ? <TextField value={value} onInput={val => this.editValue = val}/>
                         : value
                 }</span>
-                {isChosen && <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
-                                         onClick={() => this.handleDelete(obj)}/>}
+                {obj.assets && (obj.name === 'scripts' || obj.name === 'animations') &&
+                <IconButton icon={'add'} size={24} onClick={() => this.createAsset(obj.name)}/>}
+                {isChosen && <IconButton icon={'cancel'} size={24} onClick={() => this.handleDelete(obj)}/>}
             </div>
+        },
+        createAsset(name) {
+            const instanceName = name.slice(0, name.length - 1)
+            const assetName = 'new' + instanceName.charAt(0).toUpperCase() + instanceName.slice(1)
+            UndoableAction.addAction(new UndoableAction(assetName, { name: assetName, data: templates[instanceName], category: name },
+                val => this.$store.dispatch(val.name ? 'createAsset' : 'removeAsset', val)))
         },
         dropHandler(file) {
             this.$store.dispatch('uploadAssets', file)
