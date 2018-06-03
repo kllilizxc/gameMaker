@@ -1,10 +1,9 @@
 import * as BABYLON from 'babylonjs'
-import { removeInArray, getScriptObject, debounce } from '../common/util'
+import { removeInArray, getScriptObject, trimFilenameExtension, UUID } from '../common/util'
 import { FILE_TYPE } from '@/components/script-field'
 import Script from './script'
 import GameObject from './gameObject'
 import { getRawGameObject } from '@/store/scene'
-import { trimFilenameExtension } from "@/common/util";
 
 export default class Game {
     engine = null
@@ -75,6 +74,12 @@ export default class Game {
         gameObject = this.reloadGameObject(gameObject)
         gameObject.onScriptsReady()
         return gameObject
+    }
+
+    createGameObjectFromPrefab(file) {
+        const id = UUID()
+        this.scriptsMap[id] = JSON.parse(file.data)
+        return this.loadGameObject({ id, name: trimFilenameExtension(file.name), children: [] })
     }
 
     removeGameObject(gameObject) {

@@ -6,7 +6,7 @@ import { mapGetters } from 'vuex'
 import MenuItem from 'Ui/menu-item'
 import MenuPicker from 'Components/menu-picker'
 import defaultScripts from '../../../static/scripts'
-import { getFileExtension, getScriptObject, trimFilenameExtension } from '@/common/util'
+import { getFileExtension } from '@/common/util'
 
 export default {
     name: 'script-window',

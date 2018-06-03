@@ -30,6 +30,13 @@ export default {
                         this.$refs.treeView.setTreeData()
                     }))
             }
+
+            let file = e.dataTransfer.getData('file')
+            if (file) {
+                file = JSON.parse(file)
+                this.$store.dispatch('setGameObject',
+                    this.game.createGameObjectFromPrefab(file))
+            }
         },
         renderItem(obj) {
             const isChosen = this.gameObject && obj.id === this.gameObject.id

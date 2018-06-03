@@ -7,7 +7,7 @@ import IconButton from '@/ui/material-icon-button'
 import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 import { loadMesh } from '../../common/api'
-import { trimFilenameExtension } from '../../common/util'
+import { getFileExtension, trimFilenameExtension } from '../../common/util'
 import UndoableAction from '../../classes/undoableAction'
 
 const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'FollowCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
@@ -19,7 +19,9 @@ export default {
     }),
     computed: {
         ...mapGetters(['isPlaying', 'game']),
-        canvas() { return this.$refs.canvas }
+        canvas() {
+            return this.$refs.canvas
+        }
     },
     methods: {
         newScene() {
@@ -63,12 +65,24 @@ export default {
             e.preventDefault()
 
             const loadFileObject = fileObject => {
-                loadMesh(fileObject, this.game.scene)
-                    .then(([mesh]) => {
-                        this.$store.dispatch('createGameObject', { name: trimFilenameExtension(fileObject.name), script: 'basic/transform', mesh })
-                            .then(gameObject => this.$store.dispatch('setGameObject', gameObject))
-                            .then(() => this.game.setScriptValue({ scriptName: '__self__', fieldName: 'model', value: fileObject.name }))
-                    })
+                if (getFileExtension(fileObject.name) === 'pref')
+                    this.$store.dispatch('setGameObject',
+                        this.game.createGameObjectFromPrefab(fileObject))
+                else
+                    loadMesh(fileObject, this.game.scene)
+                        .then(([mesh]) => {
+                            this.$store.dispatch('createGameObject', {
+                                name: trimFilenameExtension(fileObject.name),
+                                script: 'basic/transform',
+                                mesh
+                            })
+                                .then(gameObject => this.$store.dispatch('setGameObject', gameObject))
+                                .then(() => this.game.setScriptValue({
+                                    scriptName: '__self__',
+                                    fieldName: 'model',
+                                    value: fileObject.name
+                                }))
+                        })
             }
 
             // virtual file
@@ -94,7 +108,8 @@ export default {
 
         const origin = { horizontal: 'left', vertical: 'bottom' }
 
-        return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler} style={{ cursor: this.isPlaying ? 'none' : '' }}>
+        return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler}
+                    style={{ cursor: this.isPlaying ? 'none' : '' }}>
             <Canvas ref='canvas'/>
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
@@ -103,10 +118,13 @@ export default {
                 <IconButton slot='left' icon='undo' onClick={() => UndoableAction.undoAction()}/>
                 <IconButton slot='left' icon='redo' onClick={() => UndoableAction.redoAction()}/>
                 <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
-                    {gameObjects.map(gameObject => <MenuItem title={gameObject} onClick={() => this.canvas[`create${gameObject}`]()}/>)}
+                    {gameObjects.map(gameObject => <MenuItem title={gameObject}
+                                                             onClick={() => this.canvas[`create${gameObject}`]()}/>)}
                 </IconMenu>
                 <IconButton slot='right' icon={isPlaying ? 'pause' : 'play_arrow'} onClick={togglePlay}/>
-                <IconButton slot='right' icon={editMode === 0 ? 'open_with' : editMode === 1 ? 'crop_rotate' : 'zoom_out_map'} onClick={setEditMode}/>
+                <IconButton slot='right'
+                            icon={editMode === 0 ? 'open_with' : editMode === 1 ? 'crop_rotate' : 'zoom_out_map'}
+                            onClick={setEditMode}/>
             </Dock>
         </div>
     }
