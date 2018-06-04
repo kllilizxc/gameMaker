@@ -135,7 +135,7 @@ export default {
                     value: value[field],
                     type: 'NUMBER'
                 })
-                this.gameObject.transform.fields[type].children[field].set(value[field])
+                this.gameObject.getMesh()[type][field] = value[field]
             })
         },
         detachEditControl() {

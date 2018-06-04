@@ -10,6 +10,7 @@ import 'muse-ui/dist/muse-ui.css'
 Vue.use(MuseUI)
 
 Vue.config.productionTip = false
+Vue.config.performance = true
 
 /* eslint-disable no-new */
 window.vm0 = new Vue({
