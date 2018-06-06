@@ -280,9 +280,9 @@ export default {
 }
 
 function leftButtonHide(style) {
-    style.transform = 'translateX(-50px)'
+    style.transform = 'translateX(-36px)'
 }
 
 function rightButtonHide(style) {
-    style.transform = 'translateX(50px)'
+    style.transform = 'translateX(36px)'
 }

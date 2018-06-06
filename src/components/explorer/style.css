@@ -24,7 +24,7 @@
 }
 
 .chosen, .chosen .name {
-    color: DeepPurple-400;
+    font-weight: bold;
 }
 
 .icon {

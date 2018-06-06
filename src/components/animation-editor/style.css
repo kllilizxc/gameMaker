@@ -26,13 +26,12 @@
     min-width: 168px;
     max-width: 400px;
     width: 25%;
-    background: Grey-300;
     border-right: 1px solid Grey-400;
 }
 
 .rightPanel {
     flex-grow: 1;
-    background: Grey-200;
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .toolIcon {

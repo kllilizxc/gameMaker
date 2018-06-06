@@ -138,8 +138,6 @@ export default class GameObject {
     addScript(scriptObject) {
         this.scripts[scriptObject.name] = scriptObject
         this[scriptObject.name] = scriptObject
-        if (scriptObject.actions)
-            Object.keys(scriptObject.actions).forEach(name => this[name] = scriptObject.actions[name])
         this.onScriptsReady()
     }
 

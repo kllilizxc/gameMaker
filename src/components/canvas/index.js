@@ -100,6 +100,7 @@ export default {
                 this.editControl = new EditControl(mesh, this.game.scene.activeCamera, this.canvas, 1, true)
                 this.editControl.enableTranslation()
                 this.editControl.addActionStartListener(actionType => {
+                    if (!this.gameObject) return
                     const { position, rotation, scaling } = this.gameObject.getMesh()
                     switch (actionType) {
                         case 0:
@@ -111,6 +112,7 @@ export default {
                     }
                 })
                 this.editControl.addActionEndListener(actionType => {
+                    if (!this.gameObject) return
                     const { position, rotation, scaling } = this.gameObject.getMesh()
                     switch (actionType) {
                         case 0:
@@ -132,7 +134,7 @@ export default {
                     scriptName: 'transform',
                     groupName: type,
                     fieldName: field,
-                    value: value[field],
+                    value: type === 'rotation' ? BABYLON.Tools.ToDegrees(value[field]) : value[field],
                     type: 'NUMBER'
                 })
                 this.gameObject.getMesh()[type][field] = value[field]

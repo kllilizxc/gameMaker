@@ -72,7 +72,8 @@ export default {
             return dispatch('createFile', file)
         },
         editAssetName: ({ dispatch, commit, rootState: { scene: { game } } }, data) => {
-            while (game.filesMap[data.name] !== undefined)
+            let count = 0
+            while (game.filesMap[data.name] !== undefined && count++) // change name until get the second duplicated name
                 data.name = getDuplicatedName(data.name)
             commit(EDIT_ASSET_NAME, data)
             dispatch('editFileName', data)
@@ -135,7 +136,7 @@ export default {
                 : toReturn
         },
         editFile({ dispatch, rootState: { scene: { gameObjects, game } } }, { file, value }) {
-            dispatch('setFileValue', { name: file, content: value })
+            game.setFileValue(file, value)
             gameObjects && gameObjects.forEach(gameObject => gameObject.forEach(obj => {
                 if (obj.scripts[file])
                     obj.addScript(new Script(getScriptObject(file, value, obj), obj))

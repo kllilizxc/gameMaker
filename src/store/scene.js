@@ -15,7 +15,6 @@ const simpleState = {
 }
 
 const state = {
-    rawGameObjects: {},
     currentFileUpdated: false
 }
 
@@ -44,6 +43,7 @@ export default {
             dispatch('clearAssets')
             game.clearData()
             game.reload()
+            dispatch('setGameObject', null)
         },
         saveScene: ({ state: { game }, rootState: { asset } }) => {
             const serializedScene = {}

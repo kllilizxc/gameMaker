@@ -20,6 +20,7 @@ function registerScript(id, { name, content }, sort) {
 export default class Script {
     constructor(script, gameObject, sort) {
         this.name = script.name
+        this.gameObject = gameObject
         const scriptEvents = getScriptEvents(script)
         Object.keys(scriptEvents).forEach(key => scriptEvents[key] && (this[key] = scriptEvents[key]))
         this.sort = sort !== undefined
@@ -27,12 +28,12 @@ export default class Script {
             : Object.keys(gameObject.scripts)
                 .reduce((max, cur) => Math.max(max, gameObject.scripts[cur].sort), -1) + 1
         registerScript(gameObject.id, script, this.sort)
-        this.actions && Object.keys(this.actions).forEach(name => this[name] = this.actions[name])
+        this.actions && Object.keys(this.actions).forEach(name => this[name] = (...args) => this.actions[name].call(gameObject, ...args))
     }
 
     action(name, ...args) {
         if (!this.actions) return
         const action = this.actions[name]
-        action && action(...args)
+        action && action.call(this.gameObject, ...args)
     }
 }

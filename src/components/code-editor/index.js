@@ -24,6 +24,7 @@ export default {
         updateContent() {
             const { currentFile, game } = this
             const { filesMap } = game
+            this.editor && console.log(this.editor.getCursorPosition())
             const setValue = val => this.editor ? this.editor.setValue(val, this.editor.getCursorPosition()) : this.initValue = val
             if (!currentFile || !filesMap[currentFile]) setValue('')
             else setValue(filesMap[currentFile])
@@ -36,6 +37,7 @@ export default {
         this.editor = ace.edit('editorCotainer')
         this.editor.getSession().setMode('ace/mode/javascript')
         this.editor.setKeyboardHandler('ace/keyboard/vim')
+        this.editor.$blockScrolling = Infinity
         this.editor.session.on('change', () => {
             if (this.editor.curOp && this.editor.curOp.command.name)
                 this.$store.dispatch('editFile', { file: this.currentFile, value: this.editor.getValue() })

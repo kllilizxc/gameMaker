@@ -7,7 +7,7 @@
     margin: 0 auto;
 }
 
-.isLocked {
+.isLocked :global(.mu-icon) {
     color: Pink-500
 }
 
@@ -21,6 +21,7 @@
     border-radius: 16px;
     overflow: auto;
     display: flex;
+    background: #cfd6d1;
 }
 
 .left {

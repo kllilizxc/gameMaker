@@ -67,7 +67,7 @@ if (this.getMesh().scaling)
     }
 
 actions = {
-    setScaling(x, y, z) {
+    setScaling: (x, y, z) => {
         fields.scaling.children.x.set(x)
         fields.scaling.children.y.set(y)
         fields.scaling.children.z.set(z)
@@ -78,7 +78,7 @@ actions = {
         position.y = y
         position.z = z
     },
-    setRotation(x, y, z) {
+    setRotation: (x, y, z) => {
         const { rotation } = this.getMesh()
         rotation.x = x
         rotation.y = y

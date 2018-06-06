@@ -123,9 +123,10 @@ export default class Game {
     }
 
     reloadGameObject(gameObject) {
+        const { parent } = gameObject
         gameObject.getMesh().dispose()
-        this.removeGameObject(this)
-        return this.loadGameObject(getRawGameObject(gameObject), gameObject.parent)
+        this.removeGameObject(gameObject)
+        return this.loadGameObject(getRawGameObject(gameObject), parent)
     }
 
     disposeGameObject(gameObject) {
@@ -135,11 +136,9 @@ export default class Game {
 
     loadGameObject(rawGameObject, parent) {
         const gameObject = this.getNewGameObject(rawGameObject)
-        rawGameObject.children.forEach(child => {
-            this.loadGameObject(child, gameObject)
-            this.setGameObjectParent({ child: gameObject, parent })
-        })
-        this.addGameObject(gameObject)
+        rawGameObject.children.forEach(child =>
+            this.loadGameObject(child, gameObject))
+        this.setGameObjectParent({ child: gameObject, parent })
         return gameObject
     }
 
