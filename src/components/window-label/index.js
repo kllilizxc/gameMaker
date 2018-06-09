@@ -4,7 +4,6 @@ import Card from 'Ui/card'
 import Icon from 'Ui/icon'
 
 import Hideable from '@/ui/hideable'
-import Draggable from '@/ui/draggable'
 import { afterTransition } from '../../common/util'
 import { MAX_SIZE } from '../desktop-manager/index'
 
@@ -106,18 +105,10 @@ export default {
                 showFunction={show}
                 clickFunction={immediateShowWindow}
                 isLocked={isDragging}>
-                <Draggable
-                    class={styles.container}
-                    touchStart={handleTouchStart}
-                    touchMove={handleTouchMove}
-                    touchEnd={handleTouchEnd}
-                    dragLimit={8}
-                    dragMin={-window.innerWidth}>
-                    <Card class={styles.card} style={{ background: color }}>
-                        <Icon className={styles.icon} icon={icon} size={32}/>
-                        <div class={styles.title}>{title}</div>
-                    </Card>
-                </Draggable>
+                <Card class={styles.card} style={{ background: color }}>
+                    <Icon className={styles.icon} icon={icon} size={32}/>
+                    <div class={styles.title}>{title}</div>
+                </Card>
             </Hideable>
     }
 }

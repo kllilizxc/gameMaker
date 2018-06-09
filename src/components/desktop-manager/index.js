@@ -206,6 +206,30 @@ export default {
             const absDeltaX = Math.abs(deltaX)
             const blockWidth = sizeToPX()
             return Math.min(Math.ceil((absDeltaX - blockWidth / 2) / blockWidth), MAX_SIZE)
+        },
+        makeDraggable() {
+            const { desktopManager } = this.$refs
+            let selectedLabel
+            desktopManager.addEventListener('mousedown', startDrag)
+            desktopManager.addEventListener('mousemove', drag)
+            desktopManager.addEventListener('mouseleave', endDrag)
+            desktopManager.addEventListener('mouseup', endDrag)
+
+
+            const startDrag = e => {
+                const { target } = e
+                if (target.classList.contains(styles.label))
+                    selectedLabel = target
+            }
+
+            const drag = e => {
+                console.log(e)
+            }
+
+            const endDrag = e => {
+                console.log(e)
+                selectedLabel = null
+            }
         }
     },
     computed: {
@@ -241,7 +265,7 @@ export default {
             windowHintSize
         } = this
 
-        return <div class={styles.desktopManager}>
+        return <div class={styles.desktopManager} ref={'desktopManager'}>
             {desktops && desktops.map((desktop) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window ref="windows"
@@ -260,6 +284,7 @@ export default {
                 }}/>}
                 <div class={styles.windowLabelList}>
                     {windowLabels.map(label => <WindowLabel label={label}
+                                                            class={styles.label}
                                                             key={label.title}
                                                             onNewWindow={handleMovingNewWindow}
                                                             onMovingWindow={handleMovingWindow}
