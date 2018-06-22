@@ -93,8 +93,12 @@ export default {
             this.$refs.windowHint.style.transition = 'none'
             this.windowHintSize = size
         },
+        firstWindowInDesktopTakeSpareSpace(size) {
+            const windowIndex = this.desktopIndicators[this.currentDesktopIndex]
+            this.windows[windowIndex].size += size
+        },
         createNewDesktopToFitWindow(): void {
-            this.windows[this.currentWindowIndex - 1].size += this.currentWindow.size
+            this.firstWindowInDesktopTakeSpareSpace(this.currentWindow.size)
             this.currentWindow.size = MAX_SIZE
             this.desktopIndicators.push(this.currentWindowIndex)
             this.resetWindowHint(MAX_SIZE)
@@ -139,7 +143,7 @@ export default {
                         this.gotoLastDesktop()
                         this.desktopIndicators.pop()
                     } else
-                        this.windows[this.currentWindowIndex - 1].size += this.currentWindow.size
+                        this.firstWindowInDesktopTakeSpareSpace(this.currentWindow.size)
                     this.removeCurrentWindow()
                     this.windowHintSize = 0
                 })
@@ -283,11 +287,11 @@ export default {
                                                             key={label.title}/>)}
                 </div>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
-                    <FloatButton mini
+                    <FloatButton small
                                  icon="keyboard_arrow_left"
                                  onClick={gotoLastDesktop}/></Hideable>}
                 {!isLastDesktop && <Hideable class={styles.toRightButton} hideFunction={rightButtonHide}>
-                    <FloatButton mini
+                    <FloatButton small
                                  icon="keyboard_arrow_right"
                                  onClick={gotoNextDesktop}/></Hideable>}
 

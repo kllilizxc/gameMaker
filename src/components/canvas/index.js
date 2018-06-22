@@ -185,10 +185,10 @@ export default {
             return this.createGameObject({ name, scripts: ['basic/transform', 'geometries/groundGeometry'] })
         },
         createPointLight(name = 'pointLight') {
-            this.createGameObject({ name, scripts: ['lights/pointLight', 'basic/transform'] })
+            return this.createGameObject({ name, scripts: ['lights/pointLight', 'basic/transform'] })
         },
         createDirectionalLight(name = 'directionalLight') {
-            this.createGameObject({ name, scripts: ['lights/directionalLight', 'basic/transform', 'lights/shadowGenerator'] })
+            return this.createGameObject({ name, scripts: ['lights/directionalLight', 'basic/transform', 'lights/shadowGenerator'] })
         },
         createSpotLight(name = 'spotLight') {
             return this.createGameObject({ name, scripts: ['lights/spotLight', 'basic/transform'] })

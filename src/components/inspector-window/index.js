@@ -2,14 +2,13 @@
 import ScriptCard from '../script-card'
 import styles from './style.css'
 import FileDropper from '@/ui/file-dropper'
-import { mapGetters } from 'vuex'
-import MenuItem from 'Ui/menu-item'
+import { mapGetters, mapActions } from 'vuex'
 import MenuPicker from 'Components/menu-picker'
 import defaultScripts from '../../../static/scripts'
 import { getFileExtension } from '@/common/util'
 
 export default {
-    name: 'script-window',
+    name: 'inspector-window',
     props: {},
     data() {
         return {
@@ -35,14 +34,18 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['setIsLoading']),
         getScripts(gameObject) {
             const { scripts } = gameObject
             this.scripts = Object.keys(scripts).map(key => scripts[key])
         },
         addScript(file) {
+            if (!this.gameObject) return
             if (file instanceof File) {
+                this.setIsLoading(true)
                 this.$store.dispatch('uploadAssets', file)
                     .then(fileData => this.game.addScript(this.gameObject, fileData))
+                    .finally(() => this.setIsLoading(false))
             } else if (file.data) {
                 this.game.addScript(this.gameObject, file)
             }
@@ -77,7 +80,9 @@ export default {
                 this.game.setScriptValue(this.gameObject, data)
         },
         deleteScript(name) {
+            this.setIsLoading(true)
             this.$store.dispatch('removeScript', name)
+                .finally(() => this.setIsLoading(false))
         }
     },
     render() {
@@ -104,14 +109,10 @@ export default {
                          onFileDragLeave={dragLeaveHandler}>
                 <div class={{ [styles.dropZone]: true, [styles.dragOver]: isDragOver }}>
                     <MenuPicker class={styles.menuPicker}
-                                items={Object.keys(defaultScripts).map(key => ({ key, data: defaultScripts[key] }))}
-                                onInput={key => addScript({ name: key, data: defaultScripts[key] })}
-                                renderFunction={({ key, data }) =>
-                                    <MenuItem title={key}>
-                                        {Object.keys(data).map(childKey =>
-                                            <MenuItem title={childKey}/>)}
-                                    </MenuItem>
-                                }/>
+                                style={{ margin: 'auto' }}
+                                items={defaultScripts}
+                                placeHolder={'Type to search scripts'}
+                                onInput={({ key, data }) => addScript({ name: key, data })}/>
                 </div>
             </FileDropper>
         </div>

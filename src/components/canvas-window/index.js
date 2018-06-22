@@ -1,14 +1,14 @@
 import styles from './style.css'
 import Canvas from 'Components/canvas'
 import Dock from 'Components/dock'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import AssetManager from '@/common/asset-manager'
 import IconButton from '@/ui/material-icon-button'
-import IconMenu from '@/ui/icon-menu'
 import MenuItem from '@/ui/menu-item'
 import { loadMesh } from '../../common/api'
 import { getFileExtension, trimFilenameExtension } from '../../common/util'
 import UndoableAction from '../../classes/undoableAction'
+import { DialogService } from '@/components/dialog'
 
 const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'FollowCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
 
@@ -18,12 +18,13 @@ export default {
         editMode: 0
     }),
     computed: {
-        ...mapGetters(['isPlaying', 'game']),
+        ...mapGetters(['isPlaying', 'game', 'isLoading']),
         canvas() {
             return this.$refs.canvas
         }
     },
     methods: {
+        ...mapActions(['setIsLoading']),
         newScene() {
             this.canvas.detachEditControl()
             this.canvas.dispose()
@@ -101,26 +102,34 @@ export default {
                     }
                 }
             }
+        },
+        pickGameObject() {
+            DialogService.show({
+                contentSlot: (h, close) =>
+                    gameObjects.map(gameObject =>
+                        <MenuItem title={gameObject}
+                                  onClick={() => {
+                                      this.setIsLoading(true)
+                                      this.canvas[`create${gameObject}`]()
+                                          .finally(() => this.setIsLoading(false))
+                                      close()
+                                  }}/>)
+            })
         }
     },
     render(h) {
-        const { editMode, isPlaying, newScene, openScene, build, togglePlay, saveScene, setEditMode, dropHandler, dragOverHandler } = this
-
-        const origin = { horizontal: 'left', vertical: 'bottom' }
+        const { editMode, isPlaying, isLoading, newScene, openScene, pickGameObject, togglePlay, saveScene, setEditMode, dropHandler, dragOverHandler } = this
 
         return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler}
                     style={{ cursor: this.isPlaying ? 'none' : '' }}>
-            <Canvas ref='canvas'/>
+            <div class={styles.container} style={{ filter: isLoading ? 'blur(8px)' : '' }}><Canvas ref='canvas'/></div>
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
                 <IconButton slot='left' icon='save' onClick={saveScene}/>
                 <IconButton slot='left' icon='undo' onClick={() => UndoableAction.undoAction()}/>
                 <IconButton slot='left' icon='redo' onClick={() => UndoableAction.redoAction()}/>
-                <IconMenu slot='right' icon='add' anchorOrigin={origin} targetOrigin={origin}>
-                    {gameObjects.map(gameObject => <MenuItem title={gameObject}
-                                                             onClick={() => this.canvas[`create${gameObject}`]()}/>)}
-                </IconMenu>
+                <IconButton slot='left' icon='add' onClick={pickGameObject}/>
                 <IconButton slot='right' icon={isPlaying ? 'pause' : 'play_arrow'} onClick={togglePlay}/>
                 <IconButton slot='right'
                             icon={editMode === 0 ? 'open_with' : editMode === 1 ? 'crop_rotate' : 'zoom_out_map'}

@@ -15,6 +15,7 @@
     padding: 8px;
     overflow: auto;
     min-width: 68px;
+    cursor: pointer;
 }
 
 .title {

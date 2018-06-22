@@ -11,15 +11,17 @@
     border-radius: 4px;
 }
 
-.children {
-    margin-left: 16px;
-}
-
 .treeView {
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .hint {
     color: Black-Text;
     padding: 0 16px;
-    font-size: 16px;
+    font-size: 18px;
+}
+
+.title {
+    flex-grow: 1;
 }

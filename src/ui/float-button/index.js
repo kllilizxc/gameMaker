@@ -2,8 +2,9 @@ export default {
     name: 'float-button',
     props: {
         icon: String,
-        mini: Boolean,
-        secondary: Boolean
+        large: Boolean,
+        small: Boolean,
+        color: String
     },
     methods: {
         handleClick(e) {
@@ -13,11 +14,14 @@ export default {
     render() {
         const {
             icon,
-            mini,
-            secondary,
+            large,
+            small,
+            color,
             handleClick
         } = this
 
-        return <mu-float-button mini={mini} secondary={secondary} icon={icon} onClick={handleClick}/>
+        return <mu-button fab large={large} small={small} color={color} onClick={handleClick}>
+            <mu-icon value={icon}/>
+        </mu-button>
     }
 }

@@ -112,7 +112,7 @@ export default class Game {
     }
 
     addScript(gameObject, file) {
-        gameObject.addScript(new Script(getScriptObject(file.name, file.data, gameObject), gameObject))
+        return gameObject.addScript(new Script(getScriptObject(file.name, file.data, gameObject), gameObject))
     }
 
     removeScript(gameObject, scriptName) {

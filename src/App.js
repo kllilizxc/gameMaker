@@ -1,12 +1,13 @@
 import styles from './style.css'
 import DesktopManager from '@/components/desktop-manager'
-import ScriptWindow from '@/components/script-window'
+import ScriptWindow from '@/components/inspector-window'
 import SceneWindow from '@/components/scene-window'
-import ExplorerWindow from '@/components/explorer-window'
+import ExplorerWindow from '@/components/explorer'
 import CanvasWindow from '@/components/canvas-window'
 import CodeEditor from '@/components/code-editor'
 import AnimationEditor from '@/components/animation-editor'
 import COLORS from '@/common/colors.css'
+import { DialogOutlet } from '@/components/dialog'
 
 import { mapGetters } from 'vuex'
 
@@ -22,10 +23,10 @@ const themes = [
     ['#F1DE98', '#F0B885', '#D66761', '#EE6C62', '#384059'],
     ['#FBF6BF', '#FFBF94', '#CD7044', '#DA9A6E', '#F4A062'],
     ['#F8B195', '#6C5B7B', '#C06C84', '#F67280', '#355C7D'],
-    ['#D9C5BC', '#A7BFA8', '#BF555B', '#BD9C8D', '#D9C18F']
+    ['#D9C5BC', '#A7BFA8', '#C06C84', '#BD9C8D', '#D9C18F']
 ]
 
-let currentTheme = themes[0]
+let currentTheme = themes[6]
 
 export default {
     name: 'app',
@@ -67,6 +68,7 @@ export default {
         const { windowLabels, defaultWindow } = this
 
         return <div id="app" class={styles.app}>
+            <DialogOutlet/>
             <DesktopManager ref="desktopManager" windowLabels={windowLabels} defaultWindow={defaultWindow}/>
         </div>
     }

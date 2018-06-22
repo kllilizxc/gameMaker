@@ -34,3 +34,21 @@ body {
 :global(.mu-icon) {
     user-select: none;
 }
+
+:global(.bounce-enter-active) {
+    animation: bounce-in .5s;
+}
+:global(.bounce-leave-active) {
+    animation: bounce-in .5s reverse;
+}
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

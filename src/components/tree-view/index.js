@@ -13,15 +13,19 @@ export default {
             type: Function,
             default: () => true
         },
-        renderItemFunction: {
-            type: Function,
-            required: true
-        },
         getChildrenFunction: {
             type: Function,
             default: () => []
         },
+        renderItemFunction: {
+            type: Function,
+            required: true
+        },
         initFold: {
+            type: Boolean,
+            default: true
+        },
+        indent: {
             type: Boolean,
             default: true
         },
@@ -47,11 +51,12 @@ export default {
     },
     methods: {
         setTreeData() {
-            this.treeData = this.getItemDataFromPropData(this.data)
+            this.treeData = this.getItemDataFromPropData(this.data, null)
         },
-        getItemDataFromPropData(data) {
+        getItemDataFromPropData(data, parent) {
             return data && data.map(obj => {
                 const d = {
+                    parent,
                     children: [],
                     haveChildren: this.haveChildrenFunction(obj) || false,
                     raw: obj
@@ -65,16 +70,16 @@ export default {
             this.chosenObj = obj
             obj.fold = fold
             if (!fold && obj.haveChildren)
-                obj.children = this.getItemDataFromPropData(this.getChildrenFunction(obj.raw))
+                obj.children = this.getItemDataFromPropData(this.getChildrenFunction(obj.raw), obj)
         },
         renderItem(obj, parent) {
             return <div class={styles.itemContainer} key={this.getIdFunction(obj.raw)} ref='item' refInFor>
                 <DropDown initFold={this.initFold} class={styles.treeItem} canFold={obj.haveChildren}
                           onInput={fold => this.toggleItem(obj, fold)}>
-                    <div slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
-                    <div class={styles.children} slot='content'>
+                    <div class={styles.title} slot='title'>{this.renderItemFunction(obj.raw, parent && parent.raw)}</div>
+                    <transition-group name="bounce" tag="div" style={{ marginLeft: this.indent ? '16px' : '' }} slot='content'>
                         {this.renderItemList(obj.children, obj)}
-                    </div>
+                    </transition-group>
                 </DropDown>
             </div>
         },
@@ -89,9 +94,11 @@ export default {
         } = this
 
         return <div class={styles.treeView}>
+            <transition-group name="bounce" tag="div">
             {treeData.length > 0
                 ? renderItemList(treeData)
-                : <div class={styles.hint}>Nothing Found</div>}
+                : <div key={-1} class={styles.hint}>Nothing Found</div>}
+            </transition-group>
         </div>
     }
 }

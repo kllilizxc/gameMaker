@@ -8,6 +8,7 @@ import { GROUP_TYPE } from '../script-field'
 import styles from './style.css'
 import UndoableAction from '../../classes/undoableAction'
 import { trimFilenameExtension } from '../../common/util'
+import { DialogService } from '@/components/dialog'
 
 const INIT_BIG_NUMBER_LENGTH = 100
 const INIT_SMALL_NUMBER_STEPS_NUM = 5
@@ -38,7 +39,9 @@ export default {
             handler: 'readKeysFromFile',
             immediate: true
         },
-        currentFileUpdated() { this.readKeysFromFile() }
+        currentFileUpdated() {
+            this.readKeysFromFile()
+        }
     },
     computed: {
         ...mapGetters(['gameObject', 'currentFile', 'currentFileUpdated', 'assets', 'game']),
@@ -47,20 +50,20 @@ export default {
             const { scripts } = this.gameObject
             return Object.keys(scripts).map(name => { // scripts
                 const { fields } = scripts[name]
-                const fieldsArray = fields && Object.keys(fields).map(fieldName => { // fields
+                const scriptObject = { name: trimFilenameExtension(name) }
+                scriptObject.children = fields && Object.keys(fields).map(fieldName => { // fields
                     const field = fields[fieldName]
-                    if (field.type === GROUP_TYPE)
-                        return {
-                            name: fieldName,
-                            children: Object.keys(field.children).map(childName => { // group
-                                const child = field.children[childName]
-                                return { name: childName, get: child.get, set: child.set }
-                            })
-                        }
-                    else
-                        return { name: fieldName, get: field.get, set: field.set }
+                    const fieldObject = { name: fieldName, parent: scriptObject }
+                    if (field.type === GROUP_TYPE) {
+                        fieldObject.children = Object.keys(field.children).map(childName => { // group
+                            const child = field.children[childName]
+                            return { name: childName, parent: fieldObject, get: child.get, set: child.set }
+                        })
+                        return fieldObject
+                    } else
+                        return { ...fieldObject, get: field.get, set: field.set }
                 })
-                return { name: trimFilenameExtension(name), children: fieldsArray }
+                return scriptObject
             }).filter(f => f.children)
         },
         smallNumberLength() {
@@ -92,6 +95,29 @@ export default {
         }
     },
     methods: {
+        pickKey() {
+            console.log(this.fieldsData)
+            DialogService.show({
+                contentSlot: (h, close) =>
+                    <TreeView data={this.fieldsData}
+                              getIdFunction={item => item.name}
+                              haveChildrenFunction={item => item.children && item.children.length > 0}
+                              getChildrenFunction={item => item.children}
+                              renderItemFunction={item =>
+                                  <MenuItem
+                                      onClick={() => {
+                                          console.log(item)
+                                          this.addKey(
+                                              item.parent.parent.name,
+                                              item.parent.name,
+                                              item.name
+                                          )
+                                          close()
+                                      }
+                                      }
+                                      title={item.name}/>}/>
+            })
+        },
         readKeysFromFile() {
             const { game, currentFile } = this
             if (!currentFile) return
@@ -198,9 +224,6 @@ export default {
         openAddMenu() {
             this.addMenuIsOpen = !this.addMenuIsOpen
         },
-        handleAddMenuClose() {
-            this.addMenuIsOpen = false
-        },
         setKeyArray() {
             this.keyArray = Object.keys(this.keys)
         },
@@ -208,7 +231,7 @@ export default {
             const fieldName = names.filter(n => n).join('.')
             if (!this.keys[fieldName])
                 this.addFrame(fieldName, 0, this.getFieldValue(fieldName))
-            this.handleAddMenuClose()
+            this.addMenuIsOpen = false
             return fieldName
         },
         getField(fieldName) {

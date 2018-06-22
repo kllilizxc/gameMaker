@@ -4,6 +4,7 @@ import Card from '@/ui/card'
 import { camelToWords } from '../../common/util'
 import DropDown from '@/ui/drop-down'
 import IconButton from '@/ui/material-icon-button'
+import COLORS from 'Common/colors.css'
 
 export default {
     functional: true,
@@ -13,7 +14,7 @@ export default {
                 <div class={styles.title} slot='title' draggable
                      onDragstart={e => listeners.drag({ e, name })}>
                     <div>{camelToWords(name)}</div>
-                    <IconButton iconClass={styles.deleteIcon} icon={'cancel'} size={24}
+                    <IconButton color={COLORS['Red-300']} icon={'cancel'} size={24}
                                 onClick={() => listeners.delete(name)}/>
                 </div>
                 <div slot='content'>

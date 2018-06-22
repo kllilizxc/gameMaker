@@ -55,3 +55,8 @@
     color: Grey-900;
     margin: auto;
 }
+
+.textField {
+    padding: 0 16px;
+    margin-bottom: 0 !important;
+}

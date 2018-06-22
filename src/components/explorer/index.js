@@ -7,6 +7,7 @@ import { mapGetters } from 'vuex'
 import TextField from '@/ui/text-field'
 import IconButton from '@/ui/material-icon-button'
 import UndoableAction from '../../classes/undoableAction'
+import COLORS from 'Common/colors.css'
 
 export const templates = {
     animation: `{
@@ -24,7 +25,8 @@ export default {
         isDragOver: false,
         editingObj: null,
         updateAssets: false,
-        editValue: null
+        editValue: null,
+        keyword: ''
     }),
     methods: {
         setChosenItem(obj) {
@@ -95,13 +97,18 @@ export default {
                 }</span>
                 {obj.assets && (obj.name === 'scripts' || obj.name === 'animations') &&
                 <IconButton icon={'add'} size={24} onClick={() => this.createAsset(obj.name)}/>}
-                {isChosen && <IconButton icon={'cancel'} size={24} onClick={() => this.handleDelete(obj)}/>}
+                {isChosen && <IconButton icon={'cancel'} color={COLORS['Red-300']} size={24}
+                                         onClick={() => this.handleDelete(obj)}/>}
             </div>
         },
         createAsset(name) {
             const instanceName = name.slice(0, name.length - 1)
             const assetName = 'new' + instanceName.charAt(0).toUpperCase() + instanceName.slice(1)
-            UndoableAction.addAction(new UndoableAction(assetName, { name: assetName, data: templates[instanceName], category: name },
+            UndoableAction.addAction(new UndoableAction(assetName, {
+                    name: assetName,
+                    data: templates[instanceName],
+                    category: name
+                },
                 val => this.$store.dispatch(val.name ? 'createAsset' : 'removeAsset', val)))
         },
         dropHandler(file) {
@@ -145,8 +152,11 @@ export default {
     computed: {
         ...mapGetters(['assets', 'game', 'currentFile']),
         assetsTree() {
-            const { updateAssets } = this
-            return Object.keys(this.assets).map(name => ({ name, assets: this.assets[name] }))
+            const { updateAssets, keyword } = this
+            return Object.keys(this.assets).map(name => ({
+                name,
+                assets: this.assets[name].filter(assetName => assetName.toLowerCase().includes(keyword))
+            }))
         }
     },
     render() {
@@ -162,7 +172,13 @@ export default {
             renderItem
         } = this
 
+        console.log(this.assetsTree)
+
         return <div class={styles.explorer}>
+            <TextField fullWidth class={styles.textField}
+                       value={this.keyword}
+                       placeHolder={'Type to search assets'}
+                       onInput={val => this.keyword = val.toLowerCase()}/>
             <TreeView data={assetsTree}
                       renderItemFunction={renderItem}
                       initFold={false}

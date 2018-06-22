@@ -13,10 +13,6 @@
     margin-left: -16px;
 }
 
-.deleteIcon {
-    color: Red-300;
-}
-
 :global(.mu-icon-button):not(.deleteIcon) {
     margin-left: auto;
 }

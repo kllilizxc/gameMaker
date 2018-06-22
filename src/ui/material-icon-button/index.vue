@@ -1,9 +1,10 @@
 <template>
-    <mu-icon-button
-        :icon="icon"
-        :iconClass="iconClass"
-        :disabled="disabled"
-        @click="handleClick"/>
+    <mu-button icon @click="handleClick">
+        <mu-icon :value="icon"
+                 :color="color"
+                 :iconClass="iconClass"
+                 :disabled="disabled"/>
+    </mu-button>
 </template>
 <script>
     export default {
@@ -11,7 +12,8 @@
         props: {
             icon: String,
             iconClass: String,
-            disabled: Boolean
+            disabled: Boolean,
+            color: String
         },
         methods: {
             handleClick(e) {

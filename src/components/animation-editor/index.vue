@@ -8,22 +8,8 @@
                 <IconButton :icon="isPlaying ? 'pause' : 'play_arrow'" size="24" :class="$style.toolIcon"
                             @click="togglePlaying"/>
                 <IconButton icon="add" size="24" :class="$style.toolIcon"
-                            @click="openAddMenu" ref="addButton"/>
+                            @click="pickKey" ref="addButton"/>
                 <IconButton icon="insert_drive_file" size="24" :class="$style.toolIcon" @click="createAnimation"/>
-                <Popover :trigger="addMenuTrigger" :open="addMenuIsOpen" :close="handleAddMenuClose">
-                    <Menu v-if="fieldsData.length > 0">
-                        <MenuItem v-for="script in fieldsData" :title="script.name" :key="script.name"
-                                  rightIcon="keyboard_arrow_right">
-                            <MenuItem v-for="field in script.children" :title="field.name" :key="field.name"
-                                      @click="() => !field.children && addKey(script.name, field.name)"
-                                      :rightIcon="field.children && 'keyboard_arrow_right'">
-                                <MenuItem v-for="child in field.children" :title="child.name" :key="child.name"
-                                          @click="() => addKey(script.name, field.name, child.name)"/>
-                            </MenuItem>
-                        </MenuItem>
-                    </Menu>
-                    <div v-else :class="$style.hint">Empty</div>
-                </Popover>
             </div>
             <div :class="$style.fields">
                 <div :class="$style.fieldItem" v-for="keyName in keyArray" :key="keyName">{{keyName}}</div>
@@ -73,11 +59,12 @@
                     </g>
                     <g>
                         <g v-for="(propertyName, y) in keyArray" :key="propertyName">
-                            <rect :class="[$style.frameRect, $style.draggable, { [$style.chosenFrame]: frameIsChosen(timestamp, y) }]"
-                                  v-for="timestamp in Object.keys(keys[propertyName])" :key="timestamp"
-                                  height="10" width="10" :data-timestamp="timestamp" :data-y="y"
-                                  @click="() => setChosenFrame(timestamp, y)" @dblclick="() => removeFrame(timestamp, y)"
-                                  :transform="`translate(${getPosByTimestamp(timestamp)}, ${(y + .5) * 48 - 5}) rotate(45)`"/>
+                            <rect
+                                :class="[$style.frameRect, $style.draggable, { [$style.chosenFrame]: frameIsChosen(timestamp, y) }]"
+                                v-for="timestamp in Object.keys(keys[propertyName])" :key="timestamp"
+                                height="10" width="10" :data-timestamp="timestamp" :data-y="y"
+                                @click="() => setChosenFrame(timestamp, y)" @dblclick="() => removeFrame(timestamp, y)"
+                                :transform="`translate(${getPosByTimestamp(timestamp)}, ${(y + .5) * 48 - 5}) rotate(45)`"/>
                         </g>
                     </g>
                     <g>

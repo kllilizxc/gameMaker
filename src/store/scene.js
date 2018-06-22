@@ -4,17 +4,19 @@ import {
 } from '../common/util'
 import AssetManager from '@/common/asset-manager'
 import Game from '../classes/game'
+import UndoableAction from '@/classes/undoableAction'
 
 const logger = console
 
 const simpleState = {
-    gameObject: null,
+    isLoading: false,
     isPlaying: false,
     game: new Game(),
     currentFile: null
 }
 
 const state = {
+    gameObject: null,
     currentFileUpdated: false
 }
 
@@ -26,6 +28,9 @@ export default {
     },
     actions: {
         ...stateToActions(simpleState),
+        setGameObject({ state }, gameObject) {
+            UndoableAction.addAction(new UndoableAction(state.gameObject, gameObject, val => state.gameObject = val))
+        },
         currentFileUpdate: ({ state }) =>
             state.currentFileUpdated = !state.currentFileUpdated,
         setFileValue: ({ state, dispatch }, { name, content }) => {
