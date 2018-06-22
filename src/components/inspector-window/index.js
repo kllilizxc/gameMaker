@@ -99,11 +99,13 @@ export default {
         } = this
 
         return <div class={styles.scriptWindow}>
-            {scripts.map(script => <ScriptCard key={`${this.gameObject.id}:${script.name}`}
-                                               script={script}
-                                               onDelete={deleteScript}
-                                               onDrag={dragScript}
-                                               onInput={setScriptValue}/>)}
+            <transition-group name="bounce" tag="div">
+                {scripts.map(script => <ScriptCard mKey={`${this.gameObject.id}:${script.name}`}
+                                                   script={script}
+                                                   onDelete={deleteScript}
+                                                   onDrag={dragScript}
+                                                   onInput={setScriptValue}/>)}
+            </transition-group>
             <FileDropper onFileDrop={dropHandler}
                          onFileDragOver={dragOverHandler}
                          onFileDragLeave={dragLeaveHandler}>

@@ -288,10 +288,12 @@ export default {
                 </div>
                 {!isFirstDesktop && <Hideable class={styles.toLeftButton} hideFunction={leftButtonHide}>
                     <FloatButton small
+                                 color={'secondary'}
                                  icon="keyboard_arrow_left"
                                  onClick={gotoLastDesktop}/></Hideable>}
                 {!isLastDesktop && <Hideable class={styles.toRightButton} hideFunction={rightButtonHide}>
                     <FloatButton small
+                                 color={'secondary'}
                                  icon="keyboard_arrow_right"
                                  onClick={gotoNextDesktop}/></Hideable>}
 

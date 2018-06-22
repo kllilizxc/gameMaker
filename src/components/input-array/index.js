@@ -19,7 +19,7 @@ export default {
     render(h) {
         return <div>
             <div class={styles.label}>size</div>
-            <TextField fullWidth type='number' min={0} step={1} value={this.size} onInput={val => {
+            <TextField color={'secondary'} fullWidth type='number' min={0} step={1} value={this.size} onInput={val => {
                 this.size = +val
                 this.$emit('inputSize', this.size)
             }}/>

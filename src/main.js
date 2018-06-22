@@ -6,8 +6,17 @@ import store from './store'
 
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
+import theme from 'muse-ui/lib/theme'
 
 Vue.use(MuseUI)
+theme.add('candy', {
+    primary: '#58323d',
+    secondary: '#c06c84',
+    success: '#4caf50',
+    warning: '#ffeb3b'
+}, 'light')
+
+theme.use('candy')
 
 Vue.config.productionTip = false
 Vue.config.performance = true
@@ -20,3 +29,4 @@ window.vm0 = new Vue({
     template: '<App/>',
     components: { App }
 })
+//

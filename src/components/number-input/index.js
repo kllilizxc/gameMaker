@@ -63,6 +63,7 @@ export default {
 
         return <div class={styles.numberInput}>
             <TextField class={styles.textField}
+                       color={'secondary'}
                        ref={'input'}
                        type={'number'}
                        icon={icon}

@@ -3,7 +3,6 @@ import styles from './style.css'
 import Icon from '@/ui/icon'
 import IconButton from '@/ui/material-icon-button'
 import UndoableAction from '../../classes/undoableAction'
-import COLORS from 'Common/colors.css'
 
 export default {
     name: 'scene-item',
@@ -99,8 +98,8 @@ export default {
                         [styles.dragOver]: isDragOver
                     }]}>
             <Icon className={styles.icon} icon={icon} size={24}/>
-            {editMode ? <TextField value={innerValue.name} type='text' onInput={handleInput}/> : <span>{innerValue.name}</span>}
-            {isChosen && <IconButton iconClass={styles.deleteIcon} color={COLORS['Red-300']} icon={'cancel'} size={24} onClick={handleDelete}/>}
+            {editMode ? <TextField color={'secondary'} value={innerValue.name} type='text' onInput={handleInput}/> : <span>{innerValue.name}</span>}
+            {isChosen && <IconButton iconClass={styles.deleteIcon} color={'secondary'} icon={'cancel'} size={24} onClick={handleDelete}/>}
         </div>
     }
 }

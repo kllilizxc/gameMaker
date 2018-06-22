@@ -7,7 +7,6 @@ import { mapGetters } from 'vuex'
 import TextField from '@/ui/text-field'
 import IconButton from '@/ui/material-icon-button'
 import UndoableAction from '../../classes/undoableAction'
-import COLORS from 'Common/colors.css'
 
 export const templates = {
     animation: `{
@@ -92,12 +91,12 @@ export default {
                       onKeydown={e => this.handleKeydown(e, obj)}
                       draggable onDragstart={e => this.handleDragStart(e, obj)}>{
                     this.editingObj === obj
-                        ? <TextField value={value} onInput={val => this.editValue = val}/>
+                        ? <TextField color={'primary'} value={value} onInput={val => this.editValue = val}/>
                         : value
                 }</span>
                 {obj.assets && (obj.name === 'scripts' || obj.name === 'animations') &&
                 <IconButton icon={'add'} size={24} onClick={() => this.createAsset(obj.name)}/>}
-                {isChosen && <IconButton icon={'cancel'} color={COLORS['Red-300']} size={24}
+                {isChosen && <IconButton icon={'cancel'} color={'primary'} size={24}
                                          onClick={() => this.handleDelete(obj)}/>}
             </div>
         },
@@ -176,6 +175,7 @@ export default {
 
         return <div class={styles.explorer}>
             <TextField fullWidth class={styles.textField}
+                       color={'primary'}
                        value={this.keyword}
                        placeHolder={'Type to search assets'}
                        onInput={val => this.keyword = val.toLowerCase()}/>

@@ -43,6 +43,7 @@ export default {
                 contentSlot: (h, close) =>
                     <div>
                         <TextField fullWidth class={styles.textField}
+                                   color={'secondary'}
                                    value={this.keyword}
                                    placeHolder={this.placeHolder || 'Type to Search'}
                                    onInput={val => this.keyword = val.toLowerCase()}/>
