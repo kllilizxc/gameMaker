@@ -1,5 +1,6 @@
 
 @value Shadow-100, Grey-200 from '@/common/colors.css';
+@value Inspector from '@/common/theme.css';
 
 .fileDropper {
     width: 72%;
@@ -9,7 +10,7 @@
     cursor: pointer;
     border-radius: 4px;
     overflow: hidden;
-    background: #D9C5BC;
+    background: Inspector;
     box-shadow: Shadow-100;
 }
 

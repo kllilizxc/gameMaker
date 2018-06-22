@@ -1,4 +1,5 @@
 @value White-500, Shadow-100 from 'Common/colors.css';
+@value Inspector from '@/common/theme.css';
 
 .dialog {
     position: fixed;
@@ -22,7 +23,7 @@
 
 .content {
     box-shadow: Shadow-100;
-    background: #D9C5BC;
+    background: Inspector;
     padding: 16px;
     max-width: 400px;
     max-height: 80%;
