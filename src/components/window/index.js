@@ -45,7 +45,7 @@ export default {
                                      clickFunction={immediateReleaseWindow}
                                      dragMin={-window.innerWidth}
                                      dragLimit={window.innerWidth}>
-                    <div class={styles.title}>{title}</div>
+                    <div class={styles.title} data-title={title}>{title}</div>
                 </Draggable>}
                 {this.$slots.default}
             </Card>
