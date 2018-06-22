@@ -13,7 +13,8 @@ theme.add('candy', {
     primary: '#58323d',
     secondary: '#c06c84',
     success: '#4caf50',
-    warning: '#ffeb3b'
+    warning: '#ffeb3b',
+    inspector: '#D9C5BC'
 }, 'light')
 
 theme.use('candy')

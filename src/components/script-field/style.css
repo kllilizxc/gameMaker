@@ -47,4 +47,10 @@
     font-size: 12px;
 }
 
+.scriptField :global(.mu-switch-thumb) {
+    background: #d9c5bc;
+}
 
+.scriptField :global(.mu-switch-track) {
+    background: rgba(0, 0, 0, 0.1);
+}

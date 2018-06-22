@@ -19,13 +19,6 @@ export const GAMEOBJECT_TYPE = 'GAMEOBJECT'
 export const GROUP_TYPE = 'GROUP'
 export const ARRAY_TYPE = 'ARRAY'
 
-export type Field = {
-    type: string,
-    get: () => any,
-    set: any => void,
-    options: any
-}
-
 export default {
     name: 'script-field',
     props: {
