@@ -217,8 +217,7 @@ export default {
             }
         },
         endDrag(e) {
-            const isDragging = Math.abs(this.deltaX) > 8
-            if ((!this.selectedLabel && !this.selectedWindow) || !isDragging) return
+            if ((!this.selectedLabel && !this.selectedWindow)) return
             this.releaseWindow()
             if (this.selectedLabel)
                 this.selectedLabel.style.transform = ''
