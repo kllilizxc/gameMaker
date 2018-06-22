@@ -1,0 +1,7 @@
+.item {
+    position: relative;
+    font-size: 18px;
+    cursor: pointer;
+    height: 48px;
+    line-height: 48px;
+}

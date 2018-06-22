@@ -25,8 +25,6 @@ export default {
         bigNumberStep: MIN_BIG_NUMBER_STEP,
         isRecording: false,
         isPlaying: false,
-        addMenuTrigger: null,
-        addMenuIsOpen: false,
         chosenFrame: { timestamp: -1, y: -1 },
         keys: {},
         indicatorTimestamp: 0,
@@ -83,7 +81,6 @@ export default {
         }
     },
     mounted() {
-        this.addMenuTrigger = this.$refs.addButton.$el
         this.makeDraggable()
         this.$refs.timeline.addEventListener('wheel', this.scrollOnTimeline)
         this.game.onSetScript = ({ scriptName, groupName, fieldName, value }) => {
@@ -221,9 +218,6 @@ export default {
                 this.setFieldValue(keyName, keyValue)
             })
         },
-        openAddMenu() {
-            this.addMenuIsOpen = !this.addMenuIsOpen
-        },
         setKeyArray() {
             this.keyArray = Object.keys(this.keys)
         },
@@ -231,7 +225,6 @@ export default {
             const fieldName = names.filter(n => n).join('.')
             if (!this.keys[fieldName])
                 this.addFrame(fieldName, 0, this.getFieldValue(fieldName))
-            this.addMenuIsOpen = false
             return fieldName
         },
         getField(fieldName) {
