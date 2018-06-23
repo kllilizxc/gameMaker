@@ -110,9 +110,9 @@ export default {
                         <MenuItem title={gameObject}
                                   onClick={() => {
                                       this.setIsLoading(true)
+                                      close()
                                       this.canvas[`create${gameObject}`]()
                                           .finally(() => this.setIsLoading(false))
-                                      close()
                                   }}/>)
             })
         }

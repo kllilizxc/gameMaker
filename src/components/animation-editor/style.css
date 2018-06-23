@@ -1,4 +1,5 @@
 @value Red-300, Grey-500, Purple-200, Black-Icons, Black-HintText, Grey-200, Grey-300, Grey-400, White-Text from 'Common/colors.css';
+@value Explorer from 'Common/theme.css';
 
 .animationEditor {
     display: flex;
@@ -52,7 +53,7 @@
 }
 
 .fieldItem:nth-child(2n+1) {
-    background: Grey-200;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .timeline {
@@ -92,7 +93,7 @@
 }
 
 .indicator {
-    stroke: Purple-200;
+    stroke: Explorer;
     stroke-width: 3;
     opacity: 0.8;
     cursor: move;

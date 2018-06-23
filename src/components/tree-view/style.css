@@ -6,7 +6,7 @@
     color: Black-Text;
 }
 
-.treeView > .itemContainer:nth-child(2n+1) {
+.treeView > div > .itemContainer:nth-child(2n+1) {
     background: rgba(0, 0, 0, 0.04);
     border-radius: 4px;
 }
