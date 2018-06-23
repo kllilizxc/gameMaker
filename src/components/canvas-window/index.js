@@ -34,8 +34,10 @@ export default {
         openScene() {
             this.canvas.detachEditControl()
             this.canvas.dispose()
+            this.setIsLoading(true)
             AssetManager.pickFile('.scene')
                 .then(([file]) => this.$store.dispatch('openScene', file))
+                .then(() => this.setIsLoading(false))
         },
         togglePlay() {
             this.$store.dispatch('setIsPlaying', !this.isPlaying)

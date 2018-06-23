@@ -87,8 +87,8 @@ export default {
             dispatch('loadRawGameObjects', getRawGameObjects(gameObjects)),
         loadRawGameObjects: ({ dispatch, state: { game } }, rawGameObjects) => {
             game.reload()
-            rawGameObjects.sort((a, b) => a.sort - b.sort)
-                .forEach(gameObject => game.loadGameObject(gameObject))
+            return Promise.all(rawGameObjects.sort((a, b) => a.sort - b.sort)
+                .map(gameObject => game.loadGameObject(gameObject)))
         },
         removeScript({ state, dispatch }, name) {
             const { gameObject, game } = state
