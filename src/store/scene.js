@@ -8,6 +8,8 @@ import UndoableAction from '@/classes/undoableAction'
 
 const logger = console
 
+const SET_GAMEOBJECT = 'SET_GAMEOBJECT'
+
 const simpleState = {
     isLoading: false,
     isPlaying: false,
@@ -24,7 +26,10 @@ export default {
     state: { ...simpleState, ...state },
     getters: stateToGetters({ ...simpleState, ...state }),
     mutations: {
-        ...stateToMutations(simpleState)
+        ...stateToMutations(simpleState),
+        [SET_GAMEOBJECT](state, gameObject) {
+            state.gameObject = gameObject
+        }
     },
     actions: {
         ...stateToActions(simpleState),

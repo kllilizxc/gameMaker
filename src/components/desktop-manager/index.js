@@ -127,6 +127,7 @@ export default {
             this.$refs.windowHint.style.transition = ''
             this.$refs.windows[this.currentWindowIndex].$el.style.width = `${width}px`
             this.windowHintSize = this.getWindowSizeByDeltaX(width)
+            this.$store.dispatch('setIsLoading', true)
         },
         releaseWindow() {
             if (this.currentWindowIndex === -1) return
