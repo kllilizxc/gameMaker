@@ -10,3 +10,11 @@
     height: 100%;
 }
 
+.progress {
+    position: absolute !important;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px;
+    margin-top: -32px;
+}
+

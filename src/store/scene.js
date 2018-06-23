@@ -56,7 +56,7 @@ export default {
             serializedScene.filesMap = game.filesMap
             serializedScene.assets = asset.assets
             serializedScene.rawGameObjects = getRawGameObjects(game.gameObjects)
-            logger.log(serializedScene)
+            // logger.log(serializedScene)
             AssetManager.writeFile('scene.scene', JSON.stringify(serializedScene))
         },
         openScene: ({ state: { game }, dispatch, commit }, file) =>
@@ -75,7 +75,7 @@ export default {
                     dispatch('setAssets', data.assets)
                     commit('SET_GAMEOBJECT', null)
                     commit('SET_ISPLAYING', false)
-                    logger.log(data, game)
+                    // logger.log(data, game)
                     return dispatch('loadRawGameObjects', data.rawGameObjects)
                 }),
         restoreScene: ({ dispatch, state: { game: { gameObjects } } }) =>

@@ -249,8 +249,10 @@ export default {
 
         this.game.setCanvas(canvas)
         new ResizeObserver(debounce(() => this.game.engine.resize(), 1000)).observe(canvas)
-        // this.$store.dispatch('openScene', 'static/scenes/spaceShooter.scene')
-        this.$store.dispatch('newScene')
+        this.$store.dispatch('setIsLoading', true)
+        this.$store.dispatch('openScene', 'static/scenes/miniGame.scene')
+            .then(() => this.$store.dispatch('setIsLoading', false))
+        // this.$store.dispatch('newScene')
         window.addEventListener('resize', debounce(() => this.game.engine.resize(), 100))
 
         canvas.addEventListener('webglcontextlost', function (event) {

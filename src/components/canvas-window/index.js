@@ -9,6 +9,7 @@ import { loadMesh } from '../../common/api'
 import { getFileExtension, trimFilenameExtension } from '../../common/util'
 import UndoableAction from '../../classes/undoableAction'
 import { DialogService } from '@/components/dialog'
+import CircularProgress from 'Ui/circular-progress'
 
 const gameObjects = ['EmptyMesh', 'UniversalCamera', 'ArcRotateCamera', 'FollowCamera', 'Sphere', 'Box', 'Plane', 'Ground', 'SkyBox', 'PointLight', 'DirectionalLight', 'SpotLight', 'HemisphericLight', 'BoxArea']
 
@@ -123,6 +124,7 @@ export default {
         return <div class={styles.canvasWindow} onDrop={dropHandler} onDragover={dragOverHandler}
                     style={{ cursor: this.isPlaying ? 'none' : '' }}>
             <div class={styles.container} style={{ filter: isLoading ? 'blur(8px)' : '' }}><Canvas ref='canvas'/></div>
+            {isLoading && <CircularProgress size={64} color={'secondary'} class={styles.progress}/>}
             <Dock class={styles.dock}>
                 <IconButton slot='left' icon='folder_open' onClick={openScene}/>
                 <IconButton slot='left' icon='filter_hdr' onClick={newScene}/>
