@@ -248,10 +248,7 @@ export default {
         const { canvas } = this
 
         this.game.setCanvas(canvas)
-        new ResizeObserver(debounce(() => {
-            this.game.engine.resize()
-            this.$store.dispatch('setIsLoading', false)
-        }, 1000)).observe(canvas)
+        new ResizeObserver(debounce(() => this.game.engine.resize(), 1000)).observe(canvas)
         this.$store.dispatch('setIsLoading', true)
         this.$store.dispatch('openScene', 'static/scenes/miniGame.scene')
             .then(() => this.$store.dispatch('setIsLoading', false))

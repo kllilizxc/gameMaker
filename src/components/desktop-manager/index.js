@@ -127,7 +127,6 @@ export default {
             this.$refs.windowHint.style.transition = ''
             this.$refs.windows[this.currentWindowIndex].$el.style.width = `${width}px`
             this.windowHintSize = this.getWindowSizeByDeltaX(width)
-            this.$store.dispatch('setIsLoading', true)
         },
         releaseWindow() {
             if (this.currentWindowIndex === -1) return
@@ -193,10 +192,12 @@ export default {
             } else {
                 this.selectedWindow = null
                 this.selectedLabel = null
+                return
             }
 
             this.lastX = e.clientX || (e.touches && e.touches[0].clientX)
             this.deltaX = 0
+            this.$store.dispatch('setIsLoading', true)
         },
         drag(e) {
             if (!this.selectedLabel && !this.selectedWindow) return
@@ -224,6 +225,7 @@ export default {
                 this.selectedLabel.style.transform = ''
             this.selectedLabel = null
             this.selectedWindow = null
+            this.$store.dispatch('setIsLoading', false)
         },
         getDesktopSize() {
             if (this.currentDesktopIndex === this.desktopIndicators.length - 1)
