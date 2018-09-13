@@ -20,6 +20,9 @@ export default {
         },
         handleTouchEnd(deltaX: number): void {
             this.$emit('draggingWindowEnd', deltaX)
+        },
+        immediateReleaseWindow() {
+            this.handleTouchEnd(0)
         }
     },
     render() {
@@ -27,20 +30,22 @@ export default {
             window: { title, color },
             handleTouchStart,
             handleTouchMove,
-            handleTouchEnd
+            handleTouchEnd,
+            immediateReleaseWindow
         } = this
 
         return <div class={styles.window}>
             <Card class={styles.container}
                   style={{ backgroundColor: color }}>
-                <Draggable class={styles.draggable}
-                           touchStart={handleTouchStart}
-                           touchMove={handleTouchMove}
-                           touchEnd={handleTouchEnd}
-                           dragMin={-window.innerWidth}
-                           dragLimit={window.innerWidth}>
+                {title && <Draggable class={styles.draggable}
+                                     touchStart={handleTouchStart}
+                                     touchMove={handleTouchMove}
+                                     touchEnd={handleTouchEnd}
+                                     clickFunction={immediateReleaseWindow}
+                                     dragMin={-window.innerWidth}
+                                     dragLimit={window.innerWidth}>
                     <div class={styles.title}>{title}</div>
-                </Draggable>
+                </Draggable>}
                 {this.$slots.default}
             </Card>
         </div>

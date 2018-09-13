@@ -1,27 +1,53 @@
 import styles from './style.css'
 import DesktopManager from '@/components/desktop-manager'
 import ScriptWindow from '@/components/script-window'
-
+import SceneWindow from '@/components/scene-window'
+import ExplorerWindow from '@/components/explorer-window'
+import CanvasWindow from '@/components/canvas-window'
 import COLORS from '@/common/colors.css'
+
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'app',
+    data: () => ({
+    }),
+    methods: {
+    },
     computed: {
+        ...mapGetters(['scene', 'gameObject']),
         windowLabels() {
             return [
                 { icon: 'dashboard', title: 'Inspector', color: COLORS['Grey-50'], content: <ScriptWindow/> },
-                { icon: 'face', title: 'face', color: '#9FA8DA' },
-                { icon: 'favorite', title: 'favorite', color: '#80DEEA' },
+                { icon: 'subject', title: 'Scene', color: COLORS['Grey-100'], content: <SceneWindow ref='sceneWindow'/> },
+                { icon: 'folder', title: 'Explorer', color: COLORS['Grey-200'], content: <ExplorerWindow/> },
                 { icon: 'delete', title: 'delete', color: '#80CBC4' },
                 { icon: 'polymer', title: 'polymer', color: '#E6EE9C' }
             ]
+        },
+        defaultWindow() {
+            return { color: '#fff', size: 4, content: <CanvasWindow/> }
+        }
+    },
+    created() {
+        window.$vm0 = this  // for debug
+        document.onkeydown = e => {
+            if (e.ctrlKey && e.code === 'KeyD') {
+                // ctrl + d
+                this.$store.dispatch('duplicateGameObject')
+                    .then(() => this.$refs.sceneWindow.$refs.treeView.setTreeData())
+            } else if (e.code === 'KeyF') {
+                const { scene, gameObject } = this
+                if (scene && scene.activeCamera && scene.activeCamera.setTarget)
+                    scene.activeCamera.setTarget(gameObject.getMesh().getAbsolutePosition())
+            }
         }
     },
     render() {
-        let { windowLabels } = this
+        const { windowLabels, defaultWindow } = this
 
-        return <div id="app">
-            <DesktopManager ref="desktopManager" windowLabels={windowLabels}/>
+        return <div id="app" class={styles.app}>
+            <DesktopManager ref="desktopManager" windowLabels={windowLabels} defaultWindow={defaultWindow}/>
         </div>
     }
 }

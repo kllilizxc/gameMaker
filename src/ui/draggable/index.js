@@ -14,24 +14,29 @@ export default {
         dragMin: {
             type: Number,
             default: 8
+        },
+        clickFunction: {
+            type: Function,
+            default: e => null
         }
     },
     data: () => ({
         isDragging: false,
-        draggingStarted: false,
         lastX: 0,
-        deltaX: 0
+        deltaX: 0,
+        touchIsDragging: false,
+        startTouching: false
     }),
     methods: {
         handleTouchStart(e: any): void {
             this.lastX = e.clientX || e.touches[0].clientX
             this.deltaX = 0
             this.isDragging = false
-            this.draggingStarted = true
-            this.touchStart()
+            this.touchIsDragging = false
+            this.startTouching = true
         },
         handleTouchMove(e: any): void {
-            if (!this.draggingStarted) return
+            if (!this.startTouching) return
             e.stopPropagation()
             e.preventDefault()
 
@@ -40,21 +45,34 @@ export default {
             this.lastX = clientX
 
             this.isDragging = Math.abs(this.deltaX) > 8
-            if (this.isDragging && this.deltaX < this.dragLimit && this.deltaX > this.dragMin)
-                this.touchMove(this.deltaX)
+            if (this.isDragging && this.deltaX < this.dragLimit && this.deltaX > this.dragMin) {
+                if (!this.touchIsDragging) {
+                    this.touchIsDragging = true
+                    this.touchStart()
+                } else
+                    this.touchMove(this.deltaX)
+            }
         },
         handleTouchEnd(): void {
-            if (!this.draggingStarted) return
-            this.draggingStarted = false
+            if (!this.startTouching || !this.touchIsDragging || !this.isDragging) return
+            this.touchIsDragging = false
+            this.isDragging = false
+            this.startTouching = false
             this.touchEnd(this.deltaX)
         }
+    },
+    created() {
+        document.addEventListener('mousemove', this.handleTouchMove)
+        document.addEventListener('mouseup', this.handleTouchEnd)
+        document.addEventListener('mouseleave', this.handleTouchEnd)
     },
     render() {
         const {
             handleTouchStart,
             handleTouchMove,
             handleTouchEnd,
-            isDragging
+            isDragging,
+            clickFunction
         } = this
 
         return <div class={styles.draggable}
@@ -62,9 +80,7 @@ export default {
                     onTouchmove={handleTouchMove}
                     onTouchend={handleTouchEnd}
                     onMousedown={handleTouchStart}
-                    onMousemove={handleTouchMove}
-                    onMouseup={handleTouchEnd}
-                    onMouseleave={handleTouchEnd}
+                    onClick={clickFunction}
                     style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>{this.$slots.default}</div>
     }
 }

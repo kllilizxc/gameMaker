@@ -1,4 +1,5 @@
 // @flow
+// @jsx h
 import styles from './style.css'
 import Desktop from '@/components/desktop'
 import Window from '@/components/window'
@@ -6,6 +7,7 @@ import FloatButton from '@/ui/float-button'
 import Hideable from '@/ui/hideable'
 import WindowLabel from '@/components/window-label'
 import { afterTransition } from '../../common/util'
+import Vue from 'vue'
 
 type WindowType = {
     title: string,
@@ -27,18 +29,24 @@ function sizeToPX(size = 1) {
 export default {
     name: 'desktop-manager',
     props: {
-        windowLabels: Array
+        windowLabels: Array,
+        defaultWindow: {
+            type: Object,
+            required: true
+        }
     },
-    data: () => ({
-        desktops: [{ windows: [{ title: 'placeholder', color: '#fff', size: 4 }] }],
-        currentDesktopIndex: 0,
-        currentWindowIndex: 0,
-        windowHintSize: 0,
-        lastWindowWidth: 0,
-        currentWindowWidth: 0,
-        currentWindow: null,
-        isNewWindow: false
-    }),
+    data() {
+        return {
+            desktops: [{ windows: [this.defaultWindow] }],
+            currentDesktopIndex: 0,
+            currentWindowIndex: 0,
+            windowHintSize: 0,
+            lastWindowWidth: 0,
+            currentWindowWidth: 0,
+            currentWindow: null,
+            isNewWindow: false
+        }
+    },
     watch: {
         currentDesktopIndex(index: number): void {
             if (this.$el && this.$el.style)
@@ -46,6 +54,9 @@ export default {
         },
         currentWindowWidth(val) {
             this.currentWindowRef.$el.style.width = val + 'px'
+        },
+        defaultWindow(val) {
+            Vue.set(this.desktops[0].windows, '0', val)
         }
     },
     methods: {
@@ -93,7 +104,7 @@ export default {
             let sizeToChange = windows.reduce((cur, { size }) => cur + size, 0) + size - movingWindow.size - MAX_SIZE
             for (let i = this.currentWindowIndex - 1; i >= 0; --i) {
                 const window = windows[i]
-                if (window.size >= sizeToChange + 1) {
+                if (window.size > sizeToChange) {
                     window.size -= sizeToChange
                     break
                 } else {
@@ -108,11 +119,10 @@ export default {
             this.windowHintSize = size
         },
         createNewDesktopToFitWindow(): void {
-            const { currentWindow } = this
+            const currentWindow = this.currentDesktop.windows.pop()
             currentWindow.size = MAX_SIZE
-            this.currentDesktop.windows.pop()
-            this.resetWindowHint()
             this.addDesktop({ windows: [currentWindow] })
+            this.resetWindowHint(MAX_SIZE)
             this.$refs.windowHint.style.transition = ''
         },
         handleMovingExistingWindow(name: string): void {
@@ -142,6 +152,7 @@ export default {
             this.windowHintSize = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
         },
         handleReleaseWindow: function (deltaX: number): void {
+            if (!deltaX) return
             const size = this.getWindowSizeByDeltaX(this.lastWindowWidth - deltaX)
             if (this.currentWindowIndex < 0 || !this.currentWindow) return
             if (!size) {
@@ -208,12 +219,12 @@ export default {
             return this.desktops[this.currentDesktopIndex]
         },
         currentWindowRef(): any {
-            let currentWindowRef = this.$refs.windows.find(({ window: { title } }) => title === this.currentWindow.title)
+            const currentWindowRef = this.$refs.windows.find(({ window: { title } }) => title === this.currentWindow.title)
             console.assert(currentWindowRef)
             return currentWindowRef
         }
     },
-    render() {
+    render(h) {
         const {
             desktops,
             windowLabels,
@@ -231,7 +242,7 @@ export default {
         } = this
 
         return <div class={styles.desktopManager}>
-            {desktops && desktops.map((desktop, index) => <Desktop>
+            {desktops && desktops.map((desktop) => <Desktop>
                 {desktop.windows && desktop.windows.map(window =>
                     <Window ref="windows"
                             refInFor={true}

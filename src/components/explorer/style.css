@@ -1,0 +1,32 @@
+@value DeepPurple-400, Black-Icons, Black-Text from '@/common/colors.css';
+
+.item {
+    height: 48px;
+    line-height: 48px;
+    font-size: 18px;
+    display: flex;
+    color: Black-Icons;
+}
+
+.hint {
+    text-align: center;
+    font-size: 18px;
+}
+
+.explorer {
+    overflow: auto;
+    height: 100%;
+}
+
+.name {
+    color: Black-Text;
+}
+
+.chosen, .chosen .name {
+    color: DeepPurple-400;
+}
+
+.icon {
+    line-height: 48px;
+    margin-right: 8px;
+}

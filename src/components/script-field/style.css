@@ -1,3 +1,49 @@
+@value Black-Text, Black-SecondaryText, Black-Dividers from '@/common/colors.css';
+
 .scriptField {
-    margin: 8px 0;
+    overflow: hidden;
+    margin: 4px 0;
 }
+
+.scriptField > * {
+    width: 100%;
+}
+
+.inputGroup {
+}
+
+.inputGroup .container {
+    margin: 0 -4px;
+}
+
+.inputGroup .container > * {
+    margin: 0 4px;
+    flex: 1;
+}
+
+.inputGroup .label {
+    color: Black-SecondaryText;
+    font-size: 13px;
+}
+
+.label {
+    margin-right: 8px;
+    font-size: 14px;
+    color: Black-Text;
+    line-height: 24px;
+}
+
+.groupLabel {
+    color: Black-Text;
+}
+
+.container {
+    margin-right: auto;
+    display: flex;
+}
+
+.filePicker {
+    display: flex;
+}
+
+

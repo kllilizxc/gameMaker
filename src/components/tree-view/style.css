@@ -1,0 +1,13 @@
+@value Black-Text from '@/common/colors.css';
+
+.treeItem {
+    margin-left: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    color: Black-Text;
+}
+
+.treeView {
+    margin: 0 8px;
+}
+

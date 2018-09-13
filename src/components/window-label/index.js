@@ -79,6 +79,11 @@ export default {
                 this.shouldClear = true
                 this.isDragging = false
             }
+        },
+        immediateShowWindow() { // TODO buggy
+            // if (this.isDragging) return
+            // this.$emit('newWindow', this.label)
+            // window.requestAnimationFrame(() => this.$emit('movingWindowEnd', window.innerWidth / MAX_SIZE))
         }
     },
     render() {
@@ -90,7 +95,8 @@ export default {
             handleTouchMove,
             handleTouchEnd,
             isDragging,
-            shouldClear
+            shouldClear,
+            immediateShowWindow
         } = this
 
         return !shouldClear &&
@@ -98,6 +104,7 @@ export default {
                 class={styles.windowLabel}
                 hideFunction={hide}
                 showFunction={show}
+                clickFunction={immediateShowWindow}
                 isLocked={isDragging}>
                 <Draggable
                     class={styles.container}

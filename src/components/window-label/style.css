@@ -1,5 +1,6 @@
 .windowLabel {
     margin-bottom: -20px;
+    pointer-events: auto;
 }
 
 .icon {

@@ -1,0 +1,17 @@
+.sceneWindow {
+    padding: 0 8px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.item {
+    display: flex;
+    transition: height 0.3s ease;
+    height: 48px;
+}
+
+.dropArea {
+    flex: 1;
+    min-height: 200px;
+}

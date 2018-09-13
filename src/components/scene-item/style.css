@@ -1,0 +1,31 @@
+@value Black-Text, Black-Icon, Red-300, DeepPurple-400 from '@/common/colors.css';
+
+.item {
+    user-select: none;
+    color: Black-Icon;
+    display: flex;
+}
+
+.item span {
+    height: 48px;
+    line-height: 48px;
+    font-size: 18px;
+}
+
+.icon {
+    line-height: 48px;
+    margin-right: 8px;
+}
+
+.deleteIcon {
+    margin-left: auto;
+    color: Red-300;
+}
+
+.chosen {
+    color: DeepPurple-400;
+}
+
+.dragOver {
+    font-weight: bold;
+}

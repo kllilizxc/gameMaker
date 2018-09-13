@@ -1,0 +1,15 @@
+
+@value DeepPurple-200, Grey-200 from '@/common/colors.css';
+
+.fileDropper {
+    width: 72%;
+    padding-left: 8px;
+    margin: 4px 0 4px auto;
+    background: Grey-200;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.dragOver {
+    background: DeepPurple-200;
+}
