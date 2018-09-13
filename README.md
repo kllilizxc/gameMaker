@@ -4,6 +4,8 @@
 
 ![](screenshots/image1.png)
 
+[Try it out!](https://kllilizxc.github.io/gameMaker-build/)
+
 ## Build Setup
 
 ``` bash
@@ -45,11 +47,13 @@ Component to view/edit gameObjects' properties (actually scripts' public variabl
 ![](screenshots/image5.gif)
 
 #### Script System
+
+![](screenshots/image8.gif)
+
 The Script System transform JavaScript files to dynamic user interface,
 to visually edit scripts' internal variables.
 
 ![](screenshots/image6.png)
-![](screenshots/image8.gif)
 
 You can define some public variables which will be exposed to the outer scope,
 the editor will transform the public variables into visual user interfaces according their
